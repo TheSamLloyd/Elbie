@@ -1,0 +1,1 @@
+{"name":"Kiara","player":"Erin","playerID":"350089505359003649","level":1,"exp":1,"money":0.0,"stats":[9,8,16,13,12,15],'theme':"https://www.youtube.com/watch?v=Q5AdHEpA9r4","class":"Thief","race":"Elf","desc":"A mysterious thief!","aviURL":"https://connectgujarat.com/wp-content/uploads/2016/03/thief.jpg","baseHP":14,"hp":14,"damageDie":"d8"}
