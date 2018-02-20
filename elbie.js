@@ -28,14 +28,25 @@ function randInt(a, b){
 	}
 	return out;
 }
-function roll(str){
-	var rolls=str.split(",");
-	rolls.forEach(function(roll){
-		var total=0;
-		roll.split("+").forEach(function(dice){
-			console.log(dice)
-		})
-	})
+function sum(Array){
+	var total=0;
+	for (var i=0;i<Array.length;i++){
+		total+=parseInt(Array[i]);
+	}
+	return total;
+}
+function rollFormat(Command){
+	output = roll(Command);
+	text = "";
+	for (var i = 0;i<Object.keys(output).length;i++){
+		if (output[i].valid){
+			text+=output[i].roll+": "+output[i].dielist+"=**"+output[i].total+"**\n"
+		}
+		else{
+			text+=output[i].roll+": malformed roll"
+		}
+	}
+	return text.trim();
 }
 //error handling
 client.on("error", function(err){
@@ -46,6 +57,7 @@ client.on("error", function(err){
 function errorHandler(err){
 	console.log(err.name)
 	console.log(err.message)
+	return "I ran into an error of type "+err.name+": check console for details."
 }
 //command handling
 function comList(Command){
@@ -67,12 +79,52 @@ function defRoll(Command){
 	var mod = parseInt(Command.argument);
 	return randInt(1,20)+(mod||0)
 }
+function roll(Command){
+	var rolls = Command.argument.split(",");
+	var results={}
+	rolls.forEach(function(roll, index){
+		var dielist=[];
+		var total=0;
+		roll.split("+").forEach(function(die){
+			var k = die.split("d");
+			if (k.length==1){
+				dielist.push(parseInt(k[0]));
+			}
+			if (k.length==2){
+				var lim = k[0]=="" ? 1 : parseInt(k[0])
+				for (var i=0;i<lim;i++){
+					dielist.push(randInt(1,parseInt(k[1])));
+				}
+			}
+		})
+		var total = sum(dielist)
+		var valid = !(isNaN(total));
+		results[index]={roll:roll,dielist:dielist,total:total, valid:valid}
+	})
+	console.log(results)
+	return results;
+}
+function perish(Command){
+	if (Command.auth.id=="246462201148342272"){
+		Command.channel.send(":-(")
+		client.destroy();
+		console.log("process ended manually")
+		process.exit();
+		return false;
+	}
+	else{
+		Command.channel.send("hewwo?")
+		return false;
+	}
+}
 commandList={
 	ping:ping,
 	echo:echo,
 	flip:flip,
 	r:defRoll,
-	help:comList
+	help:comList,
+	roll:rollFormat,
+	perish:perish
 };
 function handler(Command){
 	try{
@@ -80,6 +132,7 @@ function handler(Command){
 	}
 	catch(err){
 		errorHandler(err);
+		var out = "Ran into an error."
 	}
 	finally{
 		return out;
@@ -97,15 +150,6 @@ client.on("message",function(message){
 		console.log(Command)
 		//commands
 		Command.channel.send(handler(Command))
-		// 	case "roll":
-		// 		outcome = roll(argument);
-		// 		break;
-		// 	case "r":
-		// 		outcome = roll("1d20");
-		// 		break;
-		// 	default:
-		// 		break;
-		// }
 	}
 })
 
