@@ -1,1 +1,1 @@
-web: node elbie.js
+worker: node elbie.js
