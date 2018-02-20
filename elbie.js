@@ -152,6 +152,17 @@ client.on("message",function(message){
 		Command.channel.send(handler(Command))
 	}
 })
+//=================================================
+//here there be TTRPG functions
+//=================================================
+class Ruleset(){
+	Constructor()
+}
+class Campaign(){
 
+}
+class Character(){
+
+}
 //login
 client.login(token)

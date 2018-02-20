@@ -1,0 +1,28 @@
+{
+  "name": "elbie",
+  "version": "1.0.0",
+  "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
+  "main": "elbie.js",
+  "dependencies": {
+    "discord.js": "^11.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheSamLloyd/Elbie-Mk.-III.git"
+  },
+  "keywords": [
+    "bot",
+    "discord",
+    "ttrpg"
+  ],
+  "author": "Sam Lloyd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheSamLloyd/Elbie-Mk.-III/issues"
+  },
+  "homepage": "https://github.com/TheSamLloyd/Elbie-Mk.-III#readme"
+}
