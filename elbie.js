@@ -154,15 +154,5 @@ client.on("message",function(message){
 })
 //=================================================
 //here there be TTRPG functions
-//=================================================
-class Ruleset(){
-	Constructor()
-}
-class Campaign(){
-
-}
-class Character(){
-
-}
 //login
 client.login(token)
