@@ -128,7 +128,11 @@ commandList={
 	roll:rollFormat,
 	perish:perish,
 	cTest:rpg.campaignChannel,
-	who:rpg.who
+	who:rpg.who,
+	system:rpg.Character.getSystem,
+	attr:rpg.Character.setAttr,
+	mod:rpg.Character.modifyAttr,
+	get:rpg.Character.getAttr
 };
 function handler(Command){
 	try{
