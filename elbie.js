@@ -1,6 +1,8 @@
 //dependencies
 const requests = require('requests');
+const fs = require('fs');
 const Discord = require('discord.js');
+const rpg = require('./rpg.js');
 const client = new Discord.Client();
 const token = "MjU1MzkwMzk0MjE5NjI2NDk2.CyfptA.3iYEnqOFkLtl5Vasj3wgrIKSXgk";
 
@@ -124,7 +126,9 @@ commandList={
 	r:defRoll,
 	help:comList,
 	roll:rollFormat,
-	perish:perish
+	perish:perish,
+	cTest:rpg.campaignChannel,
+	who:rpg.who
 };
 function handler(Command){
 	try{
@@ -146,13 +150,12 @@ client.on("message",function(message){
 		channel : message.channel,
 		auth : message.author,
 		command : content.split(" ")[0],
-		argument : content.split(" ").slice(1).join(" ")};
+		argument : content.split(" ").slice(1).join(" "),
+		args : content.split(" ").slice(1)}
 		console.log(Command)
 		//commands
 		Command.channel.send(handler(Command))
 	}
 })
-//=================================================
-//here there be TTRPG functions
 //login
 client.login(token)
