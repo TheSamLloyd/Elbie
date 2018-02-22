@@ -80,6 +80,11 @@ var Character={
 		var attr = Command.args[0];
 		var value = Command.args[1];
 		char[attr] += typed(value);
+		console.log(attr)
+		if (attr=="HP"){
+			console.log("checking HP")
+			char[attr] = Math.min(char.baseHP,Math.max(0,char.HP));
+		}
 		if(Character.save(Command)){
 			return char[attr];}
 		else return false;

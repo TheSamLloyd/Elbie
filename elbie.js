@@ -57,8 +57,7 @@ client.on("error", function(err){
 	client.destroy()
 })
 function errorHandler(err){
-	console.log(err.name)
-	console.log(err.message)
+	console.log(err)
 	return "I ran into an error of type "+err.name+": check console for details."
 }
 //command handling
@@ -132,8 +131,27 @@ commandList={
 	system:rpg.Character.getSystem,
 	attr:rpg.Character.setAttr,
 	mod:rpg.Character.modifyAttr,
+	mark:cast,
+	hp:cast,
 	get:rpg.Character.getAttr
 };
+function orDef(val,def){
+	return (val||def)
+}
+function cast(Command){
+	var castlist={
+		mark : ["exp",orDef(Command.args[0],1),true],
+		hp : ["HP",orDef(Command.args[0],0),true]
+	};
+	Command.args=castlist[Command.command];
+	if (Command.args[2]){
+		return rpg.Character.modifyAttr(Command);
+	}
+	else{
+		return rpg.Character.setAttr(Command);
+	}
+
+}
 function handler(Command){
 	try{
 		var out = commandList[Command.command](Command)
