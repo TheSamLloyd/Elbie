@@ -40,11 +40,12 @@ function getPlayerByID(Command){
 	}});
 	return id;
 }
-function listChar(Command){
-	var characters = campaignChannel(Command).characters;
-	var array=""
+var listChar = function(Command){
+	var players = campaignChannel(Command).characters;
+	var array="";
 	Object.keys(players).forEach(function(element){
-		array+=element.name+" ("+element.playerName+")\n"
+		var char = players[element]
+		array+=char.name+" ("+char.playerName+")\n"
 	})
 	return array.trim();
 }
@@ -172,4 +173,4 @@ var DungeonWorld = {
 var gameList = {
 	"Dungeon World" :DungeonWorld
 };
-module.exports = {campaigns, campaignChannel, who, Character};
+module.exports = {campaigns, campaignChannel, who, Character, listChar};
