@@ -18,9 +18,6 @@ function isCommand(message){
 	}
 	else return false;
 }
-function getID(message){
-	message.author.id
-}
 function randInt(a, b){
 	if (b){
 		var out = Math.floor(Math.random()*(b-a+1))+a;
@@ -139,7 +136,8 @@ commandList={
 	hp:cast,
 	get:rpg.Character.getAttr,
 	help:help,
-	s:skillRoll
+	s:skillRoll,
+	listChar:rpg.listChar
 };
 function help(Command){
 	return Object.keys(commandList);

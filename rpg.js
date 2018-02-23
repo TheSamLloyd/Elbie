@@ -22,12 +22,34 @@ function campaignChannel(Command){
 }
 function isDM(Command){
 	var dm = campaigns[Command.channel.id].dm;
-	return (Command.auth.id==dm)
+	return (Command.auth.id==dm);
+}
+function caps(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function idTest(element,arg){
+	arg = caps(arg);
+	return (element.name==arg||(element.playerName==arg||element.nickname==arg));
+}
+function getPlayerByID(Command){
+	var players = campaignChannel(Command).characters;
+	console.log(players);
+	Object.keys(players).forEach(function(element){
+		if (idTest(players[element],Command.argument)){
+			id = element;
+	}});
+	return id;
+}
+function listChar(Command){
+	var characters = campaignChannel(Command).characters;
+	var array=""
+	Object.keys(players).forEach(function(element){
+		array+=element.name+" ("+element.playerName+")\n"
+	})
+	return array.trim();
 }
 function who(Command){
-	if (isDM(Command)){
-		Command.auth.id = (Command.args[0]||Command.auth.id);
-	}
+	Command.auth.id = (getPlayerByID(Command)||Command.auth.id);
 	var char = Character.getChar(Command);
 	var embed = new Discord.RichEmbed()
 		.setColor("GREEN")

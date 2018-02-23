@@ -38,6 +38,7 @@
     "characters": {
       "246462201148342272": {
         "name": "Amateotl Maikali",
+        "nickname": "Mate",
         "playerName": "Sam",
         "level": 1,
         "exp": 6,
@@ -65,12 +66,12 @@
         "level": 1,
         "exp": 6,
         "skills": {
-          "Strength":8,
-          "Constitution":9,
-          "Dexterity":13,
-          "Intelligence":12,
-          "Wisdom":16,
-          "Charisma":15
+          "Strength": 8,
+          "Constitution": 9,
+          "Dexterity": 13,
+          "Intelligence": 12,
+          "Wisdom": 16,
+          "Charisma": 15
         },
         "theme": "https://www.youtube.com/watch?v=PuY-TM1e7EY",
         "class": "Immolator",
@@ -79,6 +80,75 @@
         "aviURL": "https://orig00.deviantart.net/056b/f/2012/304/0/a/fire_mage_character_card_by_dacas-d5jiw5u.jpg",
         "baseHP": 17,
         "HP": 17,
+        "damageDie": "d8"
+      },
+      "254413997753892865": {
+        "name": "Lillup",
+        "playerName": "Ethan",
+        "level": 2,
+        "exp": 5,
+        "money": 0.0,
+        "skills": {
+          "Strength": 16,
+          "Constitution": 12,
+          "Dexterity": 13,
+          "Intelligence": 9,
+          "Wisdom": 16,
+          "Charisma": 8
+        },
+        "theme": "https://www.youtube.com/watch?v=Q5AdHEpA9r4",
+        "class": "Druid",
+        "race": "Grippli",
+        "desc": "A Grippli dressed in the most extravagantly intricate robs and silks imaginable, he is extremely curious and forthcoming, finding joy and intrigue in everything around him.",
+        "aviURL": "https://media.discordapp.net/attachments/277518771361677314/361307267984785408/unknown.png?width=1082&height=677",
+        "baseHP": 19,
+        "HP": 18,
+        "damageDie": "d6"
+      },
+      "238110271950815232": {
+        "name": "Kupro",
+        "playerName": "Duncan",
+        "level": 2,
+        "exp": 3,
+        "money": 0.0,
+        "skills": {
+          "Strength": 15,
+          "Constitution": 13,
+          "Dexterity": 9,
+          "Intelligence": 12,
+          "Wisdom": 8,
+          "Charisma": 16
+        },
+        "theme": "https://www.youtube.com/watch?v=6W9QJe4BgPo",
+        "class": "Paladin",
+        "race": "Godlike",
+        "desc": "oooooh lucky lucky lucky",
+        "aviURL": "http://www.roulette30.com/wp-content/uploads/americanroulette.png",
+        "baseHP": 23,
+        "HP": 14,
+        "damageDie": "d10"
+      },
+      "350089505359003649": {
+        "name": "Kiara",
+        "playerName": "Erin",
+        "level": 1,
+        "exp": 1,
+        "money": 0.0,
+        "skills": {
+          "Strength":9,
+          "Constitution":8,
+          "Dexterity":16,
+          "Intelligence":13,
+          "Wisdom":12,
+          "Charisma":15
+        },
+        "theme": "https://www.youtube.com/watch?v=Q5AdHEpA9r4",
+        "class": "Thief",
+        "race": "Elf",
+        "desc": "A mysterious thief!",
+        "aviURL": "https://connectgujarat.com/wp-content/uploads/2016/03/thief.jpg",
+        "baseHP": 14,
+        "HP": 14,
         "damageDie": "d8"
       }
     }
