@@ -50,7 +50,8 @@ var listChar = function(Command){
 	return array.trim();
 }
 function who(Command){
-	Command.auth.id = (getPlayerByID(Command)||Command.auth.id);
+	if (Command.argument!=""){
+		Command.auth.id = getPlayerByID(Command)}
 	var char = Character.getChar(Command);
 	var embed = new Discord.RichEmbed()
 		.setColor("GREEN")

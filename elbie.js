@@ -152,10 +152,10 @@ function cast(Command){
 	};
 	Command.args=castlist[Command.command];
 	if (Command.args[2]){
-		return rpg.Character.modifyAttr(Command);
+		return Command.args[0]+": "+rpg.Character.modifyAttr(Command);
 	}
 	else{
-		return rpg.Character.setAttr(Command);
+		return Command.args[0]+": "+rpg.Character.setAttr(Command);
 	}
 
 }
