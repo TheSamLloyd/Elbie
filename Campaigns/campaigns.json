@@ -1,1 +1,86 @@
-{"334909600761511947":{"dm":"246661338984742923","channel":"334909600761511947","name":"Pilgrims of her Blue Flame","shtname":"pilgrims","game":"Dungeon World","characters":{"246462201148342272":{"name":"Amateotl Maikali","playerName":"Sam","level":1,"exp":6,"class":"wizard","race":"orc","desc":"Young wizard from the Orc Consulate, sent to Lucaprim to learn the magical arts of geometric arcana and mathemagics.","baseHP":19,"HP":19,"damageDie":"1d4","skills":{"Strength":14,"Constitution":15,"Dexterity":13,"Intelligence":16,"Wisdom":8,"Charisma":12},"theme":"https://www.youtube.com/watch?v=51sj9GW5shM"}}},"255389478531760128":{"dm":"246462201148342272","channel":"255389478531760128","name":"DEMO Pilgrims of her Blue Flame","shtname":"DEMOpilgrims","game":"Dungeon World","characters":{"246462201148342272":{"name":"Amateotl Maikali","playerName":"Sam","level":1,"exp":6,"class":"Wizard","race":"Orc","alignment":"Neutral","desc":"Young wizard from the Orc Consulate, sent to Lucaprim to learn the magical arts of geometric arcana and mathemagics.","baseHP":19,"HP":19,"damageDie":"1d4","skills":{"Strength":14,"Constitution":15,"Dexterity":13,"Intelligence":16,"Wisdom":8,"Charisma":12},"theme":"https://www.youtube.com/watch?v=51sj9GW5shM","aviURL":"https://68.media.tumblr.com/4a0530349e2bb6d02af2e3ec841ec2e4/tumblr_owcb6feIXG1r347q1o1_1280.png","attr":"true","handsome":"true","money":2,"hp":null}}}}
+{
+  "334909600761511947": {
+    "dm": "246661338984742923",
+    "channel": "334909600761511947",
+    "name": "Pilgrims of her Blue Flame",
+    "shtname": "pilgrims",
+    "game": "Dungeon World",
+    "characters": {
+      "246462201148342272": {
+        "name": "Amateotl Maikali",
+        "playerName": "Sam",
+        "level": 1,
+        "exp": 6,
+        "class": "wizard",
+        "race": "orc",
+        "desc": "Young wizard from the Orc Consulate, sent to Lucaprim to learn the magical arts of geometric arcana and mathemagics.",
+        "baseHP": 19,
+        "HP": 19,
+        "damageDie": "1d4",
+        "skills": {
+          "Strength": 14,
+          "Constitution": 15,
+          "Dexterity": 13,
+          "Intelligence": 16,
+          "Wisdom": 8,
+          "Charisma": 12
+        },
+        "theme": "https://www.youtube.com/watch?v=51sj9GW5shM"
+      }
+    }
+  },
+  "255389478531760128": {
+    "dm": "246462201148342272",
+    "channel": "255389478531760128",
+    "name": "DEMO Pilgrims of her Blue Flame",
+    "shtname": "DEMOpilgrims",
+    "game": "Dungeon World",
+    "characters": {
+      "246462201148342272": {
+        "name": "Amateotl Maikali",
+        "playerName": "Sam",
+        "level": 1,
+        "exp": 6,
+        "class": "Wizard",
+        "race": "Orc",
+        "alignment": "Neutral",
+        "desc": "Young wizard from the Orc Consulate, sent to Lucaprim to learn the magical arts of geometric arcana and mathemagics.",
+        "baseHP": 19,
+        "HP": 19,
+        "damageDie": "1d4",
+        "skills": {
+          "Strength": 14,
+          "Constitution": 15,
+          "Dexterity": 13,
+          "Intelligence": 16,
+          "Wisdom": 8,
+          "Charisma": 12
+        },
+        "theme": "https://www.youtube.com/watch?v=51sj9GW5shM",
+        "aviURL": "https://68.media.tumblr.com/4a0530349e2bb6d02af2e3ec841ec2e4/tumblr_owcb6feIXG1r347q1o1_1280.png"
+      },
+      "246480772964286465": {
+        "name": "Aesar",
+        "playerName": "Kevin",
+        "level": 1,
+        "exp": 6,
+        "skills": {
+          "Strength":8,
+          "Constitution":9,
+          "Dexterity":13,
+          "Intelligence":12,
+          "Wisdom":16,
+          "Charisma":15
+        },
+        "theme": "https://www.youtube.com/watch?v=PuY-TM1e7EY",
+        "class": "Immolator",
+        "race": "Human",
+        "desc": "A disgraced and exiled executioner/immolator who draws power from Solisma.",
+        "aviURL": "https://orig00.deviantart.net/056b/f/2012/304/0/a/fire_mage_character_card_by_dacas-d5jiw5u.jpg",
+        "baseHP": 17,
+        "HP": 17,
+        "damageDie": "d8"
+      }
+    }
+  }
+}

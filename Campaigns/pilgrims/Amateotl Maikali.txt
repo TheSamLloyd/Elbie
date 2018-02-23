@@ -1,1 +1,25 @@
-{'name': 'Amateotl Maikali', 'player': 'Sam', 'playerID': '246462201148342272', 'level': 1, 'exp': 6, 'money': 0.0, 'stats': [14, 15, 13, 16, 8, 12], 'theme': 'https://www.youtube.com/watch?v=51sj9GW5shM', 'class': 'Wizard', 'race': 'Orc', 'desc': 'Young wizard from the Orc Consulate, sent to Lucaprim to learn the magical arts of geometric arcana and mathemagics.', 'aviURL': 'https://68.media.tumblr.com/4a0530349e2bb6d02af2e3ec841ec2e4/tumblr_owcb6feIXG1r347q1o1_1280.png', 'baseHP': 19, 'hp': 12, 'damageDie': 'd4', 'campaign': 'pilgrims'}
+{
+  "name": "Amateotl Maikali",
+  "player": "Sam",
+  "playerID": "246462201148342272",
+  "level": 1,
+  "exp": 6,
+  "money": 0.0,
+  "stats": [
+    14,
+    15,
+    13,
+    16,
+    8,
+    12
+  ],
+  "theme": "https://www.youtube.com/watch?v=51sj9GW5shM",
+  "class": "Wizard",
+  "race": "Orc",
+  "desc": "Young wizard from the Orc Consulate, sent to Lucaprim to learn the magical arts of geometric arcana and mathemagics.",
+  "aviURL": "https://68.media.tumblr.com/4a0530349e2bb6d02af2e3ec841ec2e4/tumblr_owcb6feIXG1r347q1o1_1280.png",
+  "baseHP": 19,
+  "hp": 12,
+  "damageDie": "d4",
+  "campaign": "pilgrims"
+}

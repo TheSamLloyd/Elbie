@@ -118,6 +118,10 @@ function perish(Command){
 		return false;
 	}
 }
+function skillRoll(Command){
+	Command.argument=rpg.Character.skillRoll(Command);
+	return rollFormat(Command);
+}
 commandList={
 	ping:ping,
 	echo:echo,
@@ -133,8 +137,13 @@ commandList={
 	mod:rpg.Character.modifyAttr,
 	mark:cast,
 	hp:cast,
-	get:rpg.Character.getAttr
+	get:rpg.Character.getAttr,
+	help:help,
+	s:skillRoll
 };
+function help(Command){
+	return Object.keys(commandList);
+}
 function orDef(val,def){
 	return (val||def)
 }
