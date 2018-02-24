@@ -72,6 +72,23 @@ function who(Command){
 	}
 	return embed
 }
+function orDef(val,def){
+	return (val||def)
+}
+function cast(Command){
+	var castlist={
+		mark : ["exp",orDef(Command.args[0],1),true],
+		hp : ["HP",orDef(Command.args[0],0),true]
+	};
+	Command.args=castlist[Command.command];
+	if (Command.args[2]){
+		return Command.args[0]+": "+Character.modifyAttr(Command);
+	}
+	else{
+		return Command.args[0]+": "+Character.setAttr(Command);
+	}
+
+}
 //Character object designed to encapsulate Character functions
 var Character={
 	getChar : function(Command){
@@ -174,4 +191,4 @@ var DungeonWorld = {
 var gameList = {
 	"Dungeon World" :DungeonWorld
 };
-module.exports = {campaigns, campaignChannel, who, Character, listChar};
+module.exports = {campaigns, campaignChannel, who, Character, listChar, cast};

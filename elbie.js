@@ -1,15 +1,15 @@
 //dependencies
+require("dotenv").config();
 const requests = require('requests');
 const fs = require('fs');
 const Discord = require('discord.js');
 const rpg = require('./rpg.js');
 const client = new Discord.Client();
-const token = "MjU1MzkwMzk0MjE5NjI2NDk2.CyfptA.3iYEnqOFkLtl5Vasj3wgrIKSXgk";
+const token = process.env.DISCORD_TOKEN;
 
 //readying
 client.on("ready", function(){
-	console.log("Ready!")
-
+	console.log("Ready!");
 })
 //helper functions
 function isCommand(message){
@@ -132,8 +132,8 @@ commandList={
 	system:rpg.Character.getSystem,
 	attr:rpg.Character.setAttr,
 	mod:rpg.Character.modifyAttr,
-	mark:cast,
-	hp:cast,
+	mark:rpg.cast,
+	hp:rpg.cast,
 	get:rpg.Character.getAttr,
 	help:help,
 	s:skillRoll,
@@ -141,23 +141,6 @@ commandList={
 };
 function help(Command){
 	return Object.keys(commandList);
-}
-function orDef(val,def){
-	return (val||def)
-}
-function cast(Command){
-	var castlist={
-		mark : ["exp",orDef(Command.args[0],1),true],
-		hp : ["HP",orDef(Command.args[0],0),true]
-	};
-	Command.args=castlist[Command.command];
-	if (Command.args[2]){
-		return Command.args[0]+": "+rpg.Character.modifyAttr(Command);
-	}
-	else{
-		return Command.args[0]+": "+rpg.Character.setAttr(Command);
-	}
-
 }
 function handler(Command){
 	try{

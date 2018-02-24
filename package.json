@@ -5,6 +5,7 @@
   "main": "elbie.js",
   "dependencies": {
     "discord.js": "^11.3.0",
+    "dotenv": "^5.0.0",
     "fs": "0.0.1-security",
     "requests": "^0.2.2"
   },
