@@ -9,6 +9,14 @@ const token = process.env.DISCORD_TOKEN;
 
 //readying
 client.on("ready", function(){
+	client.user.setPresence({
+		"status":"online",
+		"afk":false,
+		"game":{
+			name:"Pilgrims of Her Blue Flame",
+			type:"WATCHING"
+		}
+	})
 	console.log("Ready!");
 })
 //helper functions
