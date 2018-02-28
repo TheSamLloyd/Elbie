@@ -157,6 +157,19 @@ var Character={
 		var roll = system.defRoll+"+"+mod;
 		console.log(roll);
 		return roll;
+	},
+	levelup : function(Command){
+		var char = Character.getChar(Command);
+		var system=gameList[Character.getSystem(Command)];
+		var canLevel = system.levelup(char);
+		if (canLevel){
+			Command.args[0]="level";
+			Command.args[1]=1;
+			var success = Character.modifyAttr(Command);
+			if (success) return "Leveled up to "+success;
+			else return success;
+		}
+		else return "Could not level up. Check EXP."
 	}
 }
 var DungeonWorld = {
