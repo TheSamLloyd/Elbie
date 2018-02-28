@@ -154,6 +154,7 @@ var Character={
 		var skill = system.skillAlias[Command.args[0]];
 		var char = Character.getChar(Command);
 		var mod = system.mod(char.skills[skill]);
+		console.log(mod,char.skills[skill],skill)
 		var roll = system.defRoll+"+"+mod;
 		console.log(roll);
 		return roll;
@@ -189,12 +190,12 @@ var DungeonWorld = {
 		else return false;
 	},
 	mod : function(score){
-		if (1<=score<=3) val=-3;
-		else if (4<=score<=5) val=-2;
-		else if (6<=score<=8) val=-1;
-		else if (9<=score<=12) val=0;
-		else if (13<=score<=15) val=1;
-		else if (16<=score<=17) val=2;
+		if (1<=score&&score<=3) val=-3;
+		else if (4<=score&&score<=5) val=-2;
+		else if (6<=score&&score<=8) val=-1;
+		else if (9<=score&&score<=12) val=0;
+		else if (13<=score&&score<=15) val=1;
+		else if (16<=score&&score<=17) val=2;
 		else if (score==18) val=3;
 		else val=0;
 		return val;
