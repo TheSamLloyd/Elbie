@@ -108,16 +108,16 @@
       "238110271950815232": {
         "name": "Kupro",
         "playerName": "Duncan",
-        "level": 2,
-        "exp": 3,
+        "level": 4,
+        "exp": 5,
         "money": 0,
         "skills": {
-          "Strength": 15,
-          "Constitution": 13,
-          "Dexterity": 9,
-          "Intelligence": 12,
-          "Wisdom": 8,
-          "Charisma": 16
+          "Strength": 16,
+          "Constitution": 12,
+          "Dexterity": 13,
+          "Intelligence": 9,
+          "Wisdom": 9,
+          "Charisma": 17
         },
         "theme": "https://www.youtube.com/watch?v=6W9QJe4BgPo",
         "class": "Paladin",
@@ -125,7 +125,7 @@
         "desc": "oooooh lucky lucky lucky",
         "aviURL": "http://www.roulette30.com/wp-content/uploads/americanroulette.png",
         "baseHP": 23,
-        "HP": 14,
+        "HP": 15,
         "damageDie": "d10"
       },
       "350089505359003649": {

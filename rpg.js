@@ -117,7 +117,7 @@ var Character={
 	setAttr : function(Command){
 		var char = Character.getChar(Command);
 		var attr = Command.args[0];
-		var value = Command.args[1];
+		var value = Command.args.slice(1).join(" ");
 		char[attr] = typed(value);
 		if(Character.save(Command)){
 			return true;}
