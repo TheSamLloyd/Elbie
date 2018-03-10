@@ -4,12 +4,14 @@
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "dependencies": {
+    "btoa": "^1.1.2",
     "discord.js": "^11.3.0",
     "dotenv": "^5.0.0",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "ffmpeg-binaries": "^3.2.2-3",
     "fs": "0.0.1-security",
+    "node-fetch": "^2.1.1",
     "requests": "^0.2.2"
   },
   "devDependencies": {},
