@@ -89,6 +89,21 @@ function cast(Command){
 	}
 
 }
+function bind(Command){
+	if (!(Command.channel.id in campaigns)){
+		campaigns[Command.channel.id]={
+			dm : Command.auth.id,
+			channel : Command.channel.id,
+			shtname : Command.args[0],
+			name : Command.args.slice(1).join(" ")
+		}
+		Character.save();
+		return "Please finish setup on the web interface."
+	}
+	else{
+		return "Already defined a campaign for this channel."
+	}
+}
 //Character object designed to encapsulate Character functions
 var Character={
 	getChar : function(Command){
@@ -205,4 +220,4 @@ var DungeonWorld = {
 var gameList = {
 	"Dungeon World" :DungeonWorld
 };
-module.exports = {campaigns, campaignChannel, who, Character, listChar, cast};
+module.exports = {campaigns, campaignChannel, who, Character, listChar, cast, bind};

@@ -146,7 +146,8 @@ commandList={
 	help:help,
 	s:skillRoll,
 	listChar:rpg.listChar,
-	levelup:rpg.Character.levelup
+	levelup:rpg.Character.levelup,
+	bind:rpg.bind
 };
 function help(Command){
 	return Object.keys(commandList);

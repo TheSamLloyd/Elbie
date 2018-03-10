@@ -1,5 +1,6 @@
 {
   "255389478531760128": {
+  	"dev":true,
     "dm": "246661338984742923",
     "channel": "255389478531760128",
     "name": "Pilgrims of her Blue Flame",
@@ -32,8 +33,8 @@
   "334909600761511947": {
     "dm": "246462201148342272",
     "channel": "334909600761511947",
-    "name": "DEMO Pilgrims of her Blue Flame",
-    "shtname": "DEMOpilgrims",
+    "name": "Pilgrims of her Blue Flame",
+    "shtname": "pilgrims",
     "game": "Dungeon World",
     "characters": {
       "246462201148342272": {
@@ -41,7 +42,7 @@
         "nickname": "Mate",
         "playerName": "Sam",
         "level": 3,
-        "exp": 0,
+        "exp": 1,
         "class": "Wizard",
         "race": "Orc",
         "alignment": "Neutral",
@@ -50,10 +51,10 @@
         "HP": 19,
         "damageDie": "1d4",
         "skills": {
-          "Strength": 14,
+          "Strength": 15,
           "Constitution": 15,
           "Dexterity": 13,
-          "Intelligence": 16,
+          "Intelligence": 17,
           "Wisdom": 8,
           "Charisma": 12
         },
