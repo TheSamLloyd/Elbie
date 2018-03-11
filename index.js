@@ -11,7 +11,8 @@ app.get("/", function(req, res) {
 	res.sendFile(path.join(__dirname, "index.html"));
 });
 app.get("/token/:token", function(req,res) {
-	console.log(req.params.token)
+	console.log(req.params.token);
+	res.redirect(`/`);
 });
 app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
