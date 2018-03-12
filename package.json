@@ -5,6 +5,7 @@
   "main": "elbie.js",
   "dependencies": {
     "btoa": "^1.1.2",
+    "cookie-parser": "^1.4.3",
     "discord.js": "^11.3.0",
     "dotenv": "^5.0.0",
     "ejs": "^2.5.7",

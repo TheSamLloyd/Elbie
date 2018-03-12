@@ -12,7 +12,7 @@ function typed(arg){
 }
 function campaignChannel(Command){
 	try{
-		var cTitle=campaigns[Command.channel.id]
+		var cTitle=campaigns[Command.channel.guild_id][Command.channel.id]
 	}
 	catch(err){
 		console.log(err)
@@ -21,7 +21,7 @@ function campaignChannel(Command){
 	return cTitle;
 }
 function isDM(Command){
-	var dm = campaigns[Command.channel.id].dm;
+	var dm = campaigns[Command.channel.guild_id][Command.channel.id].dm;
 	return (Command.auth.id==dm);
 }
 function caps(string) {
@@ -107,7 +107,7 @@ function bind(Command){
 //Character object designed to encapsulate Character functions
 var Character={
 	getChar : function(Command){
-		return campaigns[Command.channel.id].characters[Command.auth.id];
+		return campaigns[Command.channel.guild_id][Command.channel.id].characters[Command.auth.id];
 	},
 	getStats : function(Command){
 		var char = Character.getChar(Command);
@@ -115,7 +115,7 @@ var Character={
 		return skills;
 	},
 	getSystem : function(Command){
-		return campaigns[Command.channel.id].game;
+		return campaigns[Command.channel.guild_id][Command.channel.id].game;
 	},
 	save : function(Command){
 		try{fs.writeFileSync("./Campaigns/campaigns.json",

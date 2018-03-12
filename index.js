@@ -5,15 +5,32 @@ const request = require('request');
 const fs = require('fs');
 const app = express();
 const path = require("path");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser())
 app.use('/api/discordauth', require('./api/discordauth'));
+app.use("/public", express.static(__dirname + "/public"));
 var PORT = (process.env.PORT || 80);
 app.get("/", function(req, res) {
 	res.sendFile(path.join(__dirname, "index.html"));
 });
-app.get("/token/:token", function(req,res) {
-	console.log(req.params.token);
-	res.redirect(`/`);
-});
+app.get("/dashboard",function(req,res){
+	if (!req.cookies.token){
+		res.redirect("/");
+	}
+	res.sendFile(path.join(__dirname,"dashboard.html"));
+})
+app.get("/user",function(req,res){
+	console.log("user request");
+	request.get("http://discordapp.com/api/users/@me").auth(null,null,true,req.cookies.token).pipe(res)
+})
+app.get("/guilds",function(req,res){
+	console.log("server request");
+	request.get("http://discordapp.com/api/users/@me/guilds").auth(null,null,true,req.cookies.token).pipe(res)
+})
+app.get("/campaigns",function(req,res){
+	console.log("campaigns request");
+	res.sendFile(path.join(__dirname,"Campaigns","campaigns.json"));
+})
 app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
 });
