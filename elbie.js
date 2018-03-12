@@ -1,6 +1,5 @@
 //dependencies
 require("dotenv").config();
-const requests = require('requests');
 const fs = require('fs');
 const Discord = require('discord.js');
 const rpg = require('./rpg.js');
