@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	<head>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	</head>
+	<body>
+		<div class="container">
+			<nav class="navbar navbar-expand-lg navbar-light border-bottom">
+				<a class="navbar-brand">Elbie Mk. <a id="version">3.0.1</a></a>
+				<div class="navbar-nav">
+					<a class="nav-item nav-link" href="/">Home</a>
+					<a class="nav-item nav-link" href="/dashboard">Dashboard</a>
+					<a class="nav-item nav-link">Documentation</a>
+				</div>
+				<span class="navbar-text mx-auto">
+					<p>Bot status:<a id="status"></a></p>
+				</span>
+				<span class="profile navbar-text ml-auto">
+					<img src="" id="avatar" class="img-thumbnail" style="height: 100px;width:100px;">
+					<a id="username">Orb</a>
+					<a class="nav-link nav-item navbar-text">Logout</a>
+				</span>
+			</nav>
+		</div>
+		<div class="container">
+
+		</div>
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script>
+			$(document).ready(function(){
+    			$.get("/user").then(function(data){
+        			$("#username").text(data.username);
+        			$("#avatar").attr("src","https://cdn.discordapp.com/avatars/"+data.id+"/"+data.avatar);
+        			console.log(data)
+        			document.cookie = "user="+JSON.stringify(data)});
+    			$.get("/elbie").then(function(data){
+    				console.log(data)
+    				$("#version").text("3.0."+data.version)
+    				$("#status").text(data.status)
+    			})
+    		});
+    	</script>
+	</body>
+</html>
