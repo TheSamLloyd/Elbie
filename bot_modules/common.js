@@ -25,6 +25,9 @@ const common = {
   },
   orDef (val, def) {
     return (val || def)
+  },
+  caps (string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
   }
 }
 module.exports = common

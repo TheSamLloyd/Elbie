@@ -1,3 +1,8 @@
+// dependencies
+const fs = require('fs')
+var campaigns = require('./Campaigns/campaigns.json')
+const common = require('./common.js')
+
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command) {
