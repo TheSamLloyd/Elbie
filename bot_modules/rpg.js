@@ -1,7 +1,10 @@
+// dependencies
 var campaigns = require('./Campaigns/campaigns.json')
 const fs = require('fs')
 const common = require('./common.js')
 const Discord = require('discord.js')
+
+// module information
 const name = 'rpg'
 const desc = 'functions to allow basic RPG commands'
 function defRoll (Command) {

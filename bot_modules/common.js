@@ -15,6 +15,16 @@ const common = {
       total += parseInt(Array[i])
     }
     return total
+  },
+  typed (arg) {
+    if (isNaN(parseFloat(arg))) {
+      return arg
+    } else if (Math.floor(parseFloat(arg)) == parseFloat(arg)) {
+      return parseInt(arg)
+    } else return parseFloat(arg)
+  },
+  orDef (val, def) {
+    return (val || def)
   }
 }
 module.exports = common
