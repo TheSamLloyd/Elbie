@@ -1,14 +1,14 @@
 // dependencies
 const fs = require('fs')
 var campaigns = require('./campaigns.json')
-const common = require('./common.js')
+const common = require('../common.js')
 const gameList = {
-  'Dungeon World': require('./DungeonWorld.js')
+  'Dungeon World': require('./dungeon-world.js')
 }
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command) {
-    return campaigns[Command.channel.guild_id][Command.channel.id].characters[Command.auth.id]
+    return campaigns[Command.channel.guild.id][Command.channel.id].characters[Command.auth.id]
   },
   getStats: function (Command) {
     var char = Character.getChar(Command)
@@ -16,11 +16,11 @@ var Character = {
     return skills
   },
   getSystem: function (Command) {
-    return campaigns[Command.channel.guild_id][Command.channel.id].game
+    return campaigns[Command.channel.guild.id][Command.channel.id].game
   },
   save: function (Command) {
     try {
-      fs.writeFileSync('./Campaigns/campaigns.json',
+      fs.writeFileSync('./campaigns.json',
         JSON.stringify(campaigns),
         'utf8')
       return true
@@ -86,4 +86,4 @@ var Character = {
     } else return 'Could not level up. Check EXP.'
   }
 }
-module.exports = {Character, gameList}
+module.exports = {Character, gameList, campaigns}

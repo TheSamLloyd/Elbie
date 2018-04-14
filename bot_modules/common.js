@@ -10,10 +10,7 @@ const common = {
     return out
   },
   sum (Array) {
-    var total = 0
-    for (var i = 0; i < Array.length; i++) {
-      total += parseInt(Array[i])
-    }
+    var total = Array.reduce(function (total, value) { return total + value })
     return total
   },
   typed (arg) {

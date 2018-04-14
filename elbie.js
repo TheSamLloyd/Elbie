@@ -3,8 +3,8 @@ require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
-const bot = require('./bot.js')
-const rpg = require('./rpg.js')
+const bot = require('./bot_modules/bot.js')
+const rpg = require('./bot_modules/rpg.js')
 const prefix = '+'
 
 // adding commands
@@ -53,7 +53,7 @@ function errorHandler (err) {
 }
 //  command handling
 function handler (Command) {
-  var out = ''
+  var out
   try {
     out = commandList[Command.command](Command)
   } catch (err) {
