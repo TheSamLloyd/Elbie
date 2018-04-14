@@ -1,8 +1,10 @@
 // dependencies
 const fs = require('fs')
-var campaigns = require('./Campaigns/campaigns.json')
+var campaigns = require('./campaigns.json')
 const common = require('./common.js')
-
+const gameList = {
+  'Dungeon World': require('./DungeonWorld.js')
+}
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command) {
@@ -31,7 +33,7 @@ var Character = {
     var char = Character.getChar(Command)
     var attr = Command.args[0]
     var value = Command.args.slice(1).join(' ')
-    char[attr] = typed(value)
+    char[attr] = common.typed(value)
     if (Character.save(Command)) {
       return true
     } else return false
@@ -40,15 +42,15 @@ var Character = {
     var char = Character.getChar(Command)
     var attr = Command.args[0]
     var value = Command.args[1]
-    char[attr] += typed(value)
+    char[attr] += common.typed(value)
     console.log(attr)
-    if (attr == 'HP') {
+    if (attr === 'HP') {
       console.log('checking HP')
       char[attr] = Math.min(char.baseHP, Math.max(0, char.HP))
     }
     if (Character.save(Command)) {
-      return char[attr] 
-} else return false
+      return char[attr]
+    } else return false
   },
   getAttr: function (Command) {
     var char = Character.getChar(Command)
@@ -84,3 +86,4 @@ var Character = {
     } else return 'Could not level up. Check EXP.'
   }
 }
+module.exports = {Character, gameList}

@@ -1,5 +1,5 @@
 // dependencies
-var campaigns = require('./Campaigns/campaigns.json')
+var campaigns = require('./rpg/campaigns.json')
 const common = require('./common.js')
 const Discord = require('discord.js')
 const Character = require('./rpg/character.js')
@@ -138,9 +138,14 @@ const rpg = {
     }
   }
 }
-
-// object to turn game strings into game objects
-var gameList = {
-  'Dungeon World': DungeonWorld
+const commands = {
+  r: rpg.defRoll,
+  bind: rpg.bind,
+  who: rpg.who,
+  listChar: rpg.listChar,
+  roll: rpg.rollFormat,
+  hp: rpg.cast,
+  exp: rpg.cast
 }
+// object to turn game strings into game objects
 module.exports = {rpg, commands, name, desc}
