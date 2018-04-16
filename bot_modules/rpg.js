@@ -148,7 +148,7 @@ const commands = {
   listChar: rpg.listChar,
   roll: rpg.rollFormat,
   hp: rpg.cast,
-  exp: rpg.cast
+  mark: rpg.cast
 }
 // object to turn game strings into game objects
 module.exports = {rpg, commands, name, desc}
