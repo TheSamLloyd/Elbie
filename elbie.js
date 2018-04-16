@@ -73,6 +73,10 @@ client.on('message', function (message) {
       args: content.slice(1)}
     console.log(Command)
     // commands
-    Command.channel.send(handler(Command))
+    if (Object.keys(commandList).indexOf(Command.command) === -1) {
+      Command.channel.send('I couldn\'t understand that command.')
+    } else {
+      Command.channel.send(handler(Command))
+    }
   }
 })
