@@ -12,8 +12,8 @@ var Character = {
   },
   getStats: function (Command) {
     var char = Character.getChar(Command)
-    var skills = Object.keys(char.skills)
-    return skills
+    var stats = Object.keys(char.stats)
+    return stats
   },
   getSystem: function (Command) {
     return campaigns[Command.channel.guild.id][Command.channel.id].game
@@ -63,12 +63,12 @@ var Character = {
       return 'Could not fetch attribute ' + attr
     }
   },
-  skillRoll: function (Command) {
+  statRoll: function (Command) {
     var system = gameList[Character.getSystem(Command)]
-    var skill = system.skillAlias[Command.args[0]]
+    var stat = system.statAlias[Command.args[0]]
     var char = Character.getChar(Command)
-    var mod = system.mod(char.skills[skill])
-    console.log(mod, char.skills[skill], skill)
+    var mod = system.mod(char.stats[stat])
+    console.log(mod, char.stats[stat], stat)
     var roll = system.defRoll + '+' + mod
     console.log(roll)
     return roll

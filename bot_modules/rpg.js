@@ -83,10 +83,9 @@ const rpg = {
   },
   listChar (Command) {
     var players = rpg.campaignChannel(Command).characters
-    var array = ''
-    Object.keys(players).forEach(function (element) {
+    var array = Object.keys(players).map(function (element) {
       var char = players[element]
-      array += char.name + ' (' + char.playerName + ')\n'
+      return char.name + ' (' + char.playerName + ')\n'
     })
     return array.trim()
   },
@@ -105,7 +104,7 @@ const rpg = {
       .addField('HP:', char.HP + '/' + char.baseHP, true)
       .addField('Alignment:', char.alignment, false)
     Character.getStats(Command).forEach(function (stat) {
-      embed.addField(stat + ':', char.skills[stat], true)
+      embed.addField(stat + ':', char.stats[stat], true)
     })
     embed.addField('Description:', char.desc, false)
       .setFooter('| Elbeanor', 'https://instagram.fbed1-2.fna.fbcdn.net/t51.2885-15/e35/1168522_964193110314463_239442678_n.jpg')
@@ -148,7 +147,9 @@ const commands = {
   listChar: rpg.listChar,
   roll: rpg.rollFormat,
   hp: rpg.cast,
-  mark: rpg.cast
+  mark: rpg.cast,
+  s: Character.statRoll,
+  levelup: Character.levelup
 }
 // object to turn game strings into game objects
 module.exports = {rpg, commands, name, desc}

@@ -1,6 +1,6 @@
 var DungeonWorld = {
   defRoll: '2d6',
-  skillAlias: {
+  statAlias: {
     'str': 'Strength',
     'con': 'Constitution',
     'dex': 'Dexterity',
@@ -8,11 +8,7 @@ var DungeonWorld = {
     'wis': 'Wisdom',
     'cha': 'Charisma'
   },
-  levelup: function (character) {
-    if (character.exp >= character.level + 6) {
-      return true
-    } else return false
-  },
+  levelup: (character) => (character.exp >= character.level + 6),
   mod: function (score) {
     var val
     if (score >= 1 && score <= 3) val = -3
