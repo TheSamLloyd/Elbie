@@ -4,24 +4,24 @@
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "dependencies": {
-    "btoa": "^1.1.2",
+    "btoa": "^1.2.1",
     "cookie-parser": "^1.4.3",
-    "discord.js": "^11.3.0",
-    "dotenv": "^5.0.0",
-    "ejs": "^2.5.7",
+    "discord.js": "^11.3.2",
+    "dotenv": "^5.0.1",
+    "ejs": "^2.5.9",
     "eslint": "^4.19.1",
-    "express": "^4.16.2",
-    "ffmpeg-binaries": "^3.2.2-3",
+    "express": "^4.16.3",
+    "ffmpeg-binaries": "^3.2.2",
     "fs": "0.0.1-security",
-    "node-fetch": "^2.1.1",
-    "request": "^2.83.0"
+    "node-fetch": "^2.1.2",
+    "request": "^2.85.0"
   },
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.1.0"
   },
   "scripts": {
     "start": "node index.js",
