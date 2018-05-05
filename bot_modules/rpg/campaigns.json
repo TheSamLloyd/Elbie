@@ -19,7 +19,7 @@
 	        "baseHP": 19,
 	        "HP": 19,
 	        "damageDie": "1d4",
-	        "skills": {
+	        "stats": {
 	          "Strength": 14,
 	          "Constitution": 15,
 	          "Dexterity": 13,
@@ -51,7 +51,7 @@
 	        "baseHP": 19,
 	        "HP": 19,
 	        "damageDie": "1d4",
-	        "skills": {
+	        "stats": {
 	          "Strength": 15,
 	          "Constitution": 15,
 	          "Dexterity": 13,
@@ -67,7 +67,7 @@
 	        "playerName": "Kevin",
 	        "level": 1,
 	        "exp": 6,
-	        "skills": {
+	        "stats": {
 	          "Strength": 8,
 	          "Constitution": 9,
 	          "Dexterity": 13,
@@ -90,7 +90,7 @@
 	        "level": 2,
 	        "exp": 5,
 	        "money": 0,
-	        "skills": {
+	        "stats": {
 	          "Strength": 16,
 	          "Constitution": 12,
 	          "Dexterity": 13,
@@ -113,7 +113,7 @@
 	        "level": 4,
 	        "exp": 5,
 	        "money": 0,
-	        "skills": {
+	        "stats": {
 	          "Strength": 16,
 	          "Constitution": 12,
 	          "Dexterity": 13,
@@ -136,7 +136,7 @@
 	        "level": 1,
 	        "exp": 1,
 	        "money": 0,
-	        "skills": {
+	        "stats": {
 	          "Strength": 9,
 	          "Constitution": 8,
 	          "Dexterity": 16,
