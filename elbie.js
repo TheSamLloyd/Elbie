@@ -29,8 +29,8 @@ client.on('ready', function () {
     'status': 'online',
     'afk': false,
     'game': {
-      name: 'my code get upgraded',
-      type: 'WATCHING'
+      name: 'v3.2.1',
+      type: 'PLAYING'
     }
   })
   console.log('Ready!')
