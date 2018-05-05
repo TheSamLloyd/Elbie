@@ -14,7 +14,6 @@ const rpg = {
     return common.randInt(1, 20) + (mod || 0)
   },
   roll (Command) {
-    console.log('made it here too')
     var rolls = Command.argument.split(',')
     var results = {}
     rolls.forEach(function (iroll, index) {
@@ -39,7 +38,6 @@ const rpg = {
     return results
   },
   rollFormat (Command) {
-    console.log('made it here')
     var output = rpg.roll(Command)
     var text = ''
     for (var i = 0; i < Object.keys(output).length; i++) {
@@ -138,6 +136,11 @@ const rpg = {
     } else {
       return 'Already defined a campaign for this channel.'
     }
+  },
+  statRoll (Command) {
+    let sRoll = Character.statRoll(Command)
+    Command.argument = sRoll
+    return rpg.rollFormat(Command)
   }
 }
 const commands = {
@@ -148,7 +151,7 @@ const commands = {
   roll: rpg.rollFormat,
   hp: rpg.cast,
   mark: rpg.cast,
-  s: Character.statRoll,
+  s: rpg.statRoll,
   levelup: Character.levelup
 }
 // object to turn game strings into game objects

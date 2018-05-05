@@ -68,9 +68,7 @@ var Character = {
     var stat = system.statAlias[Command.args[0]]
     var char = Character.getChar(Command)
     var mod = system.mod(char.stats[stat])
-    console.log(mod, char.stats[stat], stat)
     var roll = system.defRoll + '+' + mod
-    console.log(roll)
     return roll
   },
   levelup: function (Command) {
