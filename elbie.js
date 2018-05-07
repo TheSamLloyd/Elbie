@@ -5,6 +5,9 @@ const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const bot = require('./bot_modules/bot.js')
 const rpg = require('./bot_modules/rpg.js')
+const DB_URI = process.env.MONGODB_URI
+const db = require('./models/schema.js')
+const mongoose = require('mongoose')
 const prefix = '+'
 
 // adding commands
@@ -34,6 +37,12 @@ client.on('ready', function () {
     }
   })
   console.log('Ready!')
+  mongoose.connect(DB_URI).then(
+    () => {
+      console.log('DB connection ready')
+    },
+    err => { console.log(`DB connection failed... \n${err}`) }
+  )
 })
 
 // keep-alive connection
@@ -73,7 +82,7 @@ client.on('message', function (message) {
       args: content.slice(1)}
     console.log(Command)
     // commands
-    if (Object.keys(commandList).indexOf(Command.command) === -1) {
+    if (!Object.keys(commandList).includes(Command.command)) {
       Command.channel.send('I couldn\'t understand that command.')
     } else {
       Command.channel.send(handler(Command))
