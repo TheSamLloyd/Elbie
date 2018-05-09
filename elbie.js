@@ -5,9 +5,7 @@ const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const bot = require('./bot_modules/bot.js')
 const rpg = require('./bot_modules/rpg.js')
-const DB_URI = process.env.MONGODB_URI
-const db = require('./models/schema.js')
-const mongoose = require('mongoose')
+const axios = require('axios')
 const prefix = '+'
 
 // adding commands
@@ -24,25 +22,44 @@ console.log(commandList)
 function isCommand (message) {
   return (message.content[0] === prefix)
 }
+function clean (str) {
+  str.id = str.id.replace(/\W/g, '')
+  return str
+}
+
 // login
 client.login(token)
 // readying
 client.on('ready', function () {
-  client.user.setPresence({
-    'status': 'online',
-    'afk': false,
-    'game': {
-      name: 'v3.2.1',
-      type: 'PLAYING'
+  axios({
+    method: 'post',
+    url: 'https://api.github.com/graphql',
+    auth: {
+      user: 'TheSamLloyd',
+      password: process.env.GITHUB_TOKEN
+    },
+    data: {
+      query:
+        `query Release {
+          repository(owner: "TheSamLloyd", name: "Elbie") {
+            release(tagName: "main") {
+              name
+            }
+          }
+        }`
     }
+  }).then((response) => {
+    console.log(response.data.data.repository.release.name)
+    client.user.setPresence({
+      'status': 'online',
+      'afk': false,
+      'game': {
+        name: response.data.data.repository.release.name,
+        type: 'PLAYING'
+      }
+    })
   })
   console.log('Ready!')
-  mongoose.connect(DB_URI).then(
-    () => {
-      console.log('DB connection ready')
-    },
-    err => { console.log(`DB connection failed... \n${err}`) }
-  )
 })
 
 // keep-alive connection
@@ -62,30 +79,28 @@ function errorHandler (err) {
 }
 //  command handling
 function handler (Command) {
-  var out
   try {
-    out = commandList[Command.command](Command)
+    commandList[Command.command](Command)
   } catch (err) {
-    out = errorHandler(err)
+    Command.send(errorHandler(err))
   }
-  return out
 }
 // command execution
 client.on('message', function (message) {
   if (isCommand(message)) {
     var content = message.content.slice(1).split(' ')
     var Command = {
-      channel: message.channel,
-      auth: message.author,
+      channel: clean(message.channel),
+      auth: clean(message.author),
       command: content[0],
       argument: content.slice(1).join(' '),
-      args: content.slice(1)}
-    console.log(Command)
+      args: content.slice(1)
+    }
     // commands
     if (!Object.keys(commandList).includes(Command.command)) {
       Command.channel.send('I couldn\'t understand that command.')
     } else {
-      Command.channel.send(handler(Command))
+      handler(Command)
     }
   }
 })

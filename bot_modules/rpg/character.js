@@ -1,87 +1,114 @@
 // dependencies
-const fs = require('fs')
-var campaigns = require('./campaigns.json')
 const common = require('../common.js')
 const gameList = {
   'Dungeon World': require('./dungeon-world.js')
 }
+
+const DB_URI = process.env.MONGODB_URI
+const mongoose = require('mongoose')
+const db = require('../../models/schema.js')
+mongoose.connect(DB_URI).then(
+  () => {
+    console.log('DB connection ready')
+  },
+  err => { console.log(`DB connection failed... \n${err}`) }
+)
+
 // Character object designed to encapsulate Character functions
 var Character = {
-  getChar: function (Command) {
-    return campaigns[Command.channel.guild.id][Command.channel.id].characters[Command.auth.id]
+  getChar: function (Command, cb) {
+    db.CampaignObject.findOne({channel: Command.channel.id}, function (err, campaign) {
+      if (err) return console.error(err)
+      db.CharacterObject.findOne({$and: [{campaign: campaign.id}, {user: Command.auth.id}]}, function (err, char) {
+        if (err) return console.error(err)
+        cb(char)
+      })
+    })
   },
-  getStats: function (Command) {
-    var char = Character.getChar(Command)
-    var stats = Object.keys(char.stats)
-    return stats
+  getStats: function (Command, cb) {
+    Character.getChar(Command, function (char) {
+      var stats = Object.keys(char.stats)
+      cb(stats)
+    })
   },
-  getSystem: function (Command) {
-    return campaigns[Command.channel.guild.id][Command.channel.id].game
+  getSystem: function (Command, cb) {
+    db.CampaignObject.findOne({channel: Command.channel.id}, function (err, campaign) {
+      if (err) console.error(err)
+      db.SystemObject.populate(campaign, {path: 'system'}, function (err, campaign) {
+        if (err) console.error(err)
+        cb(campaign.system.name)
+      })
+    })
   },
-  save: function (Command) {
-    try {
-      fs.writeFileSync('./campaigns.json',
-        JSON.stringify(campaigns),
-        'utf8')
-      return true
-    } catch (err) {
-      console.log(err)
-      return false
-    }
+  save: function (char, cb) {
+    char.save(function (err, newChar) {
+      if (err) console.error(err)
+      cb(newChar)
+    })
   },
-  setAttr: function (Command) {
-    var char = Character.getChar(Command)
-    var attr = Command.args[0]
-    var value = Command.args.slice(1).join(' ')
-    char[attr] = common.typed(value)
-    if (Character.save(Command)) {
-      return true
-    } else return false
+  setAttr: function (Command, cb) {
+    Character.getChar(Command, (char) => {
+      var attr = Command.args[0]
+      var value = Command.args.slice(1).join(' ')
+      char[attr] = common.typed(value)
+      Character.save(char, (newChar) => {
+        cb(newChar[attr])
+      })
+    })
   },
-  modifyAttr: function (Command) {
-    var char = Character.getChar(Command)
-    var attr = Command.args[0]
-    var value = Command.args[1]
-    char[attr] += common.typed(value)
-    console.log(attr)
-    if (attr === 'HP') {
-      console.log('checking HP')
-      char[attr] = Math.min(char.baseHP, Math.max(0, char.HP))
-    }
-    if (Character.save(Command)) {
-      return char[attr]
-    } else return false
+  modifyAttr: function (Command, cb) {
+    Character.getChar(Command, (char) => {
+      var attr = Command.args[0]
+      var value = Command.args[1]
+      char[attr] += common.typed(value)
+      console.log(attr)
+      if (attr === 'HP') {
+        console.log('checking HP')
+        char[attr] = Math.min(char.baseHP, Math.max(0, char.HP))
+      }
+      Character.save(char, (newChar) => {
+        cb(newChar[attr])
+      })
+    })
   },
-  getAttr: function (Command) {
-    var char = Character.getChar(Command)
-    var attr = Command.args[0]
-    try {
-      if (char[attr] != undefined) return char[attr]
-      else return 'Could not fetch attribute ' + attr
-    } catch (err) {
-      console.log(err)
-      return 'Could not fetch attribute ' + attr
-    }
+  getAttr: function (Command, cb) {
+    Character.getChar(Command, (char) => {
+      var attr = Command.args[0]
+      try {
+        if (char[attr] != undefined) cb(char[attr])
+        else Command.channel.send('Could not fetch attribute ' + attr)
+      } catch (err) {
+        console.error(err)
+        Command.channel.send('Could not fetch attribute ' + attr)
+      }
+    })
   },
-  statRoll: function (Command) {
-    var system = gameList[Character.getSystem(Command)]
-    var stat = system.statAlias[Command.args[0]]
-    var char = Character.getChar(Command)
-    var mod = system.mod(char.stats[stat])
-    var roll = system.defRoll + '+' + mod
-    return roll
+  statRoll: function (Command, cb) {
+    Character.getChar(Command, function (char) {
+      Character.getSystem(Command, function (sys) {
+        var system = gameList[sys]
+        var stat = system.statAlias[Command.args[0]]
+        var mod = system.mod(char.stats[stat])
+        var roll = system.defRoll + '+' + mod
+        cb(roll)
+      })
+    })
   },
+  // terminal
   levelup: function (Command) {
-    var char = Character.getChar(Command)
-    var system = gameList[Character.getSystem(Command)]
-    var canLevel = system.levelup(char)
-    if (canLevel) {
-      Command.args[0] = 'level'
-      Command.args[1] = 1
-      var success = Character.modifyAttr(Command)
-      if (success) return 'Leveled up to ' + success
-      else return success
-    } else return 'Could not level up. Check EXP.'
+    Character.getChar(Command, function (char) {
+      Character.getSystem(Command, function (sys) {
+        var system = gameList[sys]
+        var canLevel = system.levelup(char)
+        if (canLevel) {
+          Command.args[0] = 'level'
+          Command.args[1] = 1
+          var success = Character.modifyAttr(Command)
+          if (success) Command.channel.send('Leveled up to ' + success)
+          else Command.channel.send(success)
+        } else Command.channel.send('Could not level up. Check EXP.')
+      })
+    })
   }
 }
-module.exports = {Character, gameList, campaigns}
+module.exports = {Character, gameList, campaigns, db}

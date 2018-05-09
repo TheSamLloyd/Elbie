@@ -4,6 +4,7 @@ const Discord = require('discord.js')
 const cInfo = require('./rpg/character.js')
 const Character = cInfo.Character
 var campaigns = cInfo.campaigns
+const db = cInfo.db
 
 // module information
 const name = 'rpg'
@@ -37,6 +38,7 @@ const rpg = {
     console.log(results)
     return results
   },
+  // terminal
   rollFormat (Command) {
     var output = rpg.roll(Command)
     var text = ''
@@ -47,69 +49,81 @@ const rpg = {
         text += output[i].roll + ': malformed roll'
       }
     }
-    return text.trim()
+    Command.channel.send(text.trim())
   },
-  campaignChannel (Command) {
-    var cTitle
-    try {
-      cTitle = campaigns[Command.channel.guild.id][Command.channel.id]
-      console.log(cTitle)
-    } catch (err) {
-      console.log(err)
-      cTitle = false
-    }
-    return cTitle
+  getCampaign (Command, cb) {
+    db.CampaignObject.findOne({channel: Command.channel.id}, function (err, campaign) {
+      if (err) return console.error(err)
+      console.log(campaign)
+      console.log(campaign.id)
+      cb(campaign)
+    })
   },
   isDM (Command) {
-    var dm = campaigns[Command.channel.guild.id][Command.channel.id].dm
+    var dm = rpg.getCampaign(Command).dm
     return (Command.auth.id === dm)
   },
   idTest (element, arg) {
     arg = common.caps(arg)
     return (element.name === arg || (element.playerName === arg || element.nickname === arg))
   },
-  getPlayerByID (Command) {
-    var players = rpg.campaignChannel(Command).characters
-    var id
-    console.log(players)
-    Object.keys(players).forEach(function (element) {
-      if (rpg.idTest(players[element], Command.argument)) {
-        id = element
-      }
+  getPlayerByID (Command, cb) {
+    db.CharacterObject.find({ campaign: rpg.getCampaign(Command).id }, function (err, characters) {
+      if (err) console.error(err)
+      db.userObject.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
+        if (err) console.error(err)
+        characters.findOne({$or: [{name: Command.argument}, {nickname: Command.argument}, {'user.name': Command.argument}]}, function (err, char) {
+          if (err) console.error(err)
+          cb(char)
+        })
+      })
     })
-    return id
   },
+  // terminal
   listChar (Command) {
-    var players = rpg.campaignChannel(Command).characters
-    var array = Object.keys(players).map(function (element) {
-      var char = players[element]
-      return char.name + ' (' + char.playerName + ')\n'
+    console.log('Listing...')
+    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
+      if (err) console.error(err)
+      db.CharacterObject.find({campaign: campaign.id}, function (err, characters) {
+        if (err) console.error(err)
+        db.UserObject.populate(characters, {path: 'user', model: 'User'}, function (err, characters) {
+          if (err) console.error(err)
+          characters = characters.map((char) => ({name: char.name, user: char.user.name}))
+          var out = ''
+          characters.forEach((char) => {
+            out += `- ${char.name} (${char.user})\n`
+          })
+          console.log(out)
+          Command.channel.send(out.trim())
+        })
+      })
     })
-    return array.trim()
   },
+  // terminal
   who (Command) {
     if (Command.argument !== '') {
       Command.auth.id = rpg.getPlayerByID(Command)
     }
-    var char = Character.getChar(Command)
-    var embed = new Discord.RichEmbed()
-      .setColor('GREEN')
-      .setAuthor(char.name + ' (' + char.playerName + ')')
-      .addField('Class:', common.caps(char.class), true)
-      .addField('Race:', common.caps(char.race), true)
-      .addField('Level:', char.level, true)
-      .addField('XP:', char.exp + '/' + (char.level + 6), true)
-      .addField('HP:', char.HP + '/' + char.baseHP, true)
-      .addField('Alignment:', char.alignment, false)
-    Character.getStats(Command).forEach(function (stat) {
-      embed.addField(stat + ':', char.stats[stat], true)
+    Character.getChar(Command, function (char) {
+      var embed = new Discord.RichEmbed()
+        .setColor('GREEN')
+        .setAuthor(char.name + ' (' + char.playerName + ')')
+        .addField('Class:', common.caps(char.class), true)
+        .addField('Race:', common.caps(char.race), true)
+        .addField('Level:', char.level, true)
+        .addField('XP:', char.exp + '/' + (char.level + 6), true)
+        .addField('HP:', char.HP + '/' + char.baseHP, true)
+        .addField('Alignment:', char.alignment, false)
+      Character.getStats(Command).forEach(function (stat) {
+        embed.addField(stat + ':', char.stats[stat], true)
+      })
+      embed.addField('Description:', char.desc, false)
+        .setFooter('| Elbeanor', 'https://instagram.fbed1-2.fna.fbcdn.net/t51.2885-15/e35/1168522_964193110314463_239442678_n.jpg')
+      if (char.aviURL) {
+        embed.setImage(char.aviURL)
+      }
+      Command.channel.send(embed)
     })
-    embed.addField('Description:', char.desc, false)
-      .setFooter('| Elbeanor', 'https://instagram.fbed1-2.fna.fbcdn.net/t51.2885-15/e35/1168522_964193110314463_239442678_n.jpg')
-    if (char.aviURL) {
-      embed.setImage(char.aviURL)
-    }
-    return embed
   },
   cast (Command) {
     var castlist = {
@@ -132,15 +146,16 @@ const rpg = {
         name: Command.args.slice(1).join(' ')
       }
       Character.save()
-      return 'Please finish setup on the web interface.'
+      Command.channel.send('Please finish setup on the web interface.')
     } else {
-      return 'Already defined a campaign for this channel.'
+      Command.channel.send('Already defined a campaign for this channel.')
     }
   },
+  // terminal
   statRoll (Command) {
     let sRoll = Character.statRoll(Command)
     Command.argument = sRoll
-    return rpg.rollFormat(Command)
+    Command.channel.send(rpg.rollFormat(Command))
   }
 }
 const commands = {

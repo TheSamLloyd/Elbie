@@ -4,6 +4,7 @@
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "dependencies": {
+    "axios": "^0.18.0",
     "btoa": "^1.2.1",
     "cookie-parser": "^1.4.3",
     "discord.js": "^11.3.2",
@@ -14,8 +15,7 @@
     "ffmpeg-binaries": "^3.2.2",
     "fs": "0.0.1-security",
     "mongoose": "^5.0.17",
-    "node-fetch": "^2.1.2",
-    "request": "^2.85.0"
+    "node-fetch": "^2.1.2"
   },
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
