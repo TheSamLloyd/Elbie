@@ -82,7 +82,7 @@ function handler (Command) {
   try {
     commandList[Command.command](Command)
   } catch (err) {
-    Command.send(errorHandler(err))
+    Command.channel.send(errorHandler(err))
   }
 }
 // command execution

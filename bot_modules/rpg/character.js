@@ -21,7 +21,10 @@ var Character = {
       if (err) return console.error(err)
       db.CharacterObject.findOne({$and: [{campaign: campaign.id}, {user: Command.auth.id}]}, function (err, char) {
         if (err) return console.error(err)
-        cb(char)
+        db.UserObject.populate(char, {path: 'user'}, function (err, char) {
+          if (err) return console.error(err)
+          cb(char)
+        })
       })
     })
   },
@@ -36,6 +39,7 @@ var Character = {
       if (err) console.error(err)
       db.SystemObject.populate(campaign, {path: 'system'}, function (err, campaign) {
         if (err) console.error(err)
+        console.log(campaign)
         cb(campaign.system.name)
       })
     })
@@ -64,7 +68,7 @@ var Character = {
       console.log(attr)
       if (attr === 'HP') {
         console.log('checking HP')
-        char[attr] = Math.min(char.baseHP, Math.max(0, char.HP))
+        char[attr] = Math.min(char.maxHP, Math.max(0, char.HP))
       }
       Character.save(char, (newChar) => {
         cb(newChar[attr])
@@ -90,7 +94,8 @@ var Character = {
         var stat = system.statAlias[Command.args[0]]
         var mod = system.mod(char.stats[stat])
         var roll = system.defRoll + '+' + mod
-        cb(roll)
+        Command.argument = roll
+        cb(Command)
       })
     })
   },

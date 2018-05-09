@@ -106,17 +106,19 @@ const rpg = {
     Character.getChar(Command, function (char) {
       var embed = new Discord.RichEmbed()
         .setColor('GREEN')
-        .setAuthor(char.name + ' (' + char.playerName + ')')
-        .addField('Class:', common.caps(char.class), true)
-        .addField('Race:', common.caps(char.race), true)
+        .setAuthor(char.name + ' (' + char.user.name + ')')
+        .addField('Class:', common.caps(char.class || 'None'), true)
+        .addField('Race:', common.caps(char.race || 'None'), true)
         .addField('Level:', char.level, true)
         .addField('XP:', char.exp + '/' + (char.level + 6), true)
-        .addField('HP:', char.HP + '/' + char.baseHP, true)
-        .addField('Alignment:', char.alignment, false)
-      Character.getStats(Command).forEach(function (stat) {
-        embed.addField(stat + ':', char.stats[stat], true)
+        .addField('HP:', char.currentHP + '/' + char.maxHP, true)
+        .addField('Alignment:', (char.alignment || 'None'), false)
+      Character.getStats(Command, (stats) => {
+        stats.forEach(stat => {
+          embed.addField(stat + ':', stats[stat], true)
+        })
       })
-      embed.addField('Description:', char.desc, false)
+      embed.addField('Description:', (char.desc || 'None'), false)
         .setFooter('| Elbeanor', 'https://instagram.fbed1-2.fna.fbcdn.net/t51.2885-15/e35/1168522_964193110314463_239442678_n.jpg')
       if (char.aviURL) {
         embed.setImage(char.aviURL)
@@ -159,9 +161,7 @@ const rpg = {
   },
   // terminal
   statRoll (Command) {
-    let sRoll = Character.statRoll(Command)
-    Command.argument = sRoll
-    rpg.rollFormat(Command)
+    Character.statRoll(Command, rpg.rollFormat)
   }
 }
 const commands = {
