@@ -75,7 +75,7 @@ var Character = {
     Character.getChar(Command, (char) => {
       var attr = Command.args[0]
       try {
-        if (char[attr] != undefined) cb(char[attr])
+        if (!char[attr] & char[attr] !== 0) cb(char[attr])
         else Command.channel.send('Could not fetch attribute ' + attr)
       } catch (err) {
         console.error(err)
@@ -111,4 +111,4 @@ var Character = {
     })
   }
 }
-module.exports = {Character, gameList, campaigns, db}
+module.exports = {Character, gameList, db}

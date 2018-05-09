@@ -3,7 +3,6 @@ const common = require('./common.js')
 const Discord = require('discord.js')
 const cInfo = require('./rpg/character.js')
 const Character = cInfo.Character
-var campaigns = cInfo.campaigns
 const db = cInfo.db
 
 // module information
@@ -138,24 +137,31 @@ const rpg = {
     }
   },
   bind (Command) {
-    if (!(Command.channel.id in campaigns)) {
-      campaigns[Command.channel.id] = {
-        dm: Command.auth.id,
-        channel: Command.channel.id,
-        shtname: Command.args[0],
-        name: Command.args.slice(1).join(' ')
+    rpg.getCampaign(Command, function (campaign) {
+      if (!campaign) {
+        const newCampaign = new db.CampaignObject({
+          dm: Command.auth.id,
+          channel: Command.channel.id,
+          shtname: Command.args[0],
+          name: Command.args.slice(1).join(' ')
+        })
+        newCampaign.save(function (err, campaign) {
+          if (err) console.error(err)
+          else {
+            Command.channel.send(`Successfully created new campaign: ${campaign.name}
+          Please finish setup on the web interface [[link forthcoming]]`)
+          }
+        })
+      } else {
+        Command.channel.send('Already defined a campaign for this channel.')
       }
-      Character.save()
-      Command.channel.send('Please finish setup on the web interface.')
-    } else {
-      Command.channel.send('Already defined a campaign for this channel.')
-    }
+    })
   },
   // terminal
   statRoll (Command) {
     let sRoll = Character.statRoll(Command)
     Command.argument = sRoll
-    Command.channel.send(rpg.rollFormat(Command))
+    rpg.rollFormat(Command)
   }
 }
 const commands = {
