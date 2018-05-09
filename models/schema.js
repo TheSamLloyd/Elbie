@@ -30,7 +30,8 @@ var CampaignSchema = new Schema({
   },
   channel: {
     type: String,
-    required: true
+    required: true,
+    index: true
   },
   server: {
     type: String,
@@ -57,7 +58,8 @@ var CharacterSchema = new Schema({
   user: {
     type: String,
     required: true,
-    ref: 'User'
+    ref: 'User',
+    index: true
   },
   campaign: {
     type: Schema.Types.ObjectId,
@@ -67,8 +69,12 @@ var CharacterSchema = new Schema({
   stats: {
     type: Schema.Types.Mixed
   },
+  attributes: {
+    type: Schema.Types.Mixed
+  },
+  inventory: [],
   maxHP: Number,
-  currentHP: Number,
+  HP: Number,
   level: Number,
   exp: Number,
   alive: {type: Boolean, default: true}

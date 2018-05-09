@@ -80,7 +80,7 @@ var Character = {
       var attr = Command.args[0]
       try {
         if (!char[attr] & char[attr] !== 0) cb(char[attr])
-        else Command.channel.send('Could not fetch attribute ' + attr)
+        else Command.channel.send(`Could not fetch attribute ${attr} -- query returned undefined.`)
       } catch (err) {
         console.error(err)
         Command.channel.send('Could not fetch attribute ' + attr)
