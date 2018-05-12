@@ -40,24 +40,31 @@ client.on('ready', function () {
     },
     data: {
       query:
-        `query Release {
-          repository(owner: "TheSamLloyd", name: "Elbie") {
-            release(tagName: "main") {
-              name
+        `query { 
+          repository(owner:"TheSamLloyd", name:"Elbie"){
+            releases(last:1){
+              nodes{
+                tag {
+                  name
+                }
+              }
             }
           }
         }`
     }
   }).then((response) => {
-    console.log(response.data.data.repository.release.name)
+    let version = response.data.data.repository.releases.nodes[0].tag.name
+    console.log(version)
     client.user.setPresence({
       'status': 'online',
       'afk': false,
       'game': {
-        name: response.data.data.repository.release.name,
+        name: version,
         type: 'PLAYING'
       }
     })
+  }).catch(err => {
+    console.log(err)
   })
   console.log('Ready!')
 })
