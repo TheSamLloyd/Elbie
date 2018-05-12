@@ -4,17 +4,18 @@
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "dependencies": {
+    "axios": "^0.18.0",
     "btoa": "^1.2.1",
     "cookie-parser": "^1.4.3",
     "discord.js": "^11.3.2",
     "dotenv": "^5.0.1",
-    "ejs": "^2.5.9",
+    "ejs": "^2.6.1",
     "eslint": "^4.19.1",
     "express": "^4.16.3",
     "ffmpeg-binaries": "^3.2.2",
     "fs": "0.0.1-security",
-    "node-fetch": "^2.1.2",
-    "request": "^2.85.0"
+    "mongoose": "^5.0.17",
+    "node-fetch": "^2.1.2"
   },
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
@@ -29,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheSamLloyd/Elbie-Mk.-III.git"
+    "url": "git+https://github.com/TheSamLloyd/Elbie.git"
   },
   "keywords": [
     "bot",
@@ -39,7 +40,7 @@
   "author": "Sam Lloyd",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheSamLloyd/Elbie-Mk.-III/issues"
+    "url": "https://github.com/TheSamLloyd/Elbie/issues"
   },
-  "homepage": "https://github.com/TheSamLloyd/Elbie-Mk.-III#readme"
+  "homepage": "https://github.com/TheSamLloyd/Elbie#readme"
 }
