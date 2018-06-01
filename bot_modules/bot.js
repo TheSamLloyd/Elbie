@@ -5,14 +5,14 @@ const name = 'bot'
 const desc = 'basic bot commands'
 var bot = {
   ping (Command) {
-    return 'pong'
+    Command.channel.send('pong')
   },
   echo (Command) {
-    return Command.argument
+    Command.channel.send(Command.argument)
   },
   flip (Command) {
     var flip = common.randInt(0, 1) ? 'heads' : 'tails'
-    return flip
+    Command.channel.send(flip)
   }
 }
 var commands = {
