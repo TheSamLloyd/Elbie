@@ -3,6 +3,7 @@ const common = require('../common.js')
 const gameList = {
   'Dungeon World': require('./dungeon-world.js')
 }
+const audio = require('../audio.js')
 
 const DB_URI = process.env.MONGODB_URI
 const mongoose = require('mongoose')
@@ -79,8 +80,7 @@ var Character = {
     Character.getChar(Command, (char) => {
       var attr = Command.args[0]
       try {
-        if (!char[attr] & char[attr] !== 0) cb(char[attr])
-        else Command.channel.send(`Could not fetch attribute ${attr} -- query returned undefined.`)
+        if (!char[attr] & char[attr] !== 0) { console.log(char[attr]); cb(char[attr]) } else Command.channel.send(`Could not fetch attribute ${attr} -- query returned undefined.`)
       } catch (err) {
         console.error(err)
         Command.channel.send('Could not fetch attribute ' + attr)
@@ -113,6 +113,12 @@ var Character = {
           else Command.channel.send(success)
         } else Command.channel.send('Could not level up. Check EXP.')
       })
+    })
+  },
+  theme: function (Command) {
+    Character.getChar(Command, function (char) {
+      Command.argument = char.get('theme')
+      audio.audio.playFromUrl(Command, `playing theme for ${char.get('name')}...`)
     })
   }
 }

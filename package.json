@@ -5,17 +5,18 @@
   "main": "elbie.js",
   "dependencies": {
     "axios": "^0.18.0",
-    "btoa": "^1.2.1",
-    "cookie-parser": "^1.4.3",
     "discord.js": "^11.3.2",
     "dotenv": "^5.0.1",
     "ejs": "^2.6.1",
     "eslint": "^4.19.1",
     "express": "^4.16.3",
     "ffmpeg-binaries": "^3.2.2",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "mongoose": "^5.0.17",
-    "node-fetch": "^2.1.2"
+    "node-fetch": "^2.1.2",
+    "node-opus": "^0.3.0",
+    "ytdl-core": "^0.20.4"
   },
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
@@ -25,7 +26,7 @@
     "eslint-plugin-standard": "^3.1.0"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node elbie.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

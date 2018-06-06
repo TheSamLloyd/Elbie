@@ -5,11 +5,13 @@ const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const bot = require('./bot_modules/bot.js')
 const rpg = require('./bot_modules/rpg.js')
+const audio = require('./bot_modules/audio.js')
 const axios = require('axios')
 const prefix = '+'
+const env = process.env.NODE_ENV || 'dev'
 
 // adding commands
-var modules = [bot, rpg]
+var modules = [bot, rpg, audio]
 var commandList = {}
 modules.forEach(module => {
   Object.assign(commandList, module.commands)
@@ -59,7 +61,7 @@ client.on('ready', function () {
       'status': 'online',
       'afk': false,
       'game': {
-        name: version,
+        name: env !== 'dev' ? `${version}` : `DEV -- ${version}`,
         type: 'PLAYING'
       }
     })
@@ -99,9 +101,11 @@ client.on('message', function (message) {
     var Command = {
       channel: clean(message.channel),
       auth: clean(message.author),
+      member: message.member,
       command: content[0],
       argument: content.slice(1).join(' '),
-      args: content.slice(1)
+      args: content.slice(1),
+      server: message.guild
     }
     // commands
     if (!Object.keys(commandList).includes(Command.command)) {

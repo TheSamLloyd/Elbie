@@ -190,7 +190,8 @@ const commands = {
   hp: rpg.cast,
   mark: rpg.cast,
   s: rpg.statRoll,
-  levelup: Character.levelup
+  levelup: Character.levelup,
+  theme: Character.theme
 }
 // object to turn game strings into game objects
 module.exports = {rpg, commands, name, desc}
