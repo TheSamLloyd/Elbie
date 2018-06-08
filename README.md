@@ -5,7 +5,7 @@ What makes Elbie distinct from many of the conventionally available Discord bots
 Elbie's purpose is to provide a wide array of tools and accessories and then get out of the way, letting the players and DM be able to act freely without having to constantly be referring to a character sheet. This enables better role-playing and more mentally present players.
 ## Installation
 ### Adding to a server
-Elbie lives in Heroku at present to make her available 24/7. To add Elbie to a Discord server, visit [this link](https://????) and select a server in which you have the Manage Server permission. 
+Elbie lives in Heroku at present to make her available 24/7. To add Elbie to a Discord server, visit [this link](https://discordapp.com/oauth2/authorize?client_id=255390394219626496&scope=bot&permissions=1) and select a server in which you have the Manage Server permission. 
 ### Installing Locally
 To run Elbie locally, fork this repository and clone it to your local machine. You'll need to register a Discord app to get a login token, and if you want her to report version information, you'll need a Github token as well. You'll need to add her to a server as well, which you can do while registering her as a Discord app.
 ## Usage
