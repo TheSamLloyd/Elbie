@@ -3,7 +3,7 @@ const common = require('../common.js')
 const gameList = {
   'Dungeon World': require('./dungeon-world.js')
 }
-const audio = require('../audio.js')
+const audio = require('../audio')
 
 const DB_URI = process.env.MONGODB_URI
 const mongoose = require('mongoose')

@@ -28,7 +28,7 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
   * `+levelup`: Increases the character's level by 1, if the character has enough XP. If not, fails.
   * (`+theme`:) Immediately plays the current character's theme. (This command is not currently available in the master build.)
 * (audio)
-  *This module is not currently available in the master build. If you want to use this module, you must fork Elbie and compile her from the `audio` branch. Use at your own risk, as it is still actively in development and may change without warning.
+  * This module is not currently available in the master build. If you want to use this module, you must fork Elbie and compile her from the `audio` branch. Use at your own risk, as it is still actively in development and may change without warning.
 
 ## Extending Elbie
 Elbie is written to be fully extensible. All you need to do to write your own module is create a folder inside of `bot_modules` titled for your new module, and inside that create `index.js`. You may want to import `common.js` from `bot_modules`, which provides several common functions required by modules. Then you'll need four components in `index.js`: 

@@ -3,15 +3,12 @@ require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
-const bot = require('./bot_modules/bot.js')
-const rpg = require('./bot_modules/rpg.js')
-const audio = require('./bot_modules/audio.js')
+const modules = require('./bot_modules')
 const axios = require('axios')
 const prefix = '+'
 const env = process.env.NODE_ENV || 'dev'
 
 // adding commands
-var modules = [bot, rpg, audio]
 var commandList = {}
 modules.forEach(module => {
   Object.assign(commandList, module.commands)

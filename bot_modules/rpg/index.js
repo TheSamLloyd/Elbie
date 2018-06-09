@@ -1,7 +1,7 @@
 // dependencies
-const common = require('./common.js')
+const common = require('../common.js')
 const Discord = require('discord.js')
-const cInfo = require('./rpg/character.js')
+const cInfo = require('./character.js')
 const Character = cInfo.Character
 const db = cInfo.db
 

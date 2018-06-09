@@ -1,3 +1,5 @@
+const name = 'common'
+const desc = 'Common functions for use in other modules'
 // common commands for use in other elbie modules
 const common = {
   randInt (a, b) {
@@ -16,7 +18,7 @@ const common = {
   typed (arg) {
     if (isNaN(parseFloat(arg))) {
       return arg
-    } else if (Math.floor(parseFloat(arg)) == parseFloat(arg)) {
+    } else if (Math.floor(parseFloat(arg)) === parseFloat(arg)) {
       return parseInt(arg)
     } else return parseFloat(arg)
   },
@@ -27,4 +29,5 @@ const common = {
     return string.charAt(0).toUpperCase() + string.slice(1)
   }
 }
-module.exports = common
+const commands = {}
+module.exports = {name, desc, common, commands}

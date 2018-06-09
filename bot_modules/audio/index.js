@@ -1,8 +1,8 @@
 // dependencies
 const ytdl = require('ytdl-core')
-const Track = require('./audio/track')
-const utils = require('./audio/playerCommands').commands
-const Queue = require('./audio/playerCommands').Queue
+const Track = require('./track')
+const utils = require('./playerCommands').commands
+const Queue = require('./playerCommands').Queue
 
 // module information
 const name = 'audio'
