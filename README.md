@@ -48,7 +48,7 @@ Elbie is written to be fully extensible. All you need to do to write your own mo
   ```
 To break this pattern down, `name` and `desc` are self-explanatory. `functions` is where all of your functions live, and their names may not be correlated with their command. That's why `commands` takes in a string (i.e. the command Elbie received) and returns a function, which she then executes by passing it the Command object she received. You are free to "alias" functions by having several keys in `commands` with the same function value. 
 
-To finish installation of your new module, find `var modules = [bot, ...]` in `/elbie.js` and add your new nodule name on the end of it (in this case, whatever you named your folder, which for coherency's sake should match your value for `name` but technically doesn't have to.) 
+Elbie automatically includes any modules in the bot_modules folder, so they should be available as soon as she starts.
 
 If you've done everything right, when you start up Elbie, she should log the modules she has installed in the console and you should see your module's name and description, as well as its commands, which you should be able to use.
 
