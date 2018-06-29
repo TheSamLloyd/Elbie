@@ -43,8 +43,8 @@ const audio = {
                   m.channel.send('Clearing queue...')
                   break
                 case 'skip':
-                  utils.skip(queue, audio.playFromUrl)
-                  m.channel.send('added to queue.')
+                  if (connection.dispatcher) connection.dispatcher.end('skipped')
+                  m.channel.send('skipping...')
                   break
                 case 'play':
                 case 'add':
