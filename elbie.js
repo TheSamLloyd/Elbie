@@ -77,7 +77,8 @@ client.on('disconnect', function () {
 // for discord errors:
 client.on('error', function (err) {
   console.log(err)
-  client.destroy()
+  console.log('Got an error, trying to reconnect...')
+  client.login(token)
 })
 //  for JS errors:
 function errorHandler (err) {
