@@ -1,7 +1,7 @@
 // dependencies
-const common = require('./common.js')
+const common = require('../common.js').common
 const Discord = require('discord.js')
-const cInfo = require('./rpg/character.js')
+const cInfo = require('./character.js')
 const Character = cInfo.Character
 const db = cInfo.db
 
@@ -190,7 +190,8 @@ const commands = {
   hp: rpg.cast,
   mark: rpg.cast,
   s: rpg.statRoll,
-  levelup: Character.levelup
+  levelup: Character.levelup,
+  theme: Character.theme
 }
 // object to turn game strings into game objects
 module.exports = {rpg, commands, name, desc}

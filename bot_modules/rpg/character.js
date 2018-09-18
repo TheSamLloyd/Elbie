@@ -3,11 +3,12 @@ const common = require('../common.js')
 const gameList = {
   'Dungeon World': require('./dungeon-world.js')
 }
+const audio = require('../audio') || false
 
 const DB_URI = process.env.MONGODB_URI
 const mongoose = require('mongoose')
 const db = require('../../models/schema.js')
-mongoose.connect(DB_URI).then(
+mongoose.connect(DB_URI, {useNewUrlParser: true}).then(
   () => {
     console.log('DB connection ready')
   },
@@ -79,8 +80,7 @@ var Character = {
     Character.getChar(Command, (char) => {
       var attr = Command.args[0]
       try {
-        if (!char[attr] & char[attr] !== 0) cb(char[attr])
-        else Command.channel.send(`Could not fetch attribute ${attr} -- query returned undefined.`)
+        if (!char[attr] & char[attr] !== 0) { console.log(char[attr]); cb(char[attr]) } else Command.channel.send(`Could not fetch attribute ${attr} -- query returned undefined.`)
       } catch (err) {
         console.error(err)
         Command.channel.send('Could not fetch attribute ' + attr)
@@ -114,6 +114,20 @@ var Character = {
         } else Command.channel.send('Could not level up. Check EXP.')
       })
     })
+  },
+  theme: function (Command) {
+    if (audio) {
+      Character.getChar(Command, function (char) {
+        Command.argument = `https://www.youtube.com/watch?v=${char.get('theme')}`
+        console.log(char)
+        console.log(Object.keys(char))
+        console.log(char.get('theme'))
+        console.log(Command.argument)
+        audio.audio.play(Command)
+      })
+    } else {
+      Command.channel.send('audio module not installed or not working.')
+    }
   }
 }
 module.exports = {Character, gameList, db}

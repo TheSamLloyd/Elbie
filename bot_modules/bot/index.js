@@ -1,5 +1,5 @@
 // dependencies
-const common = require('./common.js')
+const common = require('../common.js')
 // basic bot commands
 const name = 'bot'
 const desc = 'basic bot commands'
