@@ -6,5 +6,4 @@ fs
   .forEach(file => {
     modules.push(require(`./${file}`))
   })
-console.log(modules)
 module.exports = modules

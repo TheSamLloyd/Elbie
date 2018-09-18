@@ -12,8 +12,8 @@ const env = process.env.NODE_ENV || 'dev'
 var commandList = {}
 modules.forEach(module => {
   Object.assign(commandList, module.commands)
-  console.log('Loaded commands for module ' + module.name)
-  console.log('>' + module.desc)
+  console.log('Loaded commands for module ' + module['name'])
+  console.log('>' + module['desc'])
 })
 console.log(commandList)
 

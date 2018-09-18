@@ -1,8 +1,5 @@
 // dependencies
 const ytdl = require('ytdl-core')
-const Track = require('./track')
-const utils = require('./playerCommands').commands
-const Queue = require('./playerCommands').Queue
 
 // module information
 const name = 'audio'
@@ -10,7 +7,7 @@ const desc = 'functions to allow Elbie to stream audio thru a voice channel'
 const audio = {
   passes: 3,
   volume: 0.5,
-  join: (Command) => {
+  play: (Command) => {
     if (!Command.server) {
       Command.channel.send('You have to be in a server to use voice!')
     } else {
@@ -18,79 +15,36 @@ const audio = {
         console.log(`Connecting to voice in ${Command.server.name} in channel ${Command.channel.name}`)
         Command.member.voiceChannel.join()
           .then(connection => {
-            Command.channel.send('Successfully connected to voice channel.')
-            const queue = new Queue(connection)
-            const collector = Command.channel.createMessageCollector(m => m.content.startsWith('+'))
-            connection.parent = Command.channel
-            if (connection.dispatcher) connection.dispatcher.on('end', () => { console.log('song over!!'); utils.skip(queue, audio.playFromUrl) })
-            collector.on('collect', m => {
-              console.log(m.content)
-              console.log(queue.queue)
-              switch (m.content.split(' ')[0].slice(1)) {
-                case 'p':
-                  m.channel.send(':play_pause:')
-                  utils.togglePause(connection.dispatcher)
-                  break
-                case '!kill':
-                  m.channel.send('terminating connection...')
-                  utils.kill(connection)
-                  break
-                case 'q':
-                  m.channel.send(utils.queue(queue))
-                  break
-                case '!qc':
-                  utils.queueClear(queue)
-                  m.channel.send('Clearing queue...')
-                  break
-                case 'skip':
-                  if (connection.dispatcher) connection.dispatcher.end('skipped')
-                  m.channel.send('skipping...')
-                  break
-                case 'play':
-                case 'add':
-                  var start = !connection.dispatcher || connection.dispatcher.destroyed
-                  utils.queueAdd({ song: m.content.split(' ')[1], name: m.author.username }, queue)
-                  if (start) {
-                    utils.skip(queue, audio.playFromUrl)
-                  }
-                  break
-                case '!play':
-                  utils.forcePlay({ song: m.content.split(' ')[1], name: m.author.username }, queue, audio.playFromUrl)
-                  break
-                default:
-                  break
+            console.log('Successfully connected to voice channel.')
+            let stream = ytdl(Command.argument)
+            ytdl.getInfo(Command.argument, (err, info) => {
+              if (err) console.log(err)
+              else {
+                Command.channel.send(`Playing ${info.title}`)
+                const dispatcher = connection.playStream(stream, {audioonly: true})
+                dispatcher.on('end', () => {
+                  Command.member.voiceChannel.leave()
+                })
               }
             })
           })
-      } else {
-        Command.channel.send('Join a voice channel first!')
       }
     }
   },
-  getVideoFromUrl: (url) => {
-    return new Promise(function (resolve, reject) {
-      ytdl.getInfo(url, (err, info) => {
-        if (err || !info) reject(err)
-        resolve(new Track({video: info,
-          url: url.replace(' ', ''),
-          title: info.title || info.snippet.title}))
-      })
-    })
-  },
-  playFromUrl: (voiceConnection, url, playtext) => {
-    const channel = voiceConnection.parent
-    audio.getVideoFromUrl(url)
-      .then(song => {
-        if (voiceConnection) {
-          channel.send(playtext || `Now playing ${song.title}...`)
-          voiceConnection.playStream(ytdl(song.url, { quality: 'highestaudio', filter: 'audioonly' }), { passes: audio.passes, volume: audio.volume })
-        } else {
-          channel.send('Use `+join` to bring me into a voice channel first.')
-        }
-      })
+  stop: (Command) => {
+    if (Command.member.voiceChannel) {
+      try {
+        Command.member.voiceChannel.leave()
+      } catch (err) {
+        console.log(err)
+        Command.channel.send("I can't stop if I'm not playing anything")
+      }
+    }
   }
 }
+
 const commands = {
-  join: audio.join
+  play: audio.play,
+  stop: audio.stop
 }
-module.exports = {audio, commands, name, desc}
+module.exports = { audio, commands, name, desc }

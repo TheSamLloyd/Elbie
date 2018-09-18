@@ -1,5 +1,5 @@
 // dependencies
-const common = require('../common.js')
+const common = require('../common.js').common
 const Discord = require('discord.js')
 const cInfo = require('./character.js')
 const Character = cInfo.Character

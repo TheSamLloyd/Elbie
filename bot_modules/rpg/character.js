@@ -3,12 +3,12 @@ const common = require('../common.js')
 const gameList = {
   'Dungeon World': require('./dungeon-world.js')
 }
-const audio = require('../audio')
+const audio = require('../audio') || false
 
 const DB_URI = process.env.MONGODB_URI
 const mongoose = require('mongoose')
 const db = require('../../models/schema.js')
-mongoose.connect(DB_URI).then(
+mongoose.connect(DB_URI, {useNewUrlParser: true}).then(
   () => {
     console.log('DB connection ready')
   },
@@ -116,10 +116,18 @@ var Character = {
     })
   },
   theme: function (Command) {
-    Character.getChar(Command, function (char) {
-      Command.argument = char.get('theme')
-      audio.audio.playFromUrl(Command, `playing theme for ${char.get('name')}...`)
-    })
+    if (audio) {
+      Character.getChar(Command, function (char) {
+        Command.argument = `https://www.youtube.com/watch?v=${char.get('theme')}`
+        console.log(char)
+        console.log(Object.keys(char))
+        console.log(char.get('theme'))
+        console.log(Command.argument)
+        audio.audio.play(Command)
+      })
+    } else {
+      Command.channel.send('audio module not installed or not working.')
+    }
   }
 }
 module.exports = {Character, gameList, db}
