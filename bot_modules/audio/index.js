@@ -11,28 +11,22 @@ const audio = {
     if (!Command.server) {
       Command.channel.send('You have to be in a server to use voice!')
     } else {
-      if (Command.member.voiceChannel) {
+      if (Command.member.voiceChannel && !Command.member.voiceChannel.connection) {
         console.log(`Connecting to voice in ${Command.server.name} in channel ${Command.channel.name}`)
         Command.member.voiceChannel.join()
           .then(connection => {
-            console.log('Successfully connected to voice channel.')
-            let stream = ytdl(Command.argument)
-            ytdl.getInfo(Command.argument, (err, info) => {
-              if (err) console.log(err)
-              else {
-                Command.channel.send(`Playing ${info.title}`)
-                const dispatcher = connection.playStream(stream, {audioonly: true})
-                dispatcher.on('end', () => {
-                  Command.member.voiceChannel.leave()
-                })
-              }
-            })
+            audio.fetchplay(Command, connection)
           })
+      } else {
+        if (Command.member.voiceChannel.connection) {
+          console.log('skip')
+          audio.fetchplay(Command, Command.member.voiceChannel.connection)
+        }
       }
     }
   },
   stop: (Command) => {
-    if (Command.member.voiceChannel) {
+    if (Command.member.voiceChannel.connection.speaking) {
       try {
         Command.member.voiceChannel.leave()
       } catch (err) {
@@ -40,6 +34,32 @@ const audio = {
         Command.channel.send("I can't stop if I'm not playing anything")
       }
     }
+  },
+  fetchplay: (Command, connection) => {
+    Command.channel.send('preparing song...')
+      .then(message => {
+        let stream = ytdl(Command.argument)
+        ytdl.getInfo(Command.argument, (err, info) => {
+          if (err) {
+            message.delete()
+            console.log(err)
+            Command.channel.send(':-/')
+          } else {
+            if (connection.dispatcher) {
+              connection.dispatcher.end(true)
+            }
+            message.delete()
+            Command.channel.send(`Playing ${info.title}`)
+            const dispatcher = connection.playStream(stream, { audioonly: true })
+            dispatcher.on('end', (reason) => {
+              if (!reason) Command.member.voiceChannel.leave()
+            })
+            connection.on('warn', (warning) => {
+              console.warn(warning)
+            })
+          }
+        })
+      })
   }
 }
 
