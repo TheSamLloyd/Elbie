@@ -15,10 +15,12 @@
     "ffmpeg-binaries": "^3.2.2",
     "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
+    "global": "^4.3.2",
     "libsodium-wrappers": "^0.7.3",
     "mongoose": "^5.0.17",
     "node-fetch": "^2.1.2",
     "node-opus": "^0.3.0",
+    "release": "^4.0.2",
     "save": "^2.3.2",
     "ytdl-core": "^0.20.4"
   },
