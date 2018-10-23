@@ -1,5 +1,5 @@
 // dependencies
-const common = require('../common.js')
+const common = require('../common.js').common
 const gameList = {
   'Dungeon World': require('./dungeon-world.js')
 }
