@@ -26,9 +26,14 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
   * `+mark (Integer? amount)`: Increases the current character's XP by `amount` if provided. Defaults to 1.
   * `+s (String skill) (Integer? modifier)`: Rolls a "skill roll" with the appropriate modifier depending on the character's skill in that attribute. If `modifier` is provided, it will modify the result. `skill` must be an abbreviated skill name ("str", "con", etc.)
   * `+levelup`: Increases the character's level by 1, if the character has enough XP. If not, fails.
-  * (`+theme`:) Immediately plays the current character's theme. (This command is not currently available in the master build.)
-* (audio)
-  * This module is not currently available in the master build. If you want to use this module, you must fork Elbie and compile her from the `audio` branch. Use at your own risk, as it is still actively in development and may change without warning.
+  * `+theme`: Immediately plays the current character's theme.
+* audio
+  * This module is in active development and features are likely to change without significant warning at any time.
+  * `+play (String URL)`: Plays the audio from the linked YouTube video. If you want, you may omit everything except the video ID. If you do include the full video URL, it will likely embed in the channel, depending on permissions. If a song is currently playing, asking Elbie to play a new song will have her stop the old one and begin playing the new one as soon as it is cached.
+  * `+stop`: Elbie will stop playing any audio she is currently playing.
+  * There, at present, is not a way to adjust Elbie's volume on a channel-wide basis, but every player can adjust her to their liking by right clicking her icon in the voice channel and adjusting "Player Volume."
+  * There is also current *no queueing available*, so at present you'll have to be courteous not to impose on someone else's song.
+  * Other improvements we plan to make include her ability to read YouTube playlists so that a DM could prepare a soundtrack, and to loop songs. 
 
 ## Extending Elbie
 Elbie is written to be fully extensible. All you need to do to write your own module is create a folder inside of `bot_modules` titled for your new module, and inside that create `index.js`. You may want to import `common.js` from `bot_modules`, which provides several common functions required by modules. Then you'll need four components in `index.js`: 
