@@ -18,7 +18,7 @@ const rpg = {
     var results = {}
     rolls.forEach(function (iroll, index) {
       var dielist = []
-      iroll.split('+').forEach(function (die) {
+      iroll.split(/(\+|-)/).forEach(function (die) {
         var k = die.split('d')
         if (k.length === 1) {
           dielist.push(parseInt(k[0]))
