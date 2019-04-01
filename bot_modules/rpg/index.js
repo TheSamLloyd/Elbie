@@ -38,6 +38,30 @@ const rpg = {
     return results
   },
   // terminal
+  advantage (Command) {
+    if (Command.argument.indexOf(',') !== -1) {
+      Command.channel.send('You can only do one roll with advantage.')
+      return null
+    } else {
+      Command.argument = Command.argument + ',' + Command.argument
+      var output = rpg.roll(Command)
+      var text = ''
+      if (output[0].valid) {
+        var bool = output[0].total > output[1].total ? 0 : 1
+        for (var i = 0; i <= 1; i++) {
+          text += output[i].roll + ': ' + output[i].dielist + '=**' + output[i].total + '**\n'
+        }
+        if (Command.command === 'adv') {
+          text += 'Result: **' + output[bool].total + '**'
+        }
+        if (Command.command === 'disadv' || Command.command === 'dadv') {
+          text += 'Result: **' + output[1 - bool].total + '**'
+        }
+      }
+      Command.channel.send(text)
+    }
+  },
+  // terminal
   rollFormat (Command) {
     var output = rpg.roll(Command)
     var text = ''
@@ -191,7 +215,10 @@ const commands = {
   mark: rpg.cast,
   s: rpg.statRoll,
   levelup: Character.levelup,
-  theme: Character.theme
+  theme: Character.theme,
+  adv: rpg.advantage,
+  dadv: rpg.advantage,
+  disadv: rpg.advantage
 }
 // object to turn game strings into game objects
 module.exports = {rpg, commands, name, desc}
