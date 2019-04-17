@@ -22,6 +22,15 @@ var bot = {
     }
     var flip = common.randInt(0, 1) ? heads : tails
     Command.channel.send(flip)
+  },
+  choose (Command) {
+    var n = Command.args.length
+    if (n >= 2) {
+      Command.channel.send(Command.args[common.randInt(0, n - 1)])
+    }
+    else {
+      Command.channel.send('Please provide at least 2 options.')
+    }
   }
 }
 var commands = {
@@ -29,4 +38,4 @@ var commands = {
   echo: bot.echo,
   flip: bot.flip
 }
-module.exports = {bot, commands, name, desc}
+module.exports = { bot, commands, name, desc }
