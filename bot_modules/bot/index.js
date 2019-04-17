@@ -11,7 +11,16 @@ var bot = {
     Command.channel.send(Command.argument)
   },
   flip (Command) {
-    var flip = common.randInt(0, 1) ? 'heads' : 'tails'
+    var heads
+    var tails
+    if (Command.args.length === 2) {
+      heads = Command.args[0]
+      tails = Command.args[1]
+    } else {
+      heads = 'heads'
+      tails = 'tails'
+    }
+    var flip = common.randInt(0, 1) ? heads : tails
     Command.channel.send(flip)
   }
 }
