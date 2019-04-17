@@ -15,7 +15,8 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
 * bot
   * `+ping`: Returns "pong!" as proof-of-life.
   * `+echo (String)`: Echoes back `(String)` as proof-of-life
-  * `+flip`: Returns either "heads" or "tails"
+  * `+flip (String? heads) (String? tails)`: Returns either "heads" or "tails", or if provided, returns one of the pair of options given.
+  * `+choose (String options)`: Returns one of the (space-delimited) choices at random, e.g. `+choose a b c d e f horse` will return either "a", "b", "c", "d", "e", "f" or "horse".
 * rpg
   * `+r (Integer? modifier)`: Makes a single default roll as defined by whatever TTRPG system the channel is currently bound to (2d6 for PBtA games, 1d20 for most D&D/Pathfinder games, etc.) If `modifier` is provided, it will be added as a modifier
   * `+bind (String shortname) (String name)`: Binds the current channel to a new campaign under the name `name` (which may contain spaces) and with abbreviated name `shortname` (which must not contain spaces) and assigns the player who issued the command as DM. Setup will need to be finished on the web interface, which is not, at present, publically available. (If you want to use Elbie in a campaign of yours, send me a message and I will manually finish setup.)
