@@ -3,6 +3,9 @@
   "version": "3.5.2",
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
+  "engines": {
+    "node" : "8.12.0"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "bufferutil": "^3.0.3",
