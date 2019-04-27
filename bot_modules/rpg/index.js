@@ -164,7 +164,7 @@ const rpg = {
       })
     })
   },
-  cast (Command, cb) {
+  cast (Command) {
     var castlist = {
       mark: ['exp', common.orDef(Command.args[0], 1), true],
       hp: ['HP', common.orDef(Command.args[0], 0), true]
