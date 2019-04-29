@@ -27,8 +27,7 @@ var bot = {
     var n = Command.args.length
     if (n >= 2) {
       Command.channel.send(Command.args[common.randInt(0, n - 1)])
-    }
-    else {
+    } else {
       Command.channel.send('Please provide at least 2 options.')
     }
   }
@@ -36,6 +35,7 @@ var bot = {
 var commands = {
   ping: bot.ping,
   echo: bot.echo,
-  flip: bot.flip
+  flip: bot.flip,
+  choose: bot.choose
 }
 module.exports = { bot, commands, name, desc }
