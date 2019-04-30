@@ -11,7 +11,19 @@ const desc = 'functions to allow basic RPG commands'
 const rpg = {
   defRoll (Command) {
     var mod = parseInt(Command.argument)
-    return common.randInt(1, 20) + (mod || 0)
+    var defroll = '2d6'
+    try {
+      rpg.getCampaign(Command, campaign => {
+        var defroll = campaign.system.defRoll
+        Command.argument = defroll + '+' + (mod || 0)
+        rpg.rollFormat(Command)
+      })
+    } catch (err) {
+      console.log(err)
+      Command.argument = defroll + '+'(mod || 0)
+      rpg.rollFormat(Command)
+    }
+    return common.randInt(1, 6) + common.randInt(1, 6) + (mod || 0)
   },
   roll (Command) {
     var rolls = Command.argument.split(',')
@@ -36,7 +48,7 @@ const rpg = {
       })
       var tTotal = common.sum(dielist)
       var valid = !(isNaN(tTotal))
-      results[index] = {roll: iroll, dielist: dielist, total: tTotal, valid: valid}
+      results[index] = { roll: iroll, dielist: dielist, total: tTotal, valid: valid }
     })
     console.log(results)
     return results
@@ -79,7 +91,7 @@ const rpg = {
     Command.channel.send(text.trim())
   },
   getCampaign (Command, cb) {
-    db.CampaignObject.findOne({channel: Command.channel.id}, function (err, campaign) {
+    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
       if (err) return console.error(err)
       console.log(campaign)
       console.log(campaign.id)
@@ -95,7 +107,7 @@ const rpg = {
     return (element.name === arg || (element.playerName === arg || element.nickname === arg))
   },
   getCharByPlayer (Command, cb) {
-    var query = Command.argument !== '' ? {name: common.caps(Command.argument)} : {_id: Command.auth.id}
+    var query = Command.argument !== '' ? { name: common.caps(Command.argument) } : { _id: Command.auth.id }
     db.UserObject.findOne(query, function (err, user) {
       if (err) console.error(err)
       if (!user) return cb(null)
@@ -110,7 +122,7 @@ const rpg = {
   getCharByName (Command, cb) {
     rpg.getCampaign(Command, campaign => {
       db.CharacterObject
-        .findOne({$and: [{campaign: campaign.id}, {$or: [{name: common.caps(Command.argument)}, {nickname: common.caps(Command.argument)}]}]})
+        .findOne({ $and: [{ campaign: campaign.id }, { $or: [{ name: common.caps(Command.argument) }, { nickname: common.caps(Command.argument) }] }] })
         .populate('user')
         .exec(function (err, char) {
           if (err) console.error(err)
@@ -124,11 +136,11 @@ const rpg = {
     console.log('Listing...')
     db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
       if (err) console.error(err)
-      db.CharacterObject.find({campaign: campaign.id}, function (err, characters) {
+      db.CharacterObject.find({ campaign: campaign.id }, function (err, characters) {
         if (err) console.error(err)
-        db.UserObject.populate(characters, {path: 'user', model: 'User'}, function (err, characters) {
+        db.UserObject.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
           if (err) console.error(err)
-          characters = characters.map((char) => ({name: char.name, user: char.user.name}))
+          characters = characters.map((char) => ({ name: char.name, user: char.user.name }))
           var out = ''
           characters.forEach((char) => {
             out += `- ${char.name} (${char.user})\n`
@@ -225,4 +237,4 @@ const commands = {
   disadv: rpg.advantage
 }
 // object to turn game strings into game objects
-module.exports = {rpg, commands, name, desc}
+module.exports = { rpg, commands, name, desc }

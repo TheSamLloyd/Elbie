@@ -1,14 +1,15 @@
 // dependencies
 const common = require('../common.js').common
 const gameList = {
-  'Dungeon World': require('./dungeon-world.js')
+  'Dungeon World': require('./dungeon-world.js'),
+  'Masks': require('./masks.js')
 }
 const audio = require('../audio') || false
 
 const DB_URI = process.env.MONGODB_URI
 const mongoose = require('mongoose')
 const db = require('../../models/schema.js')
-mongoose.connect(DB_URI, {useNewUrlParser: true}).then(
+mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
   () => {
     console.log('DB connection ready')
   },
@@ -18,11 +19,11 @@ mongoose.connect(DB_URI, {useNewUrlParser: true}).then(
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command, cb) {
-    db.CampaignObject.findOne({channel: Command.channel.id}, function (err, campaign) {
+    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
       if (err) return console.error(err)
-      db.CharacterObject.findOne({$and: [{campaign: campaign.id}, {user: Command.auth.id}]}, function (err, char) {
+      db.CharacterObject.findOne({ $and: [{ campaign: campaign.id }, { user: Command.auth.id }] }, function (err, char) {
         if (err) return console.error(err)
-        db.UserObject.populate(char, {path: 'user'}, function (err, char) {
+        db.UserObject.populate(char, { path: 'user' }, function (err, char) {
           if (err) return console.error(err)
           cb(char)
         })
@@ -36,9 +37,9 @@ var Character = {
     })
   },
   getSystem: function (Command, cb) {
-    db.CampaignObject.findOne({channel: Command.channel.id}, function (err, campaign) {
+    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
       if (err) console.error(err)
-      db.SystemObject.populate(campaign, {path: 'system'}, function (err, campaign) {
+      db.SystemObject.populate(campaign, { path: 'system' }, function (err, campaign) {
         if (err) console.error(err)
         console.log(campaign)
         cb(campaign.system.name)
@@ -92,7 +93,13 @@ var Character = {
       Character.getSystem(Command, function (sys) {
         var system = gameList[sys]
         var stat = system.statAlias[Command.args[0]]
-        var mod = system.mod(char.stats[stat])
+        var mod
+        try {
+          mod = system.mod(char.stats[stat])
+        } catch (err) {
+          console.log(err)
+          mod = 0
+        }
         var roll = system.defRoll + '+' + mod
         Command.argument = roll
         cb(Command)
@@ -130,4 +137,4 @@ var Character = {
     }
   }
 }
-module.exports = {Character, gameList, db}
+module.exports = { Character, gameList, db }
