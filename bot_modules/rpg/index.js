@@ -18,16 +18,20 @@ const rpg = {
     var results = {}
     rolls.forEach(function (iroll, index) {
       var dielist = []
-      iroll.split(/(\+\d+|-\d+)/).forEach(function (die) {
+      iroll = iroll.replace('-', '+-')
+      iroll.split('+').forEach(function (die) {
         var k = die.split('d')
         if (k.length === 1) {
-          dielist.push(parseInt(k[0]))
-        }
-        if (k.length === 2) {
+          if (!isNaN(parseInt(k[0]))) {
+            dielist.push(parseInt(k[0]))
+          }
+        } else if (k.length === 2) {
           var lim = ((k[0] === '') ? 1 : parseInt(k[0]))
           for (var i = 0; i < lim; i++) {
             dielist.push(common.randInt(1, parseInt(k[1])))
           }
+        } else {
+          console.log('Empty or other weird length, disregarding...')
         }
       })
       var tTotal = common.sum(dielist)
