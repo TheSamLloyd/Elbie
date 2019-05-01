@@ -15,7 +15,7 @@ const rpg = {
     try {
       rpg.getCampaign(Command, campaign => {
         var defroll = campaign.system.defRoll
-        Command.argument = defroll + '+' + (mod || 0)
+        Command.argument = (defroll || '2d6') + '+' + (mod || 0)
         rpg.rollFormat(Command)
       })
     } catch (err) {
@@ -30,7 +30,7 @@ const rpg = {
     var results = {}
     rolls.forEach(function (iroll, index) {
       var dielist = []
-      iroll = iroll.replace('-', '+-')
+      iroll = iroll.replace('-', '+-').replace('++', '+')
       iroll.split('+').forEach(function (die) {
         var k = die.split('d')
         if (k.length === 1) {
