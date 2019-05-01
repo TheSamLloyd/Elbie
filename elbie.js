@@ -82,7 +82,7 @@ client.on('error', function (err) {
 //  for JS errors:
 function errorHandler (err) {
   console.log(err)
-  return 'I ran into an error of type ' + err.name + ': check console for details.'
+  return `I ran into an error of type ${err.name}: check console for details.`
 }
 //  command handling
 function handler (Command) {
