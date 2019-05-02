@@ -31,14 +31,16 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
   * `+bind (String shortname) (String name)`: Binds the current channel to a new campaign under the name `name` (which may contain spaces) and with abbreviated name `shortname` (which must not contain spaces) and assigns the player who issued the command as DM. Setup will need to be finished on the web interface, which is not, at present, publically available. (If you want to use Elbie in a campaign of yours, send me a message and I will manually finish setup.)
   * `+who (String? name)`: Generates a character summary of either the current player if no name is provided, or if `name` is a player name (like "Sam"), a character name (like "Lurreka Al-Petarra"), or a nickname (like "Lurreka"), it will generate a summary of that character or the character assigned to that player. (For reference, if for some reason you have a player named "Sam" and a different player has a character named "Sam", `+who Sam` will refer to the player. If you are doing this, why?)
   * `+listChar`: Lists all the characters in the current campaign with their player's name (e.g. "Amateotl Maikali, played by Sam")
-  * `+roll`: Accepts a comma-separated list of rolls and modifiers to perform in `xdy+z` format, e.g. `+roll 1d20+2d4+1d6+3,2d6+-2`. Note that it is crucial to preface any negative modifiers with a `+`, e.g. (`2d4+-1`).
+  * `+roll`: Accepts a comma-separated list of rolls and modifiers to perform in `xdy+z` format, e.g. `+roll 1d20+2d4+1d6+3,2d6-2`.
   * `+hp (Integer? amount)`: Adjusts the current character's HP by the given `amount`. Restricts to values between 0 and the character's maximum health. Not providing `amount` returns the character's current HP.
   * `+mark (Integer? amount)`: Increases the current character's XP by `amount` if provided. Defaults to 1.
   * `+s (String skill) (Integer? modifier)`: Rolls a "skill roll" with the appropriate modifier depending on the character's skill in that attribute. If `modifier` is provided, it will modify the result. `skill` must be an abbreviated skill name ("str", "con", etc.)
   * `+levelup`: Increases the character's level by 1, if the character has enough XP. If not, fails.
   * `+theme`: Immediately plays the current character's theme.
+  * `+adv`: Accepts one dice string (`xdy+z`) and rolls it twice, returning both results and taking the higher one.
+  * `+disadv`: Accepts one dice string (`xdy+z`) and rolls it twice, returning both results and taking the lower one. Aliased with `+dadv`.
 * audio
-  * This module is in active development and features are likely to change without significant warning at any time.
+  * This module is in active development and features are likely to change without significant warning at any time. If you are messing with audio and you crash Elbie, it is your fault. I will reboot her but I *strongly* encourage you not to hurt my daughter.
   * `+play (String URL)`: Plays the audio from the linked YouTube video. If you want, you may omit everything except the video ID. If you do include the full video URL, it will likely embed in the channel, depending on permissions. If a song is currently playing, asking Elbie to play a new song will have her stop the old one and begin playing the new one as soon as it is cached.
   * `+stop`: Elbie will stop playing any audio she is currently playing.
   * There, at present, is not a way to adjust Elbie's volume on a channel-wide basis, but every player can adjust her to their liking by right clicking her icon in the voice channel and adjusting "Player Volume."
