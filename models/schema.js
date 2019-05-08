@@ -43,8 +43,8 @@ var CampaignSchema = new Schema({
     ref: 'User'
   },
   theme: String,
-  active: {type: Boolean, default: true},
-  system: {type: Schema.Types.ObjectId, required: true, ref: 'System'}
+  active: { type: Boolean, default: true },
+  system: { type: Schema.Types.ObjectId, required: true, ref: 'System' }
 })
 
 var CharacterSchema = new Schema({
@@ -76,8 +76,17 @@ var CharacterSchema = new Schema({
   maxHP: Number,
   HP: Number,
   level: Number,
-  exp: Number,
-  alive: {type: Boolean, default: true}
+  exp: {
+    type: Number,
+    default: 0
+  },
+  alive: { type: Boolean, default: true },
+  desc: {
+    type: String
+  },
+  theme: {
+    type: String
+  }
 })
 
 var SystemSchema = new Schema({
@@ -95,4 +104,4 @@ var CampaignObject = mongoose.model('Campaign', CampaignSchema)
 var CharacterObject = mongoose.model('Character', CharacterSchema)
 var SystemObject = mongoose.model('System', SystemSchema)
 
-module.exports = {UserObject, CampaignObject, CharacterObject, SystemObject}
+module.exports = { UserObject, CampaignObject, CharacterObject, SystemObject }

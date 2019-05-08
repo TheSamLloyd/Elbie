@@ -9,8 +9,7 @@ var Masks = {
   },
   levelup: (character) => (character.exp >= 5),
   mod: function (score) {
-    var val
-    return val
+    return score
   }
 }
 module.exports = Masks

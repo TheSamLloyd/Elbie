@@ -176,7 +176,11 @@ const rpg = {
         if (char.aviURL) {
           embed.setImage(char.aviURL)
         }
-        Command.channel.send(embed)
+        try {
+          Command.channel.send(embed)
+        } catch (err) {
+          Command.channel.send('Could not send rich embed -- may not have permission in this channel or server.')
+        }
       })
     })
   },
