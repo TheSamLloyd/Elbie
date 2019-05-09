@@ -70,6 +70,7 @@ client.on('ready', function () {
 
 // keep-alive connection
 client.on('disconnect', function () {
+  console.log('Disconnected, attempting to reconnect...')
   client.login(token)
 })
 // error handling
@@ -86,16 +87,23 @@ function errorHandler (err) {
 }
 //  command handling
 function handler (Command) {
-  try {
-    commandList[Command.command]['function'] ? commandList[Command.command]['function'](Command) : commandList[Command.command](Command)
-  } catch (err) {
-    Command.channel.send(errorHandler(err))
+  if (Command.command === '?') {
+    var output = []
+    Object.keys(commandList).forEach(command => {
+      output.push(commandList[command].desc ? `${command} : ${commandList[command].desc}` : `${command}`)
+    })
+  } else {
+    try {
+      commandList[Command.command]['function'] ? commandList[Command.command]['function'](Command) : commandList[Command.command](Command)
+    } catch (err) {
+      Command.channel.send(errorHandler(err))
+    }
   }
 }
 // command execution
 client.on('message', function (message) {
   if (isCommand(message)) {
-    var content = message.content.slice(1).split(' ')
+    var content = message.content.slice(1).split(' ').filter(element => (element || element === 0))
     var Command = {
       channel: clean(message.channel),
       auth: clean(message.author),

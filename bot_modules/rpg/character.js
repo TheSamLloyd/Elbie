@@ -100,7 +100,7 @@ var Character = {
           console.log(err)
           mod = 0
         }
-        var roll = system.defRoll + '+' + mod
+        var roll = `${system.defRoll}+${mod}`
         Command.argument = roll
         cb(Command)
       })
@@ -116,7 +116,7 @@ var Character = {
           Command.args[0] = 'level'
           Command.args[1] = 1
           var success = Character.modifyAttr(Command)
-          if (success) Command.channel.send('Leveled up to ' + success)
+          if (success) Command.channel.send(`Leveled up to ${success}`)
           else Command.channel.send(success)
         } else Command.channel.send('Could not level up. Check EXP.')
       })
