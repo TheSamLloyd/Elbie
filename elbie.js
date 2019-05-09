@@ -87,7 +87,7 @@ function errorHandler (err) {
 //  command handling
 function handler (Command) {
   try {
-    commandList[Command.command](Command)
+    commandList[Command.command]['function'] ? commandList[Command.command]['function'](Command) : commandList[Command.command](Command)
   } catch (err) {
     Command.channel.send(errorHandler(err))
   }
