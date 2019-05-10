@@ -6,7 +6,7 @@ const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
 const axios = require('axios')
 const prefix = '+'
-const develop = process.env.DEVELOP
+const develop = Boolean(process.env.DEVELOP)
 
 // adding commands
 var commandList = {}
@@ -114,7 +114,7 @@ client.on('message', function (message) {
       server: message.guild
     }
     // commands
-    if (!Object.keys(commandList).includes(Command.command)) {
+    if (!Object.keys(commandList).includes(Command.command && Command.command !== '?')) {
       Command.channel.send('I couldn\'t understand that command.')
     } else {
       handler(Command)
