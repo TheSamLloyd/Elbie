@@ -6,7 +6,7 @@ const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
 const axios = require('axios')
 const prefix = '+'
-const env = process.env.NODE_ENV || 'dev'
+const develop = process.env.DEVELOP
 
 // adding commands
 var commandList = {}
@@ -58,7 +58,7 @@ client.on('ready', function () {
       'status': 'online',
       'afk': false,
       'game': {
-        name: env !== 'dev' ? `${version}` : `DEV -- ${version}`,
+        name: develop ? `${version}` : `DEV -- ${version}`,
         type: 'PLAYING'
       }
     })
