@@ -4,9 +4,9 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
-const axios = require('axios')
 const prefix = '+'
 const develop = Boolean(process.env.DEVELOP)
+const selfPackage = require('./package.json')
 
 // adding commands
 var commandList = {}
@@ -30,38 +30,15 @@ function clean (str) {
 client.login(token)
 // readying
 client.on('ready', function () {
-  axios({
-    method: 'post',
-    url: 'https://api.github.com/graphql',
-    auth: {
-      user: 'TheSamLloyd',
-      password: process.env.GITHUB_TOKEN
-    },
-    data: {
-      query:
-        `query { 
-          repository(owner:"TheSamLloyd", name:"Elbie"){
-            releases(last:1){
-              nodes{
-                tag {
-                  name
-                }
-              }
-            }
-          }
-        }`
+  let version = selfPackage.version
+  console.log(version)
+  client.user.setPresence({
+    'status': 'online',
+    'afk': false,
+    'game': {
+      name: develop ? `${version}` : `DEV -- ${version}`,
+      type: 'PLAYING'
     }
-  }).then((response) => {
-    let version = response.data.data.repository.releases.nodes[0].tag.name
-    console.log(version)
-    client.user.setPresence({
-      'status': 'online',
-      'afk': false,
-      'game': {
-        name: develop ? `${version}` : `DEV -- ${version}`,
-        type: 'PLAYING'
-      }
-    })
   }).catch(err => {
     console.log(err)
   })
