@@ -114,10 +114,10 @@ client.on('message', function (message) {
       server: message.guild
     }
     // commands
-    if (!Object.keys(commandList).includes(Command.command && Command.command !== '?')) {
-      Command.channel.send('I couldn\'t understand that command.')
-    } else {
+    if (Command.command === '?' || Object.keys(commandList).includes(Command.command)) {
       handler(Command)
+    } else {
+      Command.channel.send('I couldn\'t understand that command.')
     }
   }
 })
