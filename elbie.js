@@ -5,7 +5,7 @@ const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
 const prefix = '+'
-const develop = process.env.DEVELOP === 'true'
+const env = process.env.BUILD
 const selfPackage = require('./package.json')
 
 // adding commands
@@ -36,7 +36,7 @@ client.on('ready', function () {
     'status': 'online',
     'afk': false,
     'game': {
-      name: develop ? `${version}` : `DEV -- ${version}`,
+      name: env === 'development' ? `${version}` : `DEV -- ${version}`,
       type: 'PLAYING'
     }
   }).catch(err => {
