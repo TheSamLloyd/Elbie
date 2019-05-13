@@ -240,7 +240,7 @@ const rpg = {
       for (var i = 0; i < n; i++) {
         dice.push(common.randInt(1, 6))
       }
-      result = Math.max(dice)
+      result = Math.max(...dice)
       dice.forEach(die => {
         if (die === 6) critical++
       })
