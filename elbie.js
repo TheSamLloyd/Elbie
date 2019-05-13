@@ -69,6 +69,7 @@ function handler (Command) {
     Object.keys(commandList).forEach(command => {
       output.push(commandList[command].desc ? `${command} : ${commandList[command].desc}` : `${command}`)
     })
+    Command.channel.send(output.join('\n'))
   } else {
     try {
       commandList[Command.command]['function'] ? commandList[Command.command]['function'](Command) : commandList[Command.command](Command)
