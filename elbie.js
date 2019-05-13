@@ -5,7 +5,7 @@ const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
 const prefix = '+'
-const develop = Boolean(process.env.DEVELOP)
+const develop = process.env.DEVELOP === 'true'
 const selfPackage = require('./package.json')
 
 // adding commands

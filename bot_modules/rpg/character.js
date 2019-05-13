@@ -1,8 +1,8 @@
 // dependencies
 const common = require('../common.js').common
 const gameList = {
-  'Dungeon World': require('./dungeon-world.js'),
-  'Masks': require('./masks.js')
+  'Dungeon World': require('./systems/dungeon-world.js'),
+  'Masks': require('./systems/masks.js')
 }
 const audio = require('../audio') || false
 

@@ -36,6 +36,6 @@ var commands = {
   ping: {function: bot.ping, desc: 'Echoes back "Pong!" as proof-of-life.'},
   echo: {function: bot.echo, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.'},
   flip: {function: bot.flip, desc: 'Flips a coin, or if exactly two space-delimited options are provided, chooses between them.'},
-  choose: {function: bot.choose, desc: 'Given a space-delimited list of choices, picks one at random.'}
+  choose: {function: bot.choose, desc: 'Given a space-delimited list of at least two choices, picks one at random.'}
 }
 module.exports = { bot, commands, name, desc }

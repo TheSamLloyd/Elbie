@@ -223,6 +223,41 @@ const rpg = {
   },
   statRoll (Command) {
     Character.statRoll(Command, rpg.rollFormat)
+  },
+  bladesRoll (Command) {
+    var n = parseInt(Command.argument)
+    var out
+    var result
+    var critical = 0
+    var outcome
+    if (n <= 0) {
+      var dice1 = common.randInt(1, 6)
+      var dice2 = common.randInt(1, 6)
+      result = Math.min(dice1, dice2)
+      out = `${n}d6: [${dice1}, ${dice2}]: ${result}`
+    } else if (n > 0) {
+      var dice = []
+      for (var i = 0; i < n; i++) {
+        dice.push(common.randInt(1, 6))
+      }
+      result = Math.max(dice)
+      dice.forEach(die => {
+        if (die === 6) critical++
+      })
+      out = `${n}d6: ${dice}: ${result}`
+    }
+    critical = (critical >= 2)
+    if (critical) outcome = 'Critical success'
+    else if (result === 6) outcome = 'Full success'
+    else if (result >= 4) outcome = 'Partial success'
+    else if (result >= 1) outcome = 'Bad outcome'
+    else if (isNaN(n)) {
+      Command.channel.send('Malformed roll.')
+      return null
+    }
+    out = `${out} - ${outcome}`
+    Command.channel.send(out)
+    return null
   }
 }
 const commands = {
@@ -238,7 +273,8 @@ const commands = {
   theme: { function: Character.theme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
   adv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
   dadv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
-  disadv: { function: rpg.advantage, desc: 'Alias of +dadv.' }
+  disadv: { function: rpg.advantage, desc: 'Alias of +dadv.' },
+  b: {function: rpg.bladesRoll, desc: 'Rolls a Blades in the Dark roll.'}
 }
 // object to turn game strings into game objects
 module.exports = { rpg, commands, name, desc }
