@@ -4,9 +4,9 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
-const axios = require('axios')
 const prefix = '+'
-const env = process.env.NODE_ENV || 'dev'
+const develop = process.env.DEVELOP === 'true'
+const selfPackage = require('./package.json')
 
 // adding commands
 var commandList = {}
@@ -30,38 +30,15 @@ function clean (str) {
 client.login(token)
 // readying
 client.on('ready', function () {
-  axios({
-    method: 'post',
-    url: 'https://api.github.com/graphql',
-    auth: {
-      user: 'TheSamLloyd',
-      password: process.env.GITHUB_TOKEN
-    },
-    data: {
-      query:
-        `query { 
-          repository(owner:"TheSamLloyd", name:"Elbie"){
-            releases(last:1){
-              nodes{
-                tag {
-                  name
-                }
-              }
-            }
-          }
-        }`
+  let version = selfPackage.version
+  console.log(version)
+  client.user.setPresence({
+    'status': 'online',
+    'afk': false,
+    'game': {
+      name: develop ? `${version}` : `DEV -- ${version}`,
+      type: 'PLAYING'
     }
-  }).then((response) => {
-    let version = response.data.data.repository.releases.nodes[0].tag.name
-    console.log(version)
-    client.user.setPresence({
-      'status': 'online',
-      'afk': false,
-      'game': {
-        name: env !== 'dev' ? `${version}` : `DEV -- ${version}`,
-        type: 'PLAYING'
-      }
-    })
   }).catch(err => {
     console.log(err)
   })
@@ -70,6 +47,7 @@ client.on('ready', function () {
 
 // keep-alive connection
 client.on('disconnect', function () {
+  console.log('Disconnected, attempting to reconnect...')
   client.login(token)
 })
 // error handling
@@ -86,16 +64,23 @@ function errorHandler (err) {
 }
 //  command handling
 function handler (Command) {
-  try {
-    commandList[Command.command](Command)
-  } catch (err) {
-    Command.channel.send(errorHandler(err))
+  if (Command.command === '?') {
+    var output = []
+    Object.keys(commandList).forEach(command => {
+      output.push(commandList[command].desc ? `${command} : ${commandList[command].desc}` : `${command}`)
+    })
+  } else {
+    try {
+      commandList[Command.command]['function'] ? commandList[Command.command]['function'](Command) : commandList[Command.command](Command)
+    } catch (err) {
+      Command.channel.send(errorHandler(err))
+    }
   }
 }
 // command execution
 client.on('message', function (message) {
   if (isCommand(message)) {
-    var content = message.content.slice(1).split(' ')
+    var content = message.content.slice(1).split(' ').filter(element => (element || element === 0))
     var Command = {
       channel: clean(message.channel),
       auth: clean(message.author),
@@ -106,10 +91,10 @@ client.on('message', function (message) {
       server: message.guild
     }
     // commands
-    if (!Object.keys(commandList).includes(Command.command)) {
-      Command.channel.send('I couldn\'t understand that command.')
-    } else {
+    if (Command.command === '?' || Object.keys(commandList).includes(Command.command)) {
       handler(Command)
+    } else {
+      Command.channel.send('I couldn\'t understand that command.')
     }
   }
 })
