@@ -79,7 +79,7 @@ const audio = {
 }
 
 const commands = {
-  play: audio.play,
-  stop: audio.stop
+  play: { function: audio.play, desc: 'given a youtube link or video ID, will attempt to stream the song in a voice channel.' },
+  stop: { function: audio.stop, desc: 'stops playing any audio. Can misbehave when no audio is playing.' }
 }
 module.exports = { audio, commands, name, desc }

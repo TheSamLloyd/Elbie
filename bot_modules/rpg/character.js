@@ -1,8 +1,8 @@
 // dependencies
 const common = require('../common.js').common
 const gameList = {
-  'Dungeon World': require('./dungeon-world.js'),
-  'Masks': require('./masks.js')
+  'Dungeon World': require('./systems/dungeon-world.js'),
+  'Masks': require('./systems/masks.js')
 }
 const audio = require('../audio') || false
 
@@ -101,7 +101,7 @@ var Character = {
           console.log(err)
           mod = 0
         }
-        var roll = system.defRoll + '+' + mod
+        var roll = `${system.defRoll}+${mod}`
         Command.argument = roll
         cb(Command)
       })
@@ -117,7 +117,7 @@ var Character = {
           Command.args[0] = 'level'
           Command.args[1] = 1
           var success = Character.modifyAttr(Command)
-          if (success) Command.channel.send('Leveled up to ' + success)
+          if (success) Command.channel.send(`Leveled up to ${success}`)
           else Command.channel.send(success)
         } else Command.channel.send('Could not level up. Check EXP.')
       })
