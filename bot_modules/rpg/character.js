@@ -97,6 +97,7 @@ var Character = {
         try {
           mod = system.mod(char.stats[stat])
         } catch (err) {
+          Command.channel.send(`Ran into an error fetching stats... ${err.name}`)
           console.log(err)
           mod = 0
         }
