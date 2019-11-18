@@ -14,7 +14,9 @@ const rpg = {
     var defroll = '2d6'
     try {
       rpg.getCampaign(Command, campaign => {
-        var defroll = campaign.system.defRoll
+        if (campaign != null) {
+          defroll = campaign.system.defRoll
+        }
         Command.argument = (defroll || '2d6') + '+' + (mod || 0)
         rpg.rollFormat(Command)
       })
@@ -91,12 +93,17 @@ const rpg = {
     Command.channel.send(text.trim())
   },
   getCampaign (Command, cb) {
-    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
-      if (err) return console.error(err)
-      console.log(campaign)
-      console.log(campaign.id)
-      cb(campaign)
-    })
+    try {
+      db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
+        if (err) return console.error(err)
+        console.log(campaign)
+        console.log(campaign.id)
+        cb(campaign)
+      })
+    } catch (exception) {
+      console.log('No campaign could be retrieved')
+      cb(null)
+    }
   },
   isDM (Command) {
     var dm = rpg.getCampaign(Command).dm
