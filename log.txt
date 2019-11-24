@@ -1,0 +1,4 @@
+stty: standard input: Inappropriate ioctl for device
+Already up to date.
+stty: standard input: Inappropriate ioctl for device
+Already up to date.

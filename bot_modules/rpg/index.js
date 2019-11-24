@@ -281,7 +281,7 @@ const commands = {
   adv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
   dadv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
   disadv: { function: rpg.advantage, desc: 'Alias of +dadv.' },
-  b: {function: rpg.bladesRoll, desc: 'Rolls a Blades in the Dark roll.'}
+  b: { function: rpg.bladesRoll, desc: 'Rolls a Blades in the Dark roll.' }
 }
 // object to turn game strings into game objects
 module.exports = { rpg, commands, name, desc }

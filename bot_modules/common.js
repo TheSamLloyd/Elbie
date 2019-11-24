@@ -30,4 +30,4 @@ const common = {
   }
 }
 const commands = {}
-module.exports = {name, desc, common, commands}
+module.exports = { name, desc, common, commands }

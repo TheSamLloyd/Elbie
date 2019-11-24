@@ -36,7 +36,7 @@ client.on('ready', function () {
     'status': 'online',
     'afk': false,
     'game': {
-      name: env === 'development' ? `${version}` : `DEV -- ${version}`,
+      name: env === 'production' ? `${version}` : `DEV -- ${version}`,
       type: 'PLAYING'
     }
   }).catch(err => {
