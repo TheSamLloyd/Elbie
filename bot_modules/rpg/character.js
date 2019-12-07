@@ -3,7 +3,7 @@ const common = require('../common.js').common
 const gameList = {
   'Dungeon World': require('./systems/dungeon-world.js'),
   'Masks': require('./systems/masks.js'),
-  'Dungeons and Dragons 3.5e': require('./systems/dnd35.js')
+  'Dungeons and Dragons 3.5e': require('./systems/dungeons-and-dragons-3-5e.js')
 }
 const audio = require('../audio') || false
 
