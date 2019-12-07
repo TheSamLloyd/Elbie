@@ -97,8 +97,11 @@ const rpg = {
       db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}, function (err, campaign) {
         if (err) return console.log(err)
         console.log(campaign)
-        console.log(campaign.id)
-        campaign.populate('system', cb(campaign))
+        campaign.populate('system').exec(function (err, campaign) {
+          if (err) return console.log(err)
+          cb(campaign)
+        }
+        )
       })
     } catch (exception) {
       console.log('No campaign could be retrieved')
