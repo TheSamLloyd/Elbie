@@ -94,14 +94,10 @@ const rpg = {
   },
   getCampaign (Command, cb) {
     try {
-      db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}, function (err, campaign) {
+      db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}).populate('system').exec(function (err, campaign) {
         if (err) return console.log(err)
         console.log(campaign)
-        campaign.populate('system').exec(function (err, campaign) {
-          if (err) return console.log(err)
-          cb(campaign)
-        }
-        )
+        cb(campaign)
       })
     } catch (exception) {
       console.log('No campaign could be retrieved')
@@ -123,7 +119,7 @@ const rpg = {
       if (!user) return cb(null)
       rpg.getCampaign(Command, function (campaign) {
         db.CharacterObject.findOne({ $and: [{ user: user.id }, { campaign: campaign.id }] }).populate('user').exec(function (err, char) {
-          if (err) console.error(err)
+          if (err) console.log(err)
           cb(char)
         })
       })
