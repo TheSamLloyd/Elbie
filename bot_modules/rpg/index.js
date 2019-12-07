@@ -94,12 +94,8 @@ const rpg = {
   },
   getCampaign (Command, cb) {
     try {
-      db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
+      db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}, function (err, campaign) {
         if (err) return console.log(err)
-        if (campaign.allServer === true && Command.channel.id !== Command.server.id) {
-          Command.channel.id = Command.server.id
-          rpg.getCampaign(Command, cb)
-        }
         console.log(campaign)
         console.log(campaign.id)
         cb(campaign)
