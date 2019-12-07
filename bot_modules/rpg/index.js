@@ -17,7 +17,7 @@ const rpg = {
         if (campaign != null) {
           defroll = campaign.system.defRoll
         }
-        Command.argument = (defroll || '2d6') + '+' + (mod || 0)
+        Command.argument = defroll + '+' + (mod || 0)
         rpg.rollFormat(Command)
       })
     } catch (err) {
@@ -98,7 +98,7 @@ const rpg = {
         if (err) return console.log(err)
         console.log(campaign)
         console.log(campaign.id)
-        cb(campaign)
+        campaign.populate('system', cb(campaign))
       })
     } catch (exception) {
       console.log('No campaign could be retrieved')
