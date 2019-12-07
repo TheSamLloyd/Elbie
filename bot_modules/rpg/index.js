@@ -167,12 +167,12 @@ const rpg = {
         var embed = new Discord.RichEmbed()
           .setColor('GREEN')
           .setAuthor(char.name + ' (' + char.user.name + ')')
-          .addField('Class:', common.caps(char.class || 'None'), true)
-          .addField('Race:', common.caps(char.race || 'None'), true)
+          .addField('Class:', common.caps(char.attributes.class || 'None'), true)
+          .addField('Race:', common.caps(char.attributes.race || 'None'), true)
           .addField('Level:', char.level, true)
           .addField('XP:', char.exp + '/' + (char.level + 6), true)
           .addField('HP:', char.HP + '/' + char.maxHP, true)
-          .addField('Alignment:', (char.alignment || 'None'), false)
+          .addField('Alignment:', (char.attributes.alignment || 'None'), false)
         Character.getStats(Command, (stats) => {
           stats.forEach(stat => {
             embed.addField(stat + ':', stats[stat], true)
