@@ -1,5 +1,6 @@
 // dependencies
 const common = require('../common.js').common
+const rpg = require('./index.js')
 const gameList = {
   'Dungeon World': require('./systems/dungeon-world.js'),
   'Masks': require('./systems/masks.js'),
@@ -20,8 +21,7 @@ mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command, cb) {
-    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
-      if (err) return console.error(err)
+    rpg.getCampaign(Command, campaign => {
       db.CharacterObject.findOne({ $and: [{ campaign: campaign.id }, { user: Command.auth.id }] }, function (err, char) {
         if (err) return console.error(err)
         db.UserObject.populate(char, { path: 'user' }, function (err, char) {
@@ -38,13 +38,9 @@ var Character = {
     })
   },
   getSystem: function (Command, cb) {
-    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
-      if (err) console.error(err)
-      db.SystemObject.populate(campaign, { path: 'system' }, function (err, campaign) {
-        if (err) console.error(err)
-        console.log(campaign)
-        cb(campaign.system.name)
-      })
+    rpg.getCampaign(Command, campaign => {
+      console.log(campaign)
+      cb(campaign.system.name)
     })
   },
   save: function (char, cb) {
