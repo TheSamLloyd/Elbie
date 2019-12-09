@@ -1,6 +1,6 @@
 // dependencies
 const common = require('../common.js').common
-const rpg = require('./index.js')
+const rpg = require('./index.js').rpg
 const gameList = {
   'Dungeon World': require('./systems/dungeon-world.js'),
   'Masks': require('./systems/masks.js'),
