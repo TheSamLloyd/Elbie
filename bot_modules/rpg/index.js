@@ -141,8 +141,7 @@ const rpg = {
   // terminal
   listChar (Command) {
     console.log('Listing...')
-    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
-      if (err) console.error(err)
+    rpg.getCampaign(Command, campaign => {
       db.CharacterObject.find({ campaign: campaign.id }, function (err, characters) {
         if (err) console.error(err)
         db.UserObject.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
@@ -179,7 +178,7 @@ const rpg = {
           })
         })
         embed.addField('Description:', (char.desc || 'None'), false)
-          .setFooter('| Elbeanor', '../../fortuna.png')
+          .setFooter('Elbeanor')
         if (char.aviURL) {
           embed.setImage(char.aviURL)
         }
