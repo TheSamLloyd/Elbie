@@ -1,6 +1,6 @@
 {
   "name": "elbie",
-  "version": "3.7.3",
+  "version": "3.8.0",
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "engines": {
