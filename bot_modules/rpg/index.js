@@ -179,7 +179,7 @@ const rpg = {
           })
         })
         embed.addField('Description:', (char.desc || 'None'), false)
-          .setFooter('| Elbeanor', 'https://instagram.fbed1-2.fna.fbcdn.net/t51.2885-15/e35/1168522_964193110314463_239442678_n.jpg')
+          .setFooter('| Elbeanor', '../../fortuna.png')
         if (char.aviURL) {
           embed.setImage(char.aviURL)
         }

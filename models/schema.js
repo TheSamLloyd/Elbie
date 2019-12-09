@@ -74,6 +74,9 @@ var CharacterSchema = new Schema({
   stats: {
     type: Schema.Types.Mixed
   },
+  skills: {
+    type: Schema.Types.Mixed
+  },
   attributes: {
     type: Schema.Types.Mixed
   },
