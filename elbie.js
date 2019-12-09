@@ -15,7 +15,6 @@ modules.forEach(module => {
   console.log('Loaded commands for module ' + module['name'])
   console.log('>' + module['desc'])
 })
-console.log(commandList)
 
 // helper functions
 function isCommand (message) {

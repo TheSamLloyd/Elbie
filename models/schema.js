@@ -44,7 +44,12 @@ var CampaignSchema = new Schema({
   },
   theme: String,
   active: { type: Boolean, default: true },
-  system: { type: Schema.Types.ObjectId, required: true, ref: 'System' }
+  system: { type: Schema.Types.ObjectId, required: true, ref: 'System' },
+  serverWide: {
+    type: Boolean,
+    required: false,
+    default: false
+  }
 })
 
 var CharacterSchema = new Schema({
@@ -67,6 +72,9 @@ var CharacterSchema = new Schema({
     ref: 'Campaign'
   },
   stats: {
+    type: Schema.Types.Mixed
+  },
+  skills: {
     type: Schema.Types.Mixed
   },
   attributes: {

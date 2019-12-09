@@ -4,6 +4,7 @@ const Discord = require('discord.js')
 const cInfo = require('./character.js')
 const Character = cInfo.Character
 const db = cInfo.db
+const gameList = cInfo.gameList
 
 // module information
 const name = 'rpg'
@@ -14,8 +15,10 @@ const rpg = {
     var defroll = '2d6'
     try {
       rpg.getCampaign(Command, campaign => {
-        var defroll = campaign.system.defRoll
-        Command.argument = (defroll || '2d6') + '+' + (mod || 0)
+        if (campaign != null) {
+          defroll = gameList[campaign.system.name].defRoll
+        }
+        Command.argument = defroll + '+' + (mod || 0)
         rpg.rollFormat(Command)
       })
     } catch (err) {
@@ -91,12 +94,16 @@ const rpg = {
     Command.channel.send(text.trim())
   },
   getCampaign (Command, cb) {
-    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
-      if (err) return console.error(err)
-      console.log(campaign)
-      console.log(campaign.id)
-      cb(campaign)
-    })
+    try {
+      db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}).populate('system').exec(function (err, campaign) {
+        if (err) return console.log(err)
+        console.log(campaign)
+        cb(campaign)
+      })
+    } catch (exception) {
+      console.log('No campaign could be retrieved')
+      cb(null)
+    }
   },
   isDM (Command) {
     var dm = rpg.getCampaign(Command).dm
@@ -113,7 +120,7 @@ const rpg = {
       if (!user) return cb(null)
       rpg.getCampaign(Command, function (campaign) {
         db.CharacterObject.findOne({ $and: [{ user: user.id }, { campaign: campaign.id }] }).populate('user').exec(function (err, char) {
-          if (err) console.error(err)
+          if (err) console.log(err)
           cb(char)
         })
       })
@@ -134,8 +141,7 @@ const rpg = {
   // terminal
   listChar (Command) {
     console.log('Listing...')
-    db.CampaignObject.findOne({ channel: Command.channel.id }, function (err, campaign) {
-      if (err) console.error(err)
+    rpg.getCampaign(Command, campaign => {
       db.CharacterObject.find({ campaign: campaign.id }, function (err, characters) {
         if (err) console.error(err)
         db.UserObject.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
@@ -160,19 +166,19 @@ const rpg = {
         var embed = new Discord.RichEmbed()
           .setColor('GREEN')
           .setAuthor(char.name + ' (' + char.user.name + ')')
-          .addField('Class:', common.caps(char.class || 'None'), true)
-          .addField('Race:', common.caps(char.race || 'None'), true)
+          .addField('Class:', common.caps(char.attributes.class || 'None'), true)
+          .addField('Race:', common.caps(char.attributes.race || 'None'), true)
           .addField('Level:', char.level, true)
           .addField('XP:', char.exp + '/' + (char.level + 6), true)
           .addField('HP:', char.HP + '/' + char.maxHP, true)
-          .addField('Alignment:', (char.alignment || 'None'), false)
+          .addField('Alignment:', (char.attributes.alignment || 'None'), false)
         Character.getStats(Command, (stats) => {
           stats.forEach(stat => {
             embed.addField(stat + ':', stats[stat], true)
           })
         })
         embed.addField('Description:', (char.desc || 'None'), false)
-          .setFooter('| Elbeanor', 'https://instagram.fbed1-2.fna.fbcdn.net/t51.2885-15/e35/1168522_964193110314463_239442678_n.jpg')
+          .setFooter('Elbeanor')
         if (char.aviURL) {
           embed.setImage(char.aviURL)
         }
@@ -274,7 +280,7 @@ const commands = {
   adv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
   dadv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
   disadv: { function: rpg.advantage, desc: 'Alias of +dadv.' },
-  b: {function: rpg.bladesRoll, desc: 'Rolls a Blades in the Dark roll.'}
+  b: { function: rpg.bladesRoll, desc: 'Rolls a Blades in the Dark roll.' }
 }
 // object to turn game strings into game objects
 module.exports = { rpg, commands, name, desc }
