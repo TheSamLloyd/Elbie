@@ -4,6 +4,7 @@ const Discord = require('discord.js')
 const cInfo = require('./character.js')
 const Character = cInfo.Character
 const db = cInfo.db
+const gameList = cInfo.gameList
 
 // module information
 const name = 'rpg'
@@ -15,7 +16,7 @@ const rpg = {
     try {
       rpg.getCampaign(Command, campaign => {
         if (campaign != null) {
-          defroll = campaign.system.defRoll
+          defroll = gameList[campaign.system.name].defRoll
         }
         Command.argument = defroll + '+' + (mod || 0)
         rpg.rollFormat(Command)
