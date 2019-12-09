@@ -11,6 +11,10 @@ const audio = require('../audio') || false
 const DB_URI = process.env.MONGODB_URI
 const mongoose = require('mongoose')
 const db = require('../../models/schema.js')
+mongoose.set('useNewUrlParser', true)
+mongoose.set('useCreateIndex', true)
+mongoose.set('useUnifiedTopology', true)
+
 mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
   () => {
     console.log('DB connection ready')
@@ -21,13 +25,11 @@ mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command, cb) {
-    rpg.getCampaign(Command, campaign => {
-      db.CharacterObject.findOne({ $and: [{ campaign: campaign.id }, { user: Command.auth.id }] }, function (err, char) {
+    db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}).exec(function (err, campaign) {
+      if (err) console.log(err)
+      db.CharacterObject.findOne({ $and: [{ campaign: campaign.id }, { user: Command.auth.id }] }).populate('user').exec(function (err, char) {
         if (err) return console.error(err)
-        db.UserObject.populate(char, { path: 'user' }, function (err, char) {
-          if (err) return console.error(err)
-          cb(char)
-        })
+        cb(char)
       })
     })
   },
