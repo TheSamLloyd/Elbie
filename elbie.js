@@ -30,12 +30,24 @@ client.login(token)
 // readying
 client.on('ready', function () {
   let version = selfPackage.version
+  let locale = null
+  switch (env) {
+    case 'production':
+      locale = `${version}`
+      break
+    case 'development':
+      locale = `DEV -- ${version}`
+      break
+    case 'development/local':
+      locale = `CANARY`
+      break
+  }
   console.log(version)
   client.user.setPresence({
     'status': 'online',
     'afk': false,
     'game': {
-      name: env === 'production' ? `${version}` : `DEV -- ${version}`,
+      name: locale,
       type: 'PLAYING'
     }
   }).catch(err => {

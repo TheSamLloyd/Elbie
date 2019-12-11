@@ -30,7 +30,9 @@ var CampaignSchema = new Schema({
   },
   channel: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.serverWide
+    },
     index: true
   },
   server: {
@@ -71,17 +73,28 @@ var CharacterSchema = new Schema({
     required: true,
     ref: 'Campaign'
   },
-  stats: {
-    type: Schema.Types.Mixed
-  },
-  skills: {
-    type: Schema.Types.Mixed
-  },
   attributes: {
-    type: Schema.Types.Mixed
+    type: Map,
+    of: String
+  },
+  scores: {
+    stats: {
+      type: Map,
+      of: Number
+    },
+    skills: {
+      type: Map,
+      of: Number
+    },
+    other: Schema.Types.Mixed
   },
   inventory: [],
-  maxHP: Number,
+  maxHP: {
+    type: Number,
+    required: function () {
+      return (this.HP >= 0)
+    }
+  },
   HP: Number,
   level: Number,
   exp: {
@@ -101,10 +114,12 @@ var SystemSchema = new Schema({
   name: {
     type: String,
     required: true
+  },
+  defRoll: {
+    type: String,
+    enum: ['1d20', '2d6'],
+    required: false
   }
-})
-SystemSchema.virtual('path').get(function () {
-  return `../bot_modules/rpg/${this.name.replace(/\W+/g, '-').toLowerCase()}.js`
 })
 
 var UserObject = mongoose.model('User', UserSchema)

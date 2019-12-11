@@ -173,7 +173,7 @@ const rpg = {
           .addField('HP:', char.HP + '/' + char.maxHP, true)
           .addField('Alignment:', (char.attributes.alignment || 'None'), false)
         Character.getStats(Command, (stats) => {
-          stats.forEach(stat => {
+          Array(stats.keys()).forEach(stat => {
             embed.addField(stat + ':', stats[stat], true)
           })
         })
