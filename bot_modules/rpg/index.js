@@ -149,7 +149,7 @@ const rpg = {
           characters = characters.map((char) => ({ name: char.name, user: char.user.name }))
           var out = ''
           characters.forEach((char) => {
-            out += `- ${char.name} (${char.user})\n`
+            out += `• ${char.name} (${char.user})\n`
           })
           console.log(out)
           Command.channel.send(out.trim())
