@@ -149,7 +149,7 @@ const rpg = {
           characters = characters.map((char) => ({ name: char.name, user: char.user.name }))
           var out = ''
           characters.forEach((char) => {
-            out += `- ${char.name} (${char.user})\n`
+            out += `• ${char.name} (${char.user})\n`
           })
           console.log(out)
           Command.channel.send(out.trim())
@@ -173,7 +173,7 @@ const rpg = {
           .addField('HP:', char.HP + '/' + char.maxHP, true)
           .addField('Alignment:', (char.attributes.alignment || 'None'), false)
         Character.getStats(Command, (stats) => {
-          stats.forEach(stat => {
+          Array(stats.keys()).forEach(stat => {
             embed.addField(stat + ':', stats[stat], true)
           })
         })

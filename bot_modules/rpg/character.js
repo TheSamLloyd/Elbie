@@ -35,7 +35,7 @@ var Character = {
   },
   getStats: function (Command, cb) {
     Character.getChar(Command, function (char) {
-      var stats = Object.keys(char.stats)
+      var stats = Array(Object.keys(char.scores.stats))
       cb(stats)
     })
   },
@@ -90,11 +90,11 @@ var Character = {
   statRoll: function (Command, cb) {
     Character.getChar(Command, function (char) {
       Character.getSystem(Command, function (sys) {
-        var system = gameList[sys]
+        var system = sys.defRoll || gameList[sys]
         var stat = system.statAlias[Command.args[0]]
         var mod
         try {
-          mod = system.mod(char.stats[stat])
+          mod = system.mod(char.scores.stats[stat])
         } catch (err) {
           Command.channel.send(`Ran into an error fetching stats... ${err.name}`)
           console.log(err)
