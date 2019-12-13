@@ -1,13 +1,6 @@
-var mongoose = require('mongoose')
+const User = require('./userSchema.js')
+const Campaign = require('./userSchema.js')
+const Character = require('./userSchema.js')
+const System = require('./userSchema.js')
 
-const UserSchema = require('./userSchema.js')
-const CampaignSchema = require('./userSchema.js')
-const CharacterSchema = require('./userSchema.js')
-const SystemSchema = require('./userSchema.js')
-
-var UserObject = mongoose.model('User', UserSchema)
-var CampaignObject = mongoose.model('Campaign', CampaignSchema)
-var CharacterObject = mongoose.model('Character', CharacterSchema)
-var SystemObject = mongoose.model('System', SystemSchema)
-
-module.exports = { UserObject, CampaignObject, CharacterObject, SystemObject }
+module.exports = { User, Campaign, Character, System }

@@ -25,17 +25,13 @@ mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command, cb) {
-    db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}).exec(function (err, campaign) {
-      if (err) console.log(err)
-      db.CharacterObject.findOne({ $and: [{ campaign: campaign.id }, { user: Command.auth.id }] }).populate('user').exec(function (err, char) {
-        if (err) return console.error(err)
-        cb(char)
-      })
-    })
+    var activeCampaign = db.Campaign.findOne.byCommand(Command)
+    var activeCharacter = db.Character.findOne.byCampaignAndUserId(activeCampaign.id, Command.auth.id)
+    cb(activeCharacter)
   },
   getStats: function (Command, cb) {
     Character.getChar(Command, function (char) {
-      var stats = Array(Object.keys(char.scores.stats))
+      var stats = Array(Object.keys(char.stats))
       cb(stats)
     })
   },

@@ -39,4 +39,6 @@ CampaignSchema.query.byCommand = function (Command) {
   return this.where({$or: [{channel: Command.channel}, {server: Command.server, serverWide: true}]})
 }
 
-module.exports = CampaignSchema
+var CampaignObject = mongoose.model('Campaign', CampaignSchema)
+
+module.exports = {CampaignSchema, CampaignObject}

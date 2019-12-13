@@ -38,7 +38,7 @@ client.on('ready', function () {
     case 'development':
       locale = `DEV -- ${version}`
       break
-    case 'development/local':
+    case 'canary':
       locale = `CANARY`
       break
   }
