@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+var $Schema = mongoose.Schema
 
-var UserSchema = new Schema({
+var Schema = new $Schema({
   name: {
     type: String,
     required: true
@@ -11,13 +11,13 @@ var UserSchema = new Schema({
     required: true
   },
   characters: {
-    type: [Schema.Types.ObjectId],
+    type: [$Schema.Types.ObjectId],
     ref: 'Character'
   },
   dm: {
-    type: [Schema.Types.ObjectId],
+    type: [$Schema.Types.ObjectId],
     ref: 'Campaign'
   }
 })
-
-module.exports = UserSchema
+var Object = mongoose.model('User', Schema)
+module.exports = {Schema, Object}

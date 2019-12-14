@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+var $Schema = mongoose.Schema
 
-var CampaignSchema = new Schema({
+var Schema = new $Schema({
   name: {
     type: String,
     required: true
@@ -27,7 +27,7 @@ var CampaignSchema = new Schema({
   },
   theme: String,
   active: { type: Boolean, default: true },
-  system: { type: Schema.Types.ObjectId, required: true, ref: 'System' },
+  system: { type: $Schema.Types.ObjectId, required: true, ref: 'System' },
   serverWide: {
     type: Boolean,
     required: false,
@@ -35,10 +35,10 @@ var CampaignSchema = new Schema({
   }
 })
 
-CampaignSchema.query.byCommand = function (Command) {
-  return this.where({$or: [{channel: Command.channel}, {server: Command.server, serverWide: true}]})
+Schema.query.byCommand = function (Command) {
+  return this.where({$or: [{channel: Command.channel.id}, {server: Command.server.id, serverWide: true}]})
 }
 
-var CampaignObject = mongoose.model('Campaign', CampaignSchema)
+var Object = mongoose.model('Campaign', Schema)
 
-module.exports = {CampaignSchema, CampaignObject}
+module.exports = {Schema, Object}

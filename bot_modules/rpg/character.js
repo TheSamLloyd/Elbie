@@ -25,8 +25,8 @@ mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
 // Character object designed to encapsulate Character functions
 var Character = {
   getChar: function (Command, cb) {
-    var activeCampaign = db.Campaign.findOne.byCommand(Command)
-    var activeCharacter = db.Character.findOne.byCampaignAndUserId(activeCampaign.id, Command.auth.id)
+    var activeCampaign = db.Campaign.Object.findOne().byCommand(Command)
+    var activeCharacter = db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id)
     cb(activeCharacter)
   },
   getStats: function (Command, cb) {
@@ -122,8 +122,6 @@ var Character = {
     if (audio) {
       Character.getChar(Command, function (char) {
         Command.argument = `https://www.youtube.com/watch?v=${char.get('theme')}`
-        console.log(char)
-        console.log(Object.keys(char))
         console.log(char.get('theme'))
         console.log(Command.argument)
         audio.audio.play(Command)

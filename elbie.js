@@ -104,6 +104,7 @@ client.on('message', function (message) {
     }
     // commands
     if (Command.command === '?' || Object.keys(commandList).includes(Command.command)) {
+      console.log(Command)
       handler(Command)
     } else {
       Command.channel.send('I couldn\'t understand that command.')

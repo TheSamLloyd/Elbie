@@ -95,12 +95,16 @@ const rpg = {
   },
   getCampaign (Command, cb) {
     try {
-      db.CampaignObject.findOne({$or: [{ channel: Command.channel.id }, {server: Command.server.id, serverWide: true}]}).populate('system').exec(function (err, campaign) {
-        if (err) return console.log(err)
+      db.Campaign.Object.findOne().byCommand(Command).exec(function (err, campaign) {
         console.log(campaign)
-        cb(campaign)
+        if (err) return console.log(err)
+        campaign.populate('system', (err, res) => {
+          if (err) return console.log(err)
+          cb(res)
+        })
       })
     } catch (exception) {
+      console.log(exception)
       console.log('No campaign could be retrieved')
       cb(null)
     }
@@ -114,22 +118,20 @@ const rpg = {
     return (element.name === arg || (element.playerName === arg || element.nickname === arg))
   },
   getCharByPlayer (Command, cb) {
-    var query = Command.argument !== '' ? { name: common.caps(Command.argument) } : { _id: Command.auth.id }
-    db.UserObject.findOne(query, function (err, user) {
+    var query = Command.argument !== '' ? { name: common.caps(Command.argument) } : { id: Command.auth.id }
+    db.User.Object.findOne(query, function (err, user) {
       if (err) console.error(err)
       if (!user) return cb(null)
-      rpg.getCampaign(Command, function (campaign) {
-        db.CharacterObject.findOne({ $and: [{ user: user.id }, { campaign: campaign.id }] }).populate('user').exec(function (err, char) {
-          if (err) console.log(err)
-          cb(char)
-        })
+      console.log(user)
+      Character.getChar(Command).populate('user').exec(function (err, char) {
+        if (err) console.log(err)
+        cb(char)
       })
     })
   },
   getCharByName (Command, cb) {
     rpg.getCampaign(Command, campaign => {
-      db.CharacterObject
-        .findOne({ $and: [{ campaign: campaign.id }, { $or: [{ name: common.caps(Command.argument) }, { nickname: common.caps(Command.argument) }] }] })
+      db.Character.Object.findOne().byCampaignAndName(campaign.id, common.caps(Command.argument))
         .populate('user')
         .exec(function (err, char) {
           if (err) console.error(err)
@@ -142,9 +144,9 @@ const rpg = {
   listChar (Command) {
     console.log('Listing...')
     rpg.getCampaign(Command, campaign => {
-      db.CharacterObject.find({ campaign: campaign.id }, function (err, characters) {
+      db.Character.Object.find({ campaign: campaign.id }, function (err, characters) {
         if (err) console.error(err)
-        db.UserObject.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
+        db.User.Object.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
           if (err) console.error(err)
           characters = characters.map((char) => ({ name: char.name, user: char.user.name }))
           var out = ''

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+var $Schema = mongoose.Schema
 
-var CharacterSchema = new Schema({
+var Schema = new $Schema({
   name: {
     type: String,
     required: true
@@ -16,7 +16,7 @@ var CharacterSchema = new Schema({
     index: true
   },
   campaign: {
-    type: Schema.Types.ObjectId,
+    type: $Schema.Types.ObjectId,
     required: true,
     ref: 'Campaign'
   },
@@ -31,7 +31,7 @@ var CharacterSchema = new Schema({
     }
   },
   attributes: {
-    type: Schema.Types.Mixed
+    type: $Schema.Types.Mixed
   },
   inventory: [],
   HP: {
@@ -39,7 +39,7 @@ var CharacterSchema = new Schema({
     current: {
       type: Number,
       min: [0, 'HP cannot be less than 0'],
-      max: [this.HP.maxHP, 'HP cannot be greater than maximum.']
+      max: [999, 'HP cannot be greater than maximum.']
     },
     maxHP: {
       type: Number,
@@ -61,14 +61,22 @@ var CharacterSchema = new Schema({
   }
 })
 
-CharacterSchema.query.byCampaign = function (campaignID) {
+Schema.query.byCampaign = function (campaignID) {
   return this.where({ campaign: campaignID })
 }
-CharacterSchema.query.byCampaignAndUserId = function (campaignID, userID) {
+Schema.query.byCampaignAndUserId = function (campaignID, userID) {
   return this.where({ campaign: campaignID, user: userID })
 }
+Schema.query.byName = function (name) {
+  return this.where({$or: [{ name: name }, {nickname: name}]})
+}
+Schema.query.byCampaignAndName = function (campaignID, name) {
+  return this.where({campaign: campaignID, $or: [{ name: name }, {nickname: name}]})
+}
 
-CharacterSchema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
-CharacterSchema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
+Schema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
+Schema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
 
-module.exports = CharacterSchema
+var Object = mongoose.model('Character', Schema)
+
+module.exports = {Schema, Object}
