@@ -73,6 +73,9 @@ Schema.query.byName = function (name) {
 Schema.query.byCampaignAndName = function (campaignID, name) {
   return this.where({campaign: campaignID, $or: [{ name: name }, {nickname: name}]})
 }
+Schema.query.byAllNames = function (name) {
+  return this.populate('user').where({$or: [{name: name}, {nickname: name}, {'user.name': name}]})
+}
 
 Schema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
 Schema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })

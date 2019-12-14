@@ -1,6 +1,5 @@
 // dependencies
 const common = require('../common.js').common
-const rpg = require('./index.js').rpg
 const gameList = {
   'Dungeon World': require('./systems/dungeon-world.js'),
   'Masks': require('./systems/masks.js'),
@@ -24,10 +23,30 @@ mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
 
 // Character object designed to encapsulate Character functions
 var Character = {
+  getActiveCampaign: function (Command, cb) {
+    db.Campaign.Object.findOne().byCommand(Command).exec(function (err, campaign) {
+      if (err) console.log(err)
+      console.log(campaign)
+      console.log('Active campaign found!')
+      cb(campaign)
+    })
+  },
   getChar: function (Command, cb) {
-    var activeCampaign = db.Campaign.Object.findOne().byCommand(Command)
-    var activeCharacter = db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id)
-    cb(activeCharacter)
+    Character.getActiveCampaign(Command, function (activeCampaign) {
+      db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id).exec(function (err, activeCharacter) {
+        if (err) console.log(err)
+        cb(activeCharacter)
+      })
+    })
+  },
+  getCharByAnyName: function (Command, cb) {
+    Character.getActiveCampaign(Command, function (activeCampaign) {
+      db.Character.Object.find().byAllNames(Command.argument).where({ campaign: activeCampaign.id }).exec(function (err, characterArray) {
+        if (err) console.log(err)
+        console.log(characterArray)
+        cb(characterArray)
+      })
+    })
   },
   getStats: function (Command, cb) {
     Character.getChar(Command, function (char) {
@@ -36,9 +55,10 @@ var Character = {
     })
   },
   getSystem: function (Command, cb) {
-    rpg.getCampaign(Command, campaign => {
-      console.log(campaign)
-      cb(campaign.system.name)
+    var activeCampaign = db.Campaign.Object.findOne().byCommand(Command)
+    activeCampaign.populate('system', function (err, campaign) {
+      if (err) return console.log(err)
+      cb(campaign.system)
     })
   },
   save: function (char, cb) {
@@ -86,7 +106,7 @@ var Character = {
   statRoll: function (Command, cb) {
     Character.getChar(Command, function (char) {
       Character.getSystem(Command, function (sys) {
-        var system = sys.defRoll || gameList[sys]
+        var system = gameList[sys.name]
         var stat = system.statAlias[Command.args[0]]
         var mod
         try {

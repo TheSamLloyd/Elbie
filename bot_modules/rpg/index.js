@@ -119,6 +119,7 @@ const rpg = {
   },
   getCharByPlayer (Command, cb) {
     var query = Command.argument !== '' ? { name: common.caps(Command.argument) } : { id: Command.auth.id }
+    console.log(query)
     db.User.Object.findOne(query, function (err, user) {
       if (err) console.error(err)
       if (!user) return cb(null)
@@ -161,35 +162,38 @@ const rpg = {
   },
   // terminal
   who (Command) {
-    rpg.getCharByPlayer(Command, function (char) {
-      rpg.getCharByName(Command, function (char2) {
-        char = char || (char2 || null)
-        if (!char) return null
-        var embed = new Discord.RichEmbed()
-          .setColor('GREEN')
-          .setAuthor(char.name + ' (' + char.user.name + ')')
-          .addField('Class:', common.caps(char.attributes.class || 'None'), true)
-          .addField('Race:', common.caps(char.attributes.race || 'None'), true)
-          .addField('Level:', char.level, true)
-          .addField('XP:', char.exp + '/' + (char.level + 6), true)
-          .addField('HP:', char.HP + '/' + char.maxHP, true)
-          .addField('Alignment:', (char.attributes.alignment || 'None'), false)
-        Character.getStats(Command, (stats) => {
-          Array(stats.keys()).forEach(stat => {
-            embed.addField(stat + ':', stats[stat], true)
-          })
+    if (Command.argument === '') {
+      var getter
+      getter = Character.getChar
+    } else {
+      getter = Character.getCharByAnyName
+    }
+    getter(Command, char => {
+      char.populate()
+      var embed = new Discord.RichEmbed()
+        .setColor('GREEN')
+        .setAuthor(char.name + ' (' + char.user.name + ')')
+        .addField('Class:', common.caps(char.attributes.class || 'None'), true)
+        .addField('Race:', common.caps(char.attributes.race || 'None'), true)
+        .addField('Level:', char.level, true)
+        .addField('XP:', char.exp + '/' + (char.level + 6), true)
+        .addField('HP:', char.HP + '/' + char.maxHP, true)
+        .addField('Alignment:', (char.attributes.alignment || 'None'), false)
+      Character.getStats(Command, (stats) => {
+        Array(stats.keys()).forEach(stat => {
+          embed.addField(stat + ':', stats[stat], true)
         })
-        embed.addField('Description:', (char.desc || 'None'), false)
-          .setFooter('Elbeanor')
-        if (char.aviURL) {
-          embed.setImage(char.aviURL)
-        }
-        try {
-          Command.channel.send(embed)
-        } catch (err) {
-          Command.channel.send('Could not send rich embed -- may not have permission in this channel or server.')
-        }
       })
+      embed.addField('Description:', (char.desc || 'None'), false)
+        .setFooter('Elbeanor')
+      if (char.aviURL) {
+        embed.setImage(char.aviURL)
+      }
+      try {
+        Command.channel.send(embed)
+      } catch (err) {
+        Command.channel.send('Could not send rich embed -- may not have permission in this channel or server.')
+      }
     })
   },
   cast (Command) {
