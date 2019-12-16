@@ -39,7 +39,7 @@ var Schema = new $Schema({
     current: {
       type: Number,
       min: [0, 'HP cannot be less than 0'],
-      max: [999, 'HP cannot be greater than maximum.']
+      max: [function () { return this.maxHP }, 'HP cannot be greater than maximum.']
     },
     maxHP: {
       type: Number,

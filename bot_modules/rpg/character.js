@@ -33,7 +33,7 @@ var Character = {
   },
   getChar: function (Command, cb) {
     Character.getActiveCampaign(Command, function (activeCampaign) {
-      db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id).exec(function (err, activeCharacter) {
+      db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id).populate('user').exec(function (err, activeCharacter) {
         if (err) console.log(err)
         cb(activeCharacter)
       })
@@ -41,10 +41,13 @@ var Character = {
   },
   getCharByAnyName: function (Command, cb) {
     Character.getActiveCampaign(Command, function (activeCampaign) {
-      db.Character.Object.find().byAllNames(Command.argument).where({ campaign: activeCampaign.id }).exec(function (err, characterArray) {
+      db.Character.Object.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {
         if (err) console.log(err)
         console.log(characterArray)
-        cb(characterArray)
+        characterArray = characterArray.filter(function (value) {
+          return value.user.name === Command.argument || value.name === Command.argument || value.nickname === Command.argument
+        })
+        cb(characterArray[0])
       })
     })
   },
@@ -55,10 +58,11 @@ var Character = {
     })
   },
   getSystem: function (Command, cb) {
-    var activeCampaign = db.Campaign.Object.findOne().byCommand(Command)
-    activeCampaign.populate('system', function (err, campaign) {
-      if (err) return console.log(err)
-      cb(campaign.system)
+    Character.getActiveCampaign(Command, function (activeCampaign) {
+      db.System.Object.findById(activeCampaign.system, function (err, system) {
+        if (err) return console.log(err)
+        cb(system)
+      })
     })
   },
   save: function (char, cb) {
