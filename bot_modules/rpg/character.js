@@ -27,7 +27,6 @@ var Character = {
     db.Campaign.Object.findOne().byCommand(Command).exec(function (err, campaign) {
       if (err) console.log(err)
       console.log(campaign)
-      console.log('Active campaign found!')
       cb(campaign)
     })
   },
@@ -53,8 +52,7 @@ var Character = {
   },
   getStats: function (Command, cb) {
     Character.getChar(Command, function (char) {
-      var stats = Array(Object.keys(char.stats))
-      cb(stats)
+      cb(char.stats)
     })
   },
   getSystem: function (Command, cb) {
@@ -111,16 +109,16 @@ var Character = {
     Character.getChar(Command, function (char) {
       Character.getSystem(Command, function (sys) {
         var system = gameList[sys.name]
-        var stat = system.statAlias[Command.args[0]]
+        var stat = system.statAlias[Command.args[0]] || Command.args[0]
         var mod
         try {
-          mod = system.mod(char.scores.stats[stat])
+          mod = system.mod(char.stats.get(stat))
         } catch (err) {
           Command.channel.send(`Ran into an error fetching stats... ${err.name}`)
-          console.log(err)
           mod = 0
         }
         var roll = `${system.defRoll}+${mod}`
+        if (char.stats.get(stat) === undefined) { Command.channel.send(`Couldn't fetch that stat, doing a blank roll instead...`) }
         Command.argument = roll
         cb(Command)
       })
