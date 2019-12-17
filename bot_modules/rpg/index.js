@@ -13,19 +13,13 @@ const rpg = {
   defRoll (Command) {
     var mod = parseInt(Command.argument)
     var defroll = '2d6'
-    try {
-      rpg.getCampaign(Command, campaign => {
-        if (campaign != null) {
-          defroll = gameList[campaign.system.name].defRoll
-        }
-        Command.argument = defroll + '+' + (mod || 0)
-        rpg.rollFormat(Command)
-      })
-    } catch (err) {
-      console.log(err)
-      Command.argument = defroll + '+'(mod || 0)
+    rpg.getSystem(Command, campaign => {
+      if (campaign != null) {
+        defroll = gameList[campaign.system.name].defRoll
+      }
+      Command.argument = `${defroll}+${(mod || 0)}`
       rpg.rollFormat(Command)
-    }
+    })
     return common.randInt(1, 6) + common.randInt(1, 6) + (mod || 0)
   },
   roll (Command) {
@@ -110,12 +104,10 @@ const rpg = {
     }
   },
   isDM (Command) {
-    var dm = rpg.getCampaign(Command).dm
-    return (Command.auth.id === dm)
-  },
-  idTest (element, arg) {
-    arg = common.caps(arg)
-    return (element.name === arg || (element.playerName === arg || element.nickname === arg))
+    Character.getActiveCampaign(Command, function (err, campaign) {
+      if (err) console.log(err)
+      return (campaign.dm === Command.auth.id)
+    })
   },
   getCharByPlayer (Command, cb) {
     var query = Command.argument !== '' ? { name: common.caps(Command.argument) } : { id: Command.auth.id }
@@ -169,27 +161,31 @@ const rpg = {
       getter = Character.getCharByAnyName
     }
     getter(Command, char => {
-      var embed = new Discord.RichEmbed()
-        .setColor('GREEN')
-        .setAuthor(char.name + ' (' + char.user.name + ')')
-        .addField('Class:', common.caps(char.attributes.class || 'None'), true)
-        .addField('Race:', common.caps(char.attributes.race || 'None'), true)
-        .addField('Level:', char.level, true)
-        .addField('XP:', char.exp + '/' + (char.level + 6), true)
-        .addField('HP:', char.HP.current + '/' + char.HP.maxHP, true)
-        .addField('Alignment:', (char.attributes.alignment || 'None'), false)
-      for (var [key, value] of char.stats) {
-        embed.addField(key + ':', value, true)
-      }
-      embed.addField('Description:', (char.desc || 'None'), false)
-        .setFooter('Elbeanor')
-      if (char.aviURL) {
-        embed.setImage(char.aviURL)
-      }
-      try {
-        Command.channel.send(embed)
-      } catch (err) {
-        Command.channel.send('Could not send rich embed -- may not have permission in this channel or server.')
+      if (char) {
+        var embed = new Discord.RichEmbed()
+          .setColor('GREEN')
+          .setAuthor(char.name + ' (' + char.user.name + ')')
+          .addField('Class:', common.caps(char.attributes.class || 'None'), true)
+          .addField('Race:', common.caps(char.attributes.race || 'None'), true)
+          .addField('Level:', char.level, true)
+          .addField('XP:', char.exp + '/' + (char.level + 6), true)
+          .addField('HP:', char.HP.current + '/' + char.HP.maxHP, true)
+          .addField('Alignment:', (char.attributes.alignment || 'None'), false)
+        for (var [key, value] of char.stats) {
+          embed.addField(key + ':', value, true)
+        }
+        embed.addField('Description:', (char.desc || 'None'), false)
+          .setFooter('Elbeanor')
+        if (char.aviURL) {
+          embed.setImage(char.aviURL)
+        }
+        try {
+          Command.channel.send(embed)
+        } catch (err) {
+          Command.channel.send('Could not send rich embed -- may not have permission in this channel or server.')
+        }
+      } else {
+        Command.channel.send(`Couldn't find a character in the active campaign scope with name, nickname, or user's name "${Command.argument}".`)
       }
     })
   },

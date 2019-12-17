@@ -14,7 +14,7 @@ mongoose.set('useNewUrlParser', true)
 mongoose.set('useCreateIndex', true)
 mongoose.set('useUnifiedTopology', true)
 
-mongoose.connect(DB_URI, { useNewUrlParser: true }).then(
+mongoose.connect(DB_URI).then(
   () => {
     console.log('DB connection ready')
   },
@@ -46,13 +46,12 @@ var Character = {
         characterArray = characterArray.filter(function (value) {
           return value.user.name === Command.argument || value.name === Command.argument || value.nickname === Command.argument
         })
-        cb(characterArray[0])
+        if (characterArray === []) {
+          return Command.channel.send('Could not find character with that name, nickname, player, or id.')
+        } else {
+          cb(characterArray[0])
+        }
       })
-    })
-  },
-  getStats: function (Command, cb) {
-    Character.getChar(Command, function (char) {
-      cb(char.stats)
     })
   },
   getSystem: function (Command, cb) {
@@ -84,7 +83,6 @@ var Character = {
       var attr = Command.args[0]
       var value = Command.args[1]
       char[attr] += common.typed(value)
-      console.log(attr)
       if (attr === 'HP') {
         console.log('checking HP')
         char[attr] = Math.min(char.maxHP, Math.max(0, char.HP))
@@ -109,7 +107,7 @@ var Character = {
     Character.getChar(Command, function (char) {
       Character.getSystem(Command, function (sys) {
         var system = gameList[sys.name]
-        var stat = system.statAlias[Command.args[0]] || Command.args[0]
+        var stat = system.statAlias[Command.args[0]] || common.caps(Command.args[0])
         var mod
         try {
           mod = system.mod(char.stats.get(stat))
