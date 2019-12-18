@@ -192,7 +192,7 @@ const rpg = {
   cast (Command) {
     var castlist = {
       mark: ['exp', common.orDef(Command.args[0], 1), true],
-      hp: ['HP', common.orDef(Command.args[0], 0), true]
+      hp: ['HP.current', common.orDef(Command.args[0], 0), true]
     }
     Command.args = castlist[Command.command]
     if (Command.args[2]) {

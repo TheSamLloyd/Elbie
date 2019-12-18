@@ -4,7 +4,7 @@
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "engines": {
-    "node": "10.16.0"
+    "node": "13.4.0"
   },
   "dependencies": {
     "axios": "^0.18.1",

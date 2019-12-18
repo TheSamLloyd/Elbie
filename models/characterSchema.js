@@ -37,9 +37,7 @@ var Schema = new $Schema({
   HP: {
     required: false,
     current: {
-      type: Number,
-      min: [0, 'HP cannot be less than 0'],
-      max: [function () { return this.maxHP }, 'HP cannot be greater than maximum.']
+      type: Number
     },
     maxHP: {
       type: Number,
@@ -68,18 +66,24 @@ Schema.query.byCampaignAndUserId = function (campaignID, userID) {
   return this.where({ campaign: campaignID, user: userID })
 }
 Schema.query.byName = function (name) {
-  return this.where({$or: [{ name: name }, {nickname: name}]})
+  return this.where({ $or: [{ name: name }, { nickname: name }] })
 }
 Schema.query.byCampaignAndName = function (campaignID, name) {
-  return this.where({campaign: campaignID, $or: [{ name: name }, {nickname: name}]})
+  return this.where({ campaign: campaignID, $or: [{ name: name }, { nickname: name }] })
 }
 Schema.query.byAllNames = function (name) {
-  return this.populate('user').where({$or: [{name: name}, {nickname: name}, {'user.name': name}]})
+  return this.populate('user').where({ $or: [{ name: name }, { nickname: name }, { 'user.name': name }] })
 }
 
+Schema.pre('validate', function (next) {
+  if (this.HP.current > this.HP.maxHP) {
+    this.invalidate('HP.current', 'HP must be less than or equal to max HP.', this.HP.current)
+  }
+  next()
+})
 Schema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
 Schema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
 
 var Object = mongoose.model('Character', Schema)
 
-module.exports = {Schema, Object}
+module.exports = { Schema, Object }

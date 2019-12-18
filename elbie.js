@@ -29,8 +29,8 @@ function clean (str) {
 client.login(token)
 // readying
 client.on('ready', function () {
-  let version = selfPackage.version
-  let locale = null
+  var version = selfPackage.version
+  var locale = null
   switch (env) {
     case 'production':
       locale = `${version}`

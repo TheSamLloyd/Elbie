@@ -72,35 +72,29 @@ var Character = {
     Character.getChar(Command, (char) => {
       var attr = Command.args[0]
       var value = Command.args.slice(1).join(' ')
-      char[attr] = common.typed(value)
-      Character.save(char, (newChar) => {
-        cb(newChar[attr])
-      })
+      cb(char[attr].set(attr, value))
     })
   },
   modifyAttr: function (Command, cb) {
     Character.getChar(Command, (char) => {
       var attr = Command.args[0]
       var value = Command.args[1]
-      char[attr] += common.typed(value)
-      if (attr === 'HP') {
+      var current = char.get(attr)
+      char.set(attr, current + common.typed(value))
+      if (attr === 'HP.current') {
         console.log('checking HP')
-        char[attr] = Math.min(char.maxHP, Math.max(0, char.HP))
+        char.set(attr, Math.min(char.HP.maxHP, Math.max(0, char.HP.current)))
       }
-      Character.save(char, (newChar) => {
-        cb(newChar[attr])
+      char.save(function (err, val) {
+        if (err) console.log(err)
+        cb(val.get(attr))
       })
     })
   },
   getAttr: function (Command, cb) {
     Character.getChar(Command, (char) => {
       var attr = Command.args[0]
-      try {
-        if (!char[attr] & char[attr] !== 0) { console.log(char[attr]); cb(char[attr]) } else Command.channel.send(`Could not fetch attribute ${attr} -- query returned undefined.`)
-      } catch (err) {
-        console.error(err)
-        Command.channel.send('Could not fetch attribute ' + attr)
-      }
+      cb(char.get(attr))
     })
   },
   statRoll: function (Command, cb) {
@@ -109,13 +103,14 @@ var Character = {
         var system = gameList[sys.name]
         var stat = system.statAlias[Command.args[0]] || common.caps(Command.args[0])
         var mod
+        var postfix = Command.args.slice(1)
         try {
           mod = system.mod(char.stats.get(stat))
         } catch (err) {
           Command.channel.send(`Ran into an error fetching stats... ${err.name}`)
           mod = 0
         }
-        var roll = `${system.defRoll}+${mod}`
+        var roll = `${system.defRoll}+${mod}+${postfix}`
         if (char.stats.get(stat) === undefined) { Command.channel.send(`Couldn't fetch that stat, doing a blank roll instead...`) }
         Command.argument = roll
         cb(Command)

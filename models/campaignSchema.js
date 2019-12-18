@@ -11,9 +11,7 @@ var Schema = new $Schema({
   },
   channel: {
     type: String,
-    required: function () {
-      return !this.serverWide
-    },
+    required: false,
     index: true
   },
   server: {
@@ -30,7 +28,7 @@ var Schema = new $Schema({
   system: { type: $Schema.Types.ObjectId, required: true, ref: 'System' },
   serverWide: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false
   }
 })
