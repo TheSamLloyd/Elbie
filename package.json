@@ -1,37 +1,33 @@
 {
   "name": "elbie",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "elbie.js",
   "engines": {
     "node": "^13.5.0"
   },
   "dependencies": {
-    "axios": "^0.18.1",
     "bufferutil": "^4.0.1",
-    "discord.js": "^11.4.2",
+    "discord.js": "^11.5.0",
     "dotenv": "^5.0.1",
     "ejs": "^2.6.1",
     "erlpack": "discordapp/erlpack",
-    "eslint": "^4.19.1",
-    "express": "^4.16.3",
     "ffmpeg-binaries": "^3.2.2",
     "fluent-ffmpeg": "^2.1.2",
-    "fs": "0.0.1-security",
     "libsodium-wrappers": "^0.7.3",
     "mongoose": "^5.7.5",
     "node-fetch": "^2.1.2",
     "node-opus": "^0.3.0",
-    "release": "^6.0.1",
-    "save": "^2.3.2",
     "ytdl-core": "^0.20.4"
   },
   "devDependencies": {
+    "eslint": "^6.7.2",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.1.0"
+    "eslint-plugin-standard": "^3.1.0",
+    "release": "^6.1.0"
   },
   "scripts": {
     "start": "node elbie.js",

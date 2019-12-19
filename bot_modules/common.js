@@ -27,6 +27,9 @@ const common = {
   },
   caps (string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
+  },
+  notNull (array) {
+    return array.filter(val => (val === 0 || val))
   }
 }
 const commands = {}

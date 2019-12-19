@@ -118,7 +118,7 @@ const rpg = {
       console.log(user)
       Character.getChar(Command).populate('user').exec(function (err, char) {
         if (err) console.log(err)
-        cb(char)
+        cb(err, char)
       })
     })
   },

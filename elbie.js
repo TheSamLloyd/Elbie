@@ -92,7 +92,7 @@ function handler (Command) {
 // command execution
 client.on('message', function (message) {
   if (isCommand(message)) {
-    var content = message.content.slice(1).split(' ').filter(element => (element || element === 0))
+    var content = message.content.slice(1).split(' ').filter(element => (element || element === '0'))
     var Command = {
       channel: clean(message.channel),
       auth: clean(message.author),

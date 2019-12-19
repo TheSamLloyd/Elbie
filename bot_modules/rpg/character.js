@@ -25,31 +25,40 @@ mongoose.connect(DB_URI).then(
 var Character = {
   getActiveCampaign: function (Command, cb) {
     db.Campaign.Object.findOne().byCommand(Command).exec(function (err, campaign) {
-      if (err) console.log(err)
-      console.log(campaign)
-      cb(campaign)
+      if (err) {
+        console.error(err)
+        Command.channel.send('Ran into an error in the getActiveCampaign function.')
+      } else {
+        console.log(campaign)
+        cb(campaign)
+      }
     })
   },
   getChar: function (Command, cb) {
     Character.getActiveCampaign(Command, function (activeCampaign) {
       db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id).populate('user').exec(function (err, activeCharacter) {
-        if (err) console.log(err)
-        cb(activeCharacter)
+        if (err) {
+          console.error(err)
+          Command.channel.send('Ran into a problem in the getChar function.')
+        } else { cb(activeCharacter) }
       })
     })
   },
   getCharByAnyName: function (Command, cb) {
     Character.getActiveCampaign(Command, function (activeCampaign) {
       db.Character.Object.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {
-        if (err) console.log(err)
-        console.log(characterArray)
-        characterArray = characterArray.filter(function (value) {
-          return value.user.name === Command.argument || value.name === Command.argument || value.nickname === Command.argument
-        })
-        if (characterArray === []) {
-          return Command.channel.send('Could not find character with that name, nickname, player, or id.')
+        if (err) {
+          console.error(err)
+          Command.channel.send('Ran into a problem in the getChar function.')
         } else {
-          cb(characterArray[0])
+          characterArray = characterArray.filter(function (value) {
+            return value.user.name === Command.argument || value.name === Command.argument || value.nickname === Command.argument
+          })
+          if (characterArray === []) {
+            return Command.channel.send('Could not find character with that name, nickname, player, or id.')
+          } else {
+            cb(characterArray[0])
+          }
         }
       })
     })
@@ -57,15 +66,22 @@ var Character = {
   getSystem: function (Command, cb) {
     Character.getActiveCampaign(Command, function (activeCampaign) {
       db.System.Object.findById(activeCampaign.system, function (err, system) {
-        if (err) return console.log(err)
-        cb(system)
+        if (err) {
+          console.error(err)
+          Command.channel.send('Ran into a problem in the getSystem function.')
+        } else {
+          cb(system)
+        }
       })
     })
   },
   save: function (char, cb) {
     char.save(function (err, newChar) {
-      if (err) console.error(err)
-      cb(newChar)
+      if (err) {
+        console.error(err)
+      } else {
+        cb(newChar)
+      }
     })
   },
   setAttr: function (Command, cb) {
@@ -86,7 +102,10 @@ var Character = {
         char.set(attr, Math.min(char.HP.maxHP, Math.max(0, char.HP.current)))
       }
       char.save(function (err, val) {
-        if (err) console.log(err)
+        if (err) {
+          console.error(err)
+          Command.channel.send('Encountered an error while saving character to the DB.')
+        }
         cb(val.get(attr))
       })
     })
@@ -100,6 +119,10 @@ var Character = {
   statRoll: function (Command, cb) {
     Character.getChar(Command, function (char) {
       Character.getSystem(Command, function (sys) {
+        if (!(char && sys)) {
+          console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
+          Command.channel.send('Had trouble retrieving character or system.')
+        }
         var system = gameList[sys.name]
         var stat = system.statAlias[Command.args[0]] || common.caps(Command.args[0])
         var mod
@@ -111,7 +134,6 @@ var Character = {
           mod = 0
         }
         var roll = `${system.defRoll}+${mod}+${postfix}`
-        if (char.stats.get(stat) === undefined) { Command.channel.send(`Couldn't fetch that stat, doing a blank roll instead...`) }
         Command.argument = roll
         cb(Command)
       })
@@ -121,7 +143,7 @@ var Character = {
   levelup: function (Command) {
     Character.getChar(Command, function (char) {
       Character.getSystem(Command, function (sys) {
-        var system = gameList[sys]
+        var system = gameList[sys.name]
         var canLevel = system.levelup(char)
         if (canLevel) {
           Command.args[0] = 'level'
