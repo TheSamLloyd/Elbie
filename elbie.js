@@ -97,7 +97,7 @@ client.on('message', function (message) {
       channel: clean(message.channel),
       auth: clean(message.author),
       member: message.member,
-      command: content[0],
+      command: (content[0]).toLowerCase(),
       argument: content.slice(1).join(' '),
       args: content.slice(1),
       server: message.guild

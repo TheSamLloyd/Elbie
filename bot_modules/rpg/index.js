@@ -269,7 +269,7 @@ const commands = {
   r: { function: rpg.defRoll, desc: 'Rolls the default roll for the system defined in the channel, or if no system is defined, rolls 2d6. Add an integer argument to modify the roll.' },
   bind: { function: rpg.bind, desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
   who: { function: rpg.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
-  listChar: { function: rpg.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
+  list: { function: rpg.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
   roll: { function: rpg.rollFormat, desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
   hp: { function: rpg.cast, desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
   mark: { function: rpg.cast, desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
