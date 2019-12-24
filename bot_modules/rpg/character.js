@@ -123,17 +123,27 @@ var Character = {
           console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
           Command.channel.send('Had trouble retrieving character or system.')
         }
+        var target = Command.args[0].toLowerCase()
         var system = gameList[sys.name]
-        var stat = system.statAlias[Command.args[0]] || common.caps(Command.args[0])
+        var stat
         var mod
-        var postfix = Command.args.slice(1)
-        try {
-          mod = system.mod(char.stats.get(stat))
-        } catch (err) {
-          Command.channel.send(`Ran into an error fetching stats... ${err.name}`)
+        if (system.skills && char['scores']['skills']) {
+          if (system.skills[target]) {
+            stat = system.statAlias[system.skills[target]]
+            mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
+          } else if (system.statAlias[target]) {
+            stat = system.statAlias[target]
+            mod = system.mod(char.stats.get(stat))
+          }
+        } else {
+          Command.channel.send(`Ran into an error fetching stats...`)
           mod = 0
         }
-        var roll = `${system.defRoll}+${mod}+${postfix}`
+        var postfix = Command.args.slice(1)
+        var oper = ''
+        if (postfix.join('+')) { oper = '+' }
+        console.log(stat, mod)
+        var roll = `${system.defRoll}+${mod}${oper}${postfix}`
         Command.argument = roll
         cb(Command)
       })
