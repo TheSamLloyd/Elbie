@@ -45,6 +45,7 @@ var Character = {
     })
   },
   getCharByAnyName: function (Command, cb) {
+    Command.argument = common.caps(Command.argument.toLowerCase())
     Character.getActiveCampaign(Command, function (activeCampaign) {
       db.Character.Object.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {
         if (err) {
@@ -56,6 +57,9 @@ var Character = {
           })
           if (characterArray === []) {
             return Command.channel.send('Could not find character with that name, nickname, player, or id.')
+          } else if (characterArray.length > 1) {
+            console.warn('More than 1 character found -- returning first.')
+            cb(characterArray[0])
           } else {
             cb(characterArray[0])
           }
@@ -123,29 +127,39 @@ var Character = {
           console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
           Command.channel.send('Had trouble retrieving character or system.')
         }
-        var target = Command.args[0].toLowerCase()
+        var target = Command.args[0] ? Command.args[0].toLowerCase() : ''
         var system = gameList[sys.name]
-        var stat
-        var mod
-        if (system.skills && char['scores']['skills']) {
-          if (system.skills[target]) {
-            stat = system.statAlias[system.skills[target]]
-            mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
-          } else if (system.statAlias[target]) {
-            stat = system.statAlias[target]
-            mod = system.mod(char.stats.get(stat))
-          }
-        } else {
-          Command.channel.send(`Ran into an error fetching stats...`)
-          mod = 0
-        }
+        var roll, mod, stat
         var postfix = Command.args.slice(1)
         var oper = ''
-        if (postfix.join('+')) { oper = '+' }
-        console.log(stat, mod)
-        var roll = `${system.defRoll}+${mod}${oper}${postfix}`
-        Command.argument = roll
-        cb(Command)
+        if (isNaN(parseInt(target))) {
+          if (system.skills && char['scores']['skills']) {
+            if (system.skills[target]) {
+              // if this is a skill roll
+              stat = system.statAlias[system.skills[target]]
+              mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
+            } else if (system.statAlias[target] || Object.values(system.statAlias).indexOf(common.caps(target)) !== -1) {
+              // if this is a stat roll
+              stat = system.statAlias[target] ? system.statAlias[target] : common.caps(target)
+              mod = system.mod(char.stats.get(stat))
+            }
+          } else {
+            Command.channel.send(`Ran into an error fetching stats...`)
+            mod = 0
+          }
+          if (postfix.join('+')) { oper = '+' }
+          console.log(stat, mod)
+          roll = `${system.defRoll}+${mod}${oper}${postfix}`
+          Command.argument = roll
+          cb(Command)
+        } else if (parseInt(target)) {
+          postfix = Command.args.slice(1)
+          oper = ''
+          if (postfix.join('+')) { oper = '+' }
+          roll = `${system.defRoll}+${target}${oper}${postfix}`
+          Command.argument = roll
+          cb(Command)
+        }
       })
     })
   },

@@ -4,24 +4,11 @@ const Discord = require('discord.js')
 const cInfo = require('./character.js')
 const Character = cInfo.Character
 const db = cInfo.db
-const gameList = cInfo.gameList
 
 // module information
 const name = 'rpg'
 const desc = 'functions to allow basic RPG commands'
 const rpg = {
-  defRoll (Command) {
-    var mod = parseInt(Command.argument)
-    var defroll = '2d6'
-    rpg.getSystem(Command, campaign => {
-      if (campaign != null) {
-        defroll = gameList[campaign.system.name].defRoll
-      }
-      Command.argument = `${defroll}+${(mod || 0)}`
-      rpg.rollFormat(Command)
-    })
-    return common.randInt(1, 6) + common.randInt(1, 6) + (mod || 0)
-  },
   roll (Command) {
     var rolls = Command.argument.split(',')
     var results = {}
@@ -266,14 +253,13 @@ const rpg = {
   }
 }
 const commands = {
-  r: { function: rpg.defRoll, desc: 'Rolls the default roll for the system defined in the channel, or if no system is defined, rolls 2d6. Add an integer argument to modify the roll.' },
+  r: { function: rpg.statRoll, desc: 'Rolls the default roll for the system defined in the channel, or if no system is defined, rolls 2d6. Add an integer argument to modify the roll.' },
   bind: { function: rpg.bind, desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
   who: { function: rpg.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
   list: { function: rpg.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
   roll: { function: rpg.rollFormat, desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
   hp: { function: rpg.cast, desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
   mark: { function: rpg.cast, desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
-  s: { function: rpg.statRoll, desc: 'Given a stat abbreviation ("str", "frk"), rolls the default roll for the system and adds your character\'s modifier to it.' },
   levelup: { function: Character.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
   theme: { function: Character.theme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
   adv: { function: rpg.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
