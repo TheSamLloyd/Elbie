@@ -132,7 +132,7 @@ var Character = {
         var roll, mod, stat
         var postfix = Command.args.slice(1)
         var oper = ''
-        if (isNaN(parseInt(target))) {
+        if (isNaN(parseInt(target)) && target !== '') {
           if (system.skills && char['scores']['skills']) {
             if (system.skills[target]) {
               // if this is a skill roll
@@ -152,11 +152,15 @@ var Character = {
           roll = `${system.defRoll}+${mod}${oper}${postfix}`
           Command.argument = roll
           cb(Command)
-        } else if (parseInt(target)) {
-          postfix = Command.args.slice(1)
-          oper = ''
-          if (postfix.join('+')) { oper = '+' }
-          roll = `${system.defRoll}+${target}${oper}${postfix}`
+        } else if (parseInt(target) || target === '') {
+          if (target === '') {
+            roll = `${system.defRoll}`
+          } else {
+            postfix = Command.args.slice(1)
+            oper = ''
+            if (postfix.join('+')) { oper = '+' }
+            roll = `${system.defRoll}+${target}${oper}${postfix}`
+          }
           Command.argument = roll
           cb(Command)
         }
