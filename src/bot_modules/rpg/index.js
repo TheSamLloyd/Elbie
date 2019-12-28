@@ -1,9 +1,9 @@
 // dependencies
-const common = require('../common.js').common
-const Discord = require('discord.js')
-const cInfo = require('./character.js')
-const Character = cInfo.Character
-const db = cInfo.db
+import { common } from '../common'
+import { RichEmbed } from 'discord.js'
+import { Character as _Character, db as _db } from './character'
+const Character = _Character
+const db = _db
 
 // module information
 const name = 'rpg'
@@ -149,7 +149,7 @@ const rpg = {
     }
     getter(Command, char => {
       if (char) {
-        var embed = new Discord.RichEmbed()
+        var embed = new RichEmbed()
           .setColor('GREEN')
           .setAuthor(char.name + ' (' + char.user.name + ')')
           .addField('Class:', common.caps(char.attributes.class || 'None'), true)
@@ -266,4 +266,4 @@ const commands = {
   b: { function: rpg.bladesRoll, desc: 'Rolls a Blades in the Dark roll.' }
 }
 // object to turn game strings into game objects
-module.exports = { rpg, commands, name, desc }
+export default { rpg, commands, name, desc }

@@ -1,11 +1,12 @@
 // dependencies
 require('dotenv').config()
-const Discord = require('discord.js')
+import Discord from 'discord.js'
+import { Command } from './objects/command'
 const client = new Discord.Client()
-const token = process.env.DISCORD_TOKEN
-const modules = require('./bot_modules')
-const prefix = '+'
-const env = process.env.BUILD
+const token:string = process.env.DISCORD_TOKEN
+import { modules } from './bot_modules'
+const prefix:string = '+'
+const env:string = process.env.BUILD
 const selfPackage = require('../package.json')
 
 // adding commands
@@ -20,11 +21,6 @@ modules.forEach(module => {
 function isCommand (message) {
   return (message.content[0] === prefix)
 }
-function clean (str) {
-  str.id = str.id.replace(/\W/g, '')
-  return str
-}
-
 // login
 client.login(token)
 // readying
@@ -92,22 +88,13 @@ function handler (Command) {
 // command execution
 client.on('message', function (message) {
   if (isCommand(message)) {
-    var content = message.content.slice(1).split(' ').filter(element => (element || element === '0'))
-    var Command = {
-      channel: clean(message.channel),
-      auth: clean(message.author),
-      member: message.member,
-      command: (content[0]).toLowerCase(),
-      argument: content.slice(1).join(' '),
-      args: content.slice(1),
-      server: message.guild
-    }
+    let command = new Command(message)
     // commands
-    if (Command.command === '?' || Object.keys(commandList).includes(Command.command)) {
-      console.log(`Command: ${Command.auth.username}: ${Command.command} => ${Command.argument} `)
-      handler(Command)
+    if (command.command === '?' || Object.keys(commandList).includes(command.command)) {
+      console.log(`Command: ${command.auth['username']}: ${command.command} => ${command.argument} `)
+      handler(command)
     } else {
-      Command.channel.send('I couldn\'t understand that command.')
+      command.reply('I couldn\'t understand that command.')
     }
   }
 })

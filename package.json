@@ -2,7 +2,7 @@
   "name": "elbie",
   "version": "3.9.2",
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
-  "main": "elbie.js",
+  "main": "lib/elbie.js",
   "engines": {
     "node": "^13.5.0"
   },
@@ -37,7 +37,7 @@
 
   },
   "scripts": {
-    "start": "node elbie.js",
+    "start": "node lib/elbie.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d lib"
   },

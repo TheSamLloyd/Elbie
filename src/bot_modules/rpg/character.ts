@@ -1,5 +1,6 @@
 // dependencies
-const common = require('../common.js').common
+import { Common } from '../common'
+const common = Common.functions
 const gameList = {
   'Dungeon World': require('./systems/dungeon-world.js'),
   'Masks': require('./systems/masks.js'),
@@ -8,7 +9,8 @@ const gameList = {
 const audio = require('../audio') || false
 
 const DB_URI = process.env.MONGODB_URI
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
+import { Command } from '../../objects/command'
 const db = require('../../models/schema.js')
 mongoose.set('useNewUrlParser', true)
 mongoose.set('useCreateIndex', true)
@@ -22,29 +24,29 @@ mongoose.connect(DB_URI).then(
 )
 
 // Character object designed to encapsulate Character functions
-var Character = {
-  getActiveCampaign: function (Command, cb) {
-    db.Campaign.Object.findOne().byCommand(Command).exec(function (err, campaign) {
+class Character {
+  static getActiveCampaign = function (command:Command, cb) {
+    db.Campaign.Object.findOne().byCommand(Command).exec(function (err:object, campaign) {
       if (err) {
         console.error(err)
-        Command.channel.send('Ran into an error in the getActiveCampaign function.')
+        command.reply('Ran into an error in the getActiveCampaign function.')
       } else {
         console.log(campaign)
         cb(campaign)
       }
     })
-  },
-  getChar: function (Command, cb) {
-    Character.getActiveCampaign(Command, function (activeCampaign) {
+  }
+  static getChar =  function(command:Command, cb) {
+    Character.getActiveCampaign(command, function (activeCampaign) {
       db.Character.Object.findOne().byCampaignAndUserId(activeCampaign.id, Command.auth.id).populate('user').exec(function (err, activeCharacter) {
         if (err) {
           console.error(err)
-          Command.channel.send('Ran into a problem in the getChar function.')
+          command.reply('Ran into a problem in the getChar function.')
         } else { cb(activeCharacter) }
       })
     })
-  },
-  getCharByAnyName: function (Command, cb) {
+  }
+  getCharByAnyName = function (Command, cb) {
     Command.argument = common.caps(Command.argument.toLowerCase())
     Character.getActiveCampaign(Command, function (activeCampaign) {
       db.Character.Object.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {

@@ -1,9 +1,10 @@
-const name = 'common'
-const desc = 'Common functions for use in other modules'
-// common commands for use in other elbie modules
-const common = {
-  randInt (a, b) {
-    var out
+import {Module} from './module'
+export const Common = new Module(
+  {name:'common',
+  desc:'Common functions for use in other modules',
+  functions:{
+  randInt (a:number, b:number):number {
+    var out:number
     if (b) {
       out = Math.floor(Math.random() * (b - a + 1)) + a
     } else {
@@ -11,26 +12,24 @@ const common = {
     }
     return out
   },
-  sum (Array) {
-    var total = Array.reduce(function (total, value) { return total + value })
-    return total
+  sum (Array:number[]):number {
+    return Array.reduce(function (total, value) { return total + value })
   },
-  typed (arg) {
+  typed (arg:any):any {
     if (isNaN(parseFloat(arg))) {
       return arg
     } else if (Math.floor(parseFloat(arg)) === parseFloat(arg)) {
       return parseInt(arg)
     } else return parseFloat(arg)
   },
-  orDef (val, def) {
+  orDef (val:any, def:any):any {
     return (val || def)
   },
-  caps (string) {
+  caps (string:string):string {
     return string.charAt(0).toUpperCase() + string.slice(1)
   },
-  notNull (array) {
+  notNull (array:any[]):any[] {
     return array.filter(val => (val === 0 || val))
-  }
-}
-const commands = {}
-module.exports = { name, desc, common, commands }
+  }},
+  commands:{},
+})
