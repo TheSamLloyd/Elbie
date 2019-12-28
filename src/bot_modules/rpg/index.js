@@ -233,9 +233,7 @@ const rpg = {
         dice.push(common.randInt(1, 6))
       }
       result = Math.max(...dice)
-      dice.forEach(die => {
-        if (die === 6) critical++
-      })
+      critical = dice.filter(die => die === 6).length
       out = `${n}d6: ${dice}: ${result}`
     }
     critical = (critical >= 2)
@@ -253,7 +251,7 @@ const rpg = {
   }
 }
 const commands = {
-  r: { function: rpg.statRoll, desc: 'Rolls the default roll for the system defined in the channel, or if no system is defined, rolls 2d6. Add an integer argument to modify the roll.' },
+  r: { function: rpg.statRoll, desc: 'Rolls the default roll for the system defined in the channel. Add a skill, stat, or number to automatically modify it.' },
   bind: { function: rpg.bind, desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
   who: { function: rpg.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
   list: { function: rpg.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },

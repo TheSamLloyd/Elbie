@@ -6,7 +6,7 @@ const token = process.env.DISCORD_TOKEN
 const modules = require('./bot_modules')
 const prefix = '+'
 const env = process.env.BUILD
-const selfPackage = require('./package.json')
+const selfPackage = require('../package.json')
 
 // adding commands
 var commandList = {}
