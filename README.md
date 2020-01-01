@@ -1,6 +1,6 @@
 # Elbie (Landon Bot)
 
-An extensible [Discord](https://discordapp.com/) bot designed to facilitate running rules-lite [TTRPG](https://en.wikipedia.org/wiki/Tabletop_role-playing_game) systems, including [Dungeon World](http://dungeon-world.com/), [Fiasco](http://bullypulpitgames.com/games/fiasco/), and others.
+An extensible [Discord](https://discordapp.com/) bot designed to facilitate running rules-lite [TTRPG](https://en.wikipedia.org/wiki/Tabletop_role-playing_game) systems, including [Dungeon World](http://dungeon-world.com/), [Fiasco](http://bullypulpitgames.com/games/fiasco/), and others, with rudimentary support for Dungeons & Dragons 3.5e.
 What makes Elbie distinct from many of the conventionally available Discord bots is her tight RPG integrations, capable of handling skills, inventory, dice rolls, and creating character summaries on the fly. She also has rudimentary (and in-progress) audio capabiities, with built-in support for character theme songs.
 
 Elbie's purpose is to provide a wide array of tools and accessories and then get out of the way, letting the players and DM be able to act freely without having to constantly be referring to a character sheet. This enables better role-playing and more mentally present players.
@@ -27,16 +27,15 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
   * `+flip (String? heads) (String? tails)`: Returns either "heads" or "tails", or if provided, returns one of the pair of options given.
   * `+choose (String options)`: Returns one of the (space-delimited) choices at random, e.g. `+choose a b c d e f horse` will return either "a", "b", "c", "d", "e", "f" or "horse". At least 2 choices must be provided.
 * rpg
-  * `+r (Integer? modifier)`: Makes a single default roll as defined by whatever TTRPG system the channel is currently bound to (2d6 for PBtA games, 1d20 for most D&D/Pathfinder games, etc.) If `modifier` is provided, it will be added as a modifier
-  * `+bind (String shortname) (String name)`: Binds the current channel to a new campaign under the name `name` (which may contain spaces) and with abbreviated name `shortname` (which must not contain spaces) and assigns the player who issued the command as DM. Setup will need to be finished on the web interface, which is not, at present, publically available. (If you want to use Elbie in a campaign of yours, send me a message and I will manually finish setup.)
+  * `+r (Integer? modifier | String? skill | String? stat) (extra dice as '+roll')`: Makes a single default roll as defined by whatever TTRPG system the channel is currently bound to (2d6 for PBtA games, 1d20 for most D&D/Pathfinder games, etc.) If `modifier` is provided, it will be added as a modifier
+  * `+bind (String shortname) (String name)`: (If you're interested in binding Elbie to a channel for a campaign, just email me and we can talk!)
   * `+who (String? name)`: Generates a character summary of either the current player if no name is provided, or if `name` is a player name (like "Sam"), a character name (like "Lurreka Al-Petarra"), or a nickname (like "Lurreka"), it will generate a summary of that character or the character assigned to that player. (For reference, if for some reason you have a player named "Sam" and a different player has a character named "Sam", `+who Sam` will refer to the player. If you are doing this, why?)
-  * `+listChar`: Lists all the characters in the current campaign with their player's name (e.g. "Amateotl Maikali, played by Sam")
+  * `+list`: Lists all the characters in the current campaign with their player's name (e.g. "Amateotl Maikali, played by Sam")
   * `+roll`: Accepts a comma-separated list of rolls and modifiers to perform in `xdy+z` format, e.g. `+roll 1d20+2d4+1d6+3,2d6-2`.
   * `+hp (Integer? amount)`: Adjusts the current character's HP by the given `amount`. Restricts to values between 0 and the character's maximum health. Not providing `amount` returns the character's current HP.
   * `+mark (Integer? amount)`: Increases the current character's XP by `amount` if provided. Defaults to 1.
-  * `+s (String skill) (Integer? modifier)`: Rolls a "skill roll" with the appropriate modifier depending on the character's skill in that attribute. If `modifier` is provided, it will modify the result. `skill` must be an abbreviated skill name ("str", "con", etc.)
-  * `+levelup`: Increases the character's level by 1, if the character has enough XP. If not, fails.
-  * `+theme`: Immediately plays the current character's theme.
+  * `+levelup`: Increases the character's level by 1, if the character has enough XP. If not, fails. (Implementation of this command successfully depends on the system.)
+  * `+theme`: Immediately plays the current character's theme (assuming audio module is installed and working.)
   * `+adv`: Accepts one dice string (`xdy+z`) and rolls it twice, returning both results and taking the higher one.
   * `+disadv`: Accepts one dice string (`xdy+z`) and rolls it twice, returning both results and taking the lower one. Aliased with `+dadv`.
 * audio
