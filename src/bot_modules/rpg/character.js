@@ -3,7 +3,8 @@ const common = require('../common.js').common
 const gameList = {
   'Dungeon World': require('./systems/dungeon-world.js'),
   'Masks': require('./systems/masks.js'),
-  'Dungeons and Dragons 3.5e': require('./systems/dungeons-and-dragons-3-5e.js')
+  'Dungeons and Dragons 3.5e': require('./systems/dungeons-and-dragons-3-5e.js'),
+  'Apocalypse World: Burned Over': require('./systems/apocalyse-world-burned-over')
 }
 const audio = require('../audio') || false
 
@@ -121,50 +122,58 @@ var Character = {
     })
   },
   statRoll: function (Command, cb) {
-    Character.getChar(Command, function (char) {
-      Character.getSystem(Command, function (sys) {
-        if (!(char && sys)) {
-          console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
-          Command.channel.send('Had trouble retrieving character or system.')
-        }
-        var target = Command.args[0] ? Command.args[0].toLowerCase() : ''
+    Character.getSystem(Command, function (sys) {
+      var defRoll
+      if (!sys) {
+        console.warn('Could not retrieve system, will roll 2d6.')
+        defRoll = '2d6'
+      } else {
         var system = gameList[sys.name]
-        var roll, mod, stat
-        var postfix = Command.args.slice(1)
-        var oper = ''
-        if (isNaN(parseInt(target)) && target !== '') {
-          if (system.skills && char['scores']['skills']) {
-            if (system.skills[target]) {
-              // if this is a skill roll
-              stat = system.statAlias[system.skills[target]]
-              mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
+        defRoll = system.defRoll
+      }
+      var target = Command.args[0] ? Command.args[0].toLowerCase() : ''
+      var roll, stat, mod
+      var postfix = Command.args.slice(1) || []
+      var oper = ''
+      if (parseInt(target) || target === '') {
+        // if this is a numeric roll
+        if (target === '') {
+          roll = `${defRoll}`
+        } else {
+          oper = ''
+          if (postfix.join('+')) { oper = '+' }
+          roll = `${defRoll}+${target}${oper}${postfix}`
+        }
+        Command.argument = roll
+        cb(Command)
+      } else {
+        Character.getChar(Command, function (char) {
+          if (!(char)) {
+            console.error(`Problem retrieving character.`)
+            Command.channel.send('Had trouble retrieving character.')
+          } else {
+            if (system.skills && char['scores']['skills']) {
+              if (system.skills[target]) {
+                // if this is a skill roll
+                stat = system.statAlias[system.skills[target]]
+                mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
+              }
             } else if (system.statAlias[target] || Object.values(system.statAlias).indexOf(common.caps(target)) !== -1) {
               // if this is a stat roll
               stat = system.statAlias[target] ? system.statAlias[target] : common.caps(target)
               mod = system.mod(char.stats.get(stat))
+            } else {
+              console.warn(`Couldn't find the skill or stat in question ${target}`)
+              Command.channel.send(`Couldn't find the stat or skill ${target}`)
+              cb = function () { return null }
             }
-          } else {
-            Command.channel.send(`Ran into an error fetching stats...`)
-            mod = 0
-          }
-          if (postfix.join('+')) { oper = '+' }
-          console.log(stat, mod)
-          roll = `${system.defRoll}+${mod}${oper}${postfix}`
-          Command.argument = roll
-          cb(Command)
-        } else if (parseInt(target) || target === '') {
-          if (target === '') {
-            roll = `${system.defRoll}`
-          } else {
-            postfix = Command.args.slice(1)
-            oper = ''
             if (postfix.join('+')) { oper = '+' }
-            roll = `${system.defRoll}+${target}${oper}${postfix}`
+            roll = `${system.defRoll}+${mod}${oper}${postfix}`
+            Command.argument = roll
+            cb(Command)
           }
-          Command.argument = roll
-          cb(Command)
-        }
-      })
+        })
+      }
     })
   },
   // terminal
