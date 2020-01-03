@@ -2,36 +2,37 @@
 import { Common } from '../common'
 const common = Common.commands
 import { Module } from '../module'
+import { Command  } from '../../objects/command'
 // basic bot commands
 export const bot = new Module({
   name: 'bot',
   desc: 'basic bot commands',
   functions: {
-    ping (Command) {
-      Command.channel.send('pong')
+    ping (command:Command):void {
+      command.reply('pong')
     },
-    echo (Command) {
-      Command.channel.send(Command.argument)
+    echo (command:Command):void {
+      command.reply(command.argument)
     },
-    flip (Command) {
+    flip (command:Command):void {
       var heads
       var tails
-      if (Command.args.length === 2) {
-        heads = Command.args[0]
-        tails = Command.args[1]
+      if (command.args.length === 2) {
+        heads = command.args[0]
+        tails = command.args[1]
       } else {
         heads = 'heads'
         tails = 'tails'
       }
       var flip = common['randInt'](0, 1) ? heads : tails
-      Command.channel.send(flip)
+      command.reply(flip)
     },
-    choose (Command) {
-      var n = Command.args.length
+    choose (command:Command):void {
+      var n = command.args.length
       if (n >= 2) {
-        Command.channel.send(Command.args[common['randInt'](0, n - 1)])
+        command.reply(command.args[common['randInt'](0, n - 1)])
       } else {
-        Command.channel.send('Please provide at least 2 options.')
+        command.reply('Please provide at least 2 options.')
       }
     }
   },

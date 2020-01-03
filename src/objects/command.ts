@@ -1,4 +1,4 @@
-import { Channel, User, Guild, Message } from "discord.js"
+import { Channel, User, Guild, Message, RichEmbed } from "discord.js"
 
 export class Command {
     constructor(message: Message){
@@ -24,8 +24,7 @@ export class Command {
         str['id'] = str['id'].replace(/\W/g, '')
         return str
       }
-    reply = (content:string):void => {
+    reply = (content:string|RichEmbed):void => {
         this.message.reply(content)
     }
-
 }

@@ -10,7 +10,9 @@ export class Module {
         commands: object}) { 
             this.name = obj.name
             this.desc = obj.desc
-            this.functions = obj.functions
+            Object.keys(obj.functions).forEach(func=>{
+                this[func]=func
+            })
             this.commands = obj.commands
         }
     }
