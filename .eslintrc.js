@@ -1,9 +1,12 @@
 module.exports = {
-    "extends": "standard",
-    "env": {
-    "node": true,
-    "es6": true
-  },
-  "parser": "babel-eslint",
-  "ignorePatterns": ["lib/"]
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: [
+    '@typescript-eslint',
+  ],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
 };

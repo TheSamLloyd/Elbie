@@ -1,7 +1,7 @@
-var mongoose = require('mongoose')
-var $Schema = mongoose.Schema
+import mongoose from 'mongoose'
+const $Schema = mongoose.Schema
 
-var Schema = new $Schema({
+const Schema = new $Schema({
   name: {
     type: String,
     required: true
@@ -33,10 +33,13 @@ var Schema = new $Schema({
   }
 })
 
-Schema.query.byCommand = function (Command) {
+Schema.query.byCommand = function (Command):mongoose.Document {
   return this.where({$or: [{channel: Command.channel.id}, {server: Command.server.id, serverWide: true}]})
 }
+Schema.query.allActive = function ():mongoose.Document[] {
+  return this.where({ active:true })
+}
 
-var Object = mongoose.model('Campaign', Schema)
+const Model = mongoose.model('Campaign', Schema)
 
-module.exports = {Schema, Object}
+export const Campaign = {Model, Schema}

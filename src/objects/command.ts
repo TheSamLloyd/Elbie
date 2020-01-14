@@ -1,4 +1,4 @@
-import { Channel, User, Guild, Message, RichEmbed } from "discord.js"
+import { Channel, User, GuildMember, Guild as Server, Message, RichEmbed, GuildMemberEditData } from "discord.js"
 
 export class Command {
     constructor(message: Message){
@@ -15,16 +15,16 @@ export class Command {
     public channel:Channel
     public auth:User
     public command:string
-    public argument:any
-    public server:Guild
+    public argument:string
+    public server:Server
     public args:string[]
-    public member:object
+    public member:GuildMember
     private message:Message
-    static clean = function(str:any):any {
+    static clean = function<T>(str:T):T {
         str['id'] = str['id'].replace(/\W/g, '')
         return str
       }
     reply = (content:string|RichEmbed):void => {
-        this.message.reply(content)
+        this.message.channel.send(content)
     }
 }

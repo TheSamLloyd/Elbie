@@ -1,7 +1,7 @@
-var mongoose = require('mongoose')
-var $Schema = mongoose.Schema
+import mongoose from 'mongoose'
+const $Schema = mongoose.Schema
 
-var Schema = new $Schema({
+const Schema = new $Schema({
   name: {
     type: String,
     required: true
@@ -11,6 +11,6 @@ Schema.virtual('path').get(function () {
   return `../bot_modules/rpg/${this.name.replace(/\W+/g, '-').toLowerCase()}.js`
 })
 
-var Object = mongoose.model('System', Schema)
+var Model = mongoose.model('System', Schema)
 
-module.exports = {Schema, Object}
+export const System = {Schema, Model}

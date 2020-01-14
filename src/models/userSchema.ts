@@ -1,4 +1,5 @@
-var mongoose = require('mongoose')
+import mongoose from 'mongoose'
+
 var $Schema = mongoose.Schema
 
 var Schema = new $Schema({
@@ -19,5 +20,5 @@ var Schema = new $Schema({
     ref: 'Campaign'
   }
 })
-var Object = mongoose.model('User', Schema)
-module.exports = {Schema, Object}
+const Model = mongoose.model('User', Schema)
+export const User = {Schema, Model}

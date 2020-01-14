@@ -1,7 +1,6 @@
-var mongoose = require('mongoose')
-var $Schema = mongoose.Schema
+import { Schema as $Schema, model } from 'mongoose'
 
-var Schema = new $Schema({
+const Schema:$Schema = new $Schema({
   name: {
     type: String,
     required: true
@@ -76,14 +75,13 @@ Schema.query.byAllNames = function (name) {
 }
 
 Schema.pre('validate', function (next) {
-  if (this.HP.current > this.HP.maxHP) {
-    this.invalidate('HP.current', 'HP must be less than or equal to max HP.', this.HP.current)
+  if (this['HP']['current'] > this['HP']['maxHP']) {
+    this.invalidate('HP.current', 'HP must be less than or equal to max HP.', this['HP']['current'])
   }
   next()
 })
 Schema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
 Schema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
 
-var Object = mongoose.model('Character', Schema)
-
-module.exports = { Schema, Object }
+const Model = model('Character', Schema)
+export const Character = {Model, Schema}

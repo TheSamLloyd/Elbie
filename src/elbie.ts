@@ -1,12 +1,13 @@
 // dependencies
-require('dotenv').config()
+import { config } from 'dotenv'
+config()
 import Discord from 'discord.js'
 import { Command } from './objects/command'
 const client = new Discord.Client()
-const token:string = process.env.DISCORD_TOKEN
+const token: string = process.env.DISCORD_TOKEN
 import { modules } from './bot_modules'
-const prefix:string = '+'
-const env:string = process.env.BUILD
+const prefix: string = '+'
+const env: string = process.env.BUILD
 const selfPackage = require('../package.json')
 
 // adding commands
@@ -18,7 +19,7 @@ modules.forEach(module => {
 })
 
 // helper functions
-function isCommand (message) {
+function isCommand(message) {
   return (message.content[0] === prefix)
 }
 // login
@@ -65,23 +66,23 @@ client.on('error', function (err) {
   client.login(token)
 })
 //  for JS errors:
-function errorHandler (err) {
+function errorHandler(err) {
   console.log(err)
   return `I ran into an error of type ${err.name}: check console for details.`
 }
 //  command handling
-function handler (Command) {
-  if (Command.command === '?') {
+function handler(cmd: Command) {
+  if (cmd.command === '?') {
     var output = []
     Object.keys(commandList).forEach(command => {
       output.push(commandList[command].desc ? `${command} : ${commandList[command].desc}` : `${command}`)
     })
-    Command.channel.send(output.join('\n'))
+    cmd.reply(output.join('\n'))
   } else {
     try {
-      commandList[Command.command]['function'] ? commandList[Command.command]['function'](Command) : commandList[Command.command](Command)
+      commandList[cmd.command]['function'] ? commandList[cmd.command]['function'](Command) : commandList[cmd.command](Command)
     } catch (err) {
-      Command.channel.send(errorHandler(err))
+      cmd.reply(errorHandler(err))
     }
   }
 }

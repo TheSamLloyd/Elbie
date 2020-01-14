@@ -1,5 +1,10 @@
-var DnD35 = {
-  defRoll: '1d20',
+import { GameSystem } from "../game"
+
+export class DnD35 extends GameSystem {
+  constructor(){
+    super()
+  }
+  defRoll: '1d20'
   statAlias: {
     'str': 'Strength',
     'con': 'Constitution',
@@ -7,7 +12,7 @@ var DnD35 = {
     'int': 'Intelligence',
     'wis': 'Wisdom',
     'cha': 'Charisma'
-  },
+  }
   skills: {
     'appraise': 'int',
     'balance': 'dex',
@@ -54,11 +59,10 @@ var DnD35 = {
     'tumble': 'dex',
     'use_magic_device': 'cha',
     'use_rope': 'dex'
-  },
-  levelup: (character) => false,
-  mod: function (score) {
+  }
+  levelup = (character):boolean => false
+  mod = function (score) {
     var val = Math.floor(score / 2) - 5
     return val
   }
 }
-module.exports = DnD35
