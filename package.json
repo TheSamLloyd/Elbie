@@ -7,10 +7,8 @@
     "node": "^13.5.0"
   },
   "dependencies": {
-    "@babel/preset-env": "^7.7.7",
     "bufferutil": "^4.0.1",
     "discord.js": "^11.5.0",
-    "dotenv": "^5.0.1",
     "ejs": "^2.6.1",
     "erlpack": "discordapp/erlpack",
     "ffmpeg-binaries": "^3.2.2",
@@ -24,7 +22,9 @@
   "devDependencies": {
     "@babel/cli": "^7.7.7",
     "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.8.3",
     "babel-eslint": "^10.0.3",
+    "dotenv": "^8.2.0",
     "eslint": "^6.7.2",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
