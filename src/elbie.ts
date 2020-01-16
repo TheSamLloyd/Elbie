@@ -23,7 +23,15 @@ function isCommand(message) {
   return (message.content[0] === prefix)
 }
 // login
-client.login(token)
+client.login(token).then(
+  () => {
+    console.log('Discord connection ready')
+  },
+  err => {
+    console.error(`Discord connection failed... \n${err}`)
+    process.exit(400)
+  }
+)
 // readying
 client.on('ready', function () {
   var version = selfPackage.version
