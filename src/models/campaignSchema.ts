@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { IModel } from './schema'
 const $Schema = mongoose.Schema
 
 const Schema = new $Schema({
@@ -40,6 +41,7 @@ Schema.query.allActive = function ():mongoose.Document[] {
   return this.where({ active:true })
 }
 
-const Model = mongoose.model('Campaign', Schema)
+let Model:IModel<mongoose.Document> 
+Model = mongoose.model('Campaign', Schema)
 
 export const Campaign = {Model, Schema}

@@ -1,4 +1,5 @@
-import { Schema as $Schema, model } from 'mongoose'
+import { Schema as $Schema, model, Document } from 'mongoose'
+import { IModel } from './schema'
 
 const Schema:$Schema = new $Schema({
   name: {
@@ -83,5 +84,5 @@ Schema.pre('validate', function (next) {
 Schema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
 Schema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
 
-const Model = model('Character', Schema)
+const Model:IModel<Document> = model('Character', Schema)
 export const Character = {Model, Schema}

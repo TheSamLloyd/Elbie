@@ -29,7 +29,7 @@ mongoose.connect(DB_URI).then(
 // Character object designed to encapsulate Character functions
 export class Character {
   static getActiveCampaign = function (command: Command, cb) {
-    db.Campaign.Schema.findOne().byCommand(command).exec(function (err: object, campaign) {
+    (db.Campaign.Model.findOne as any)().byCommand(command).exec(function (err: object, campaign) {
       if (err) {
         console.error(err)
         command.reply('Ran into an error in the getActiveCampaign function.')
@@ -118,14 +118,14 @@ export class Character {
         cb(val.get(attr))
       })
     })
-  },
-  getAttr: function (Command, cb) {
+  }
+  getAttr = function (Command, cb) {
   Character.getChar(Command, (char) => {
     var attr = Command.args[0]
     cb(char.get(attr))
   })
-},
-statRoll: function (Command, cb) {
+}
+statRoll = function (Command, cb) {
   Character.getChar(Command, function (char) {
     Character.getSystem(Command, function (sys) {
       if (!(char && sys)) {
@@ -171,9 +171,9 @@ statRoll: function (Command, cb) {
       }
     })
   })
-},
+}
 // terminal
-levelup: function (Command) {
+levelup = function (Command):boolean {
   Character.getChar(Command, function (char) {
     Character.getSystem(Command, function (sys) {
       var system = gameList[sys.name]
@@ -187,8 +187,8 @@ levelup: function (Command) {
       } else Command.channel.send('Could not level up. Check EXP.')
     })
   })
-},
-theme: function (Command) {
+}
+theme = function (Command) {
   if (audio) {
     Character.getChar(Command, function (char) {
       Command.argument = `https://www.youtube.com/watch?v=${char.get('theme')}`
