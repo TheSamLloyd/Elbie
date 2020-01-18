@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import mongoose, { Document, Schema, DocumentQuery} from 'mongoose'
 import { ISystem } from './systemSchema'
 import { IUser } from './UserSchema'
 import { Command } from '../objects/command'
@@ -13,6 +13,11 @@ export interface ICampaign extends Document {
   active: boolean
   system: ISystem['_id']
   serverWide: boolean
+  findOne: (...options:any)=>CampaignQuery
+  find: (...options:any)=>CampaignQuery
+  findById: (...options:any)=>CampaignQuery
+}
+interface CampaignQuery extends DocumentQuery<ICampaign, ICampaign, {}>{
   byCommand: (cmd: Command) => ICampaign
   allActive: () => ICampaign[]
 }
