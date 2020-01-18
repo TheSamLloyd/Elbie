@@ -1,7 +1,30 @@
-import { Schema as $Schema, model, Document } from 'mongoose'
-import { IModel } from './schema'
+import mongoose, { Schema, Document } from 'mongoose'
+import { ICampaign } from './campaignSchema'
+import { IUser } from './userSchema'
 
-const Schema:$Schema = new $Schema({
+export interface ICharacter extends Document {
+  name: string
+  nickname?: string
+  user?: IUser['_id']
+  campaign: ICampaign['_id']
+  scores: object
+  attributes: object
+  inventory: string[]
+  HP: { current: number, maxHP: number }
+  level: number
+  exp: number
+  alive: boolean
+  desc: string
+  theme?: string
+  stats: object
+  skills: any
+  byCampaign: (id: ICampaign['_id']) => ICharacter[]
+  byName: (name: string) => ICharacter[]
+  byCampaignAndName: (id: ICampaign['_id'], name: string) => ICharacter
+  byCampaignAndUserId: (campaignId: ICampaign['_id'], userId: IUser['_id']) => ICharacter
+}
+
+const CharacterSchema: Schema = new Schema({
   name: {
     type: String,
     required: true
@@ -16,7 +39,7 @@ const Schema:$Schema = new $Schema({
     index: true
   },
   campaign: {
-    type: $Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: 'Campaign'
   },
@@ -31,7 +54,7 @@ const Schema:$Schema = new $Schema({
     }
   },
   attributes: {
-    type: $Schema.Types.Mixed
+    type: Schema.Types.Mixed
   },
   inventory: [],
   HP: {
@@ -59,30 +82,26 @@ const Schema:$Schema = new $Schema({
   }
 })
 
-Schema.query.byCampaign = function (campaignID) {
+CharacterSchema.query.byCampaign = function (campaignID: string): ICharacter[] {
   return this.where({ campaign: campaignID })
 }
-Schema.query.byCampaignAndUserId = function (campaignID, userID) {
+CharacterSchema.query.byCampaignAndUserId = function (campaignID: string, userID: string): ICharacter {
   return this.where({ campaign: campaignID, user: userID })
 }
-Schema.query.byName = function (name) {
+CharacterSchema.query.byName = function (name: string): ICharacter[] {
   return this.where({ $or: [{ name: name }, { nickname: name }] })
 }
-Schema.query.byCampaignAndName = function (campaignID, name) {
+CharacterSchema.query.byCampaignAndName = function (campaignID, name): ICharacter {
   return this.where({ campaign: campaignID, $or: [{ name: name }, { nickname: name }] })
 }
-Schema.query.byAllNames = function (name) {
-  return this.populate('user').where({ $or: [{ name: name }, { nickname: name }, { 'user.name': name }] })
-}
 
-Schema.pre('validate', function (next) {
+CharacterSchema.pre('validate', function (next) {
   if (this['HP']['current'] > this['HP']['maxHP']) {
     this.invalidate('HP.current', 'HP must be less than or equal to max HP.', this['HP']['current'])
   }
   next()
 })
-Schema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
-Schema.virtual('skill').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
+CharacterSchema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
+CharacterSchema.virtual('skills').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
 
-const Model:IModel<Document> = model('Character', Schema)
-export const Character = {Model, Schema}
+export default mongoose.model<ICharacter>('Character', CharacterSchema)

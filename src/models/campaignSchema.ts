@@ -1,8 +1,23 @@
-import mongoose from 'mongoose'
-import { IModel } from './schema'
-const $Schema = mongoose.Schema
+import mongoose, { Document, Schema } from 'mongoose'
+import { ISystem } from './systemSchema'
+import { IUser } from './UserSchema'
+import { Command } from '../objects/command'
 
-const Schema = new $Schema({
+export interface ICampaign extends Document {
+  name: string
+  shortname?: string
+  channel?: string
+  server: string
+  dm: IUser['_id']
+  theme?: string
+  active: boolean
+  system: ISystem['_id']
+  serverWide: boolean
+  byCommand: (cmd: Command) => ICampaign
+  allActive: () => ICampaign[]
+}
+
+const CampaignSchema: Schema = new Schema({
   name: {
     type: String,
     required: true
@@ -26,7 +41,7 @@ const Schema = new $Schema({
   },
   theme: String,
   active: { type: Boolean, default: true },
-  system: { type: $Schema.Types.ObjectId, required: true, ref: 'System' },
+  system: { type: Schema.Types.ObjectId, required: true, ref: 'System' },
   serverWide: {
     type: Boolean,
     required: true,
@@ -34,14 +49,11 @@ const Schema = new $Schema({
   }
 })
 
-Schema.query.byCommand = function (Command):mongoose.Document {
-  return this.where({$or: [{channel: Command.channel.id}, {server: Command.server.id, serverWide: true}]})
+CampaignSchema.query.byCommand = function (cmd: Command): ICampaign {
+  return this.where({ $or: [{ channel: cmd.channel.id }, { server: cmd.server.id, serverWide: true }] })
 }
-Schema.query.allActive = function ():mongoose.Document[] {
-  return this.where({ active:true })
+CampaignSchema.query.allActive = function (): ICampaign[] {
+  return this.where({ active: true })
 }
 
-let Model:IModel<mongoose.Document> 
-Model = mongoose.model('Campaign', Schema)
-
-export const Campaign = {Model, Schema}
+export default mongoose.model<ICampaign>('Campaign', CampaignSchema)
