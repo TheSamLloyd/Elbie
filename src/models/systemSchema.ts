@@ -1,16 +1,19 @@
-import mongoose from 'mongoose'
-const $Schema = mongoose.Schema
+import mongoose, { Schema, Document } from 'mongoose'
 
-const Schema = new $Schema({
+export interface ISystem extends Document {
+  name:string
+  path:string
+}
+
+const SystemSchema = new Schema({
   name: {
     type: String,
     required: true
   }
 })
-Schema.virtual('path').get(function () {
+
+SystemSchema.virtual('path').get(function () {
   return `../bot_modules/rpg/${this.name.replace(/\W+/g, '-').toLowerCase()}.js`
 })
 
-var Model = mongoose.model('System', Schema)
-
-export const System = {Schema, Model}
+export default mongoose.model<ISystem>('System', SystemSchema)

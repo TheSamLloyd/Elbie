@@ -1,8 +1,14 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose'
+import { ICharacter } from './characterSchema'
+import { ICampaign } from './campaignSchema'
 
-var $Schema = mongoose.Schema
+export interface IUser extends Document {
+  name: string
+  characters: ICharacter[]
+  dm: ICampaign[]
+}
 
-var Schema = new $Schema({
+const UserSchema = new Schema({
   name: {
     type: String,
     required: true
@@ -12,13 +18,12 @@ var Schema = new $Schema({
     required: true
   },
   characters: {
-    type: [$Schema.Types.ObjectId],
+    type: [Schema.Types.ObjectId],
     ref: 'Character'
   },
   dm: {
-    type: [$Schema.Types.ObjectId],
+    type: [Schema.Types.ObjectId],
     ref: 'Campaign'
   }
 })
-const Model = mongoose.model('User', Schema)
-export const User = {Schema, Model}
+export default mongoose.model<IUser>('User', UserSchema)

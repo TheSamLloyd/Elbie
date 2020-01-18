@@ -29,7 +29,7 @@ mongoose.connect(DB_URI).then(
 // Character object designed to encapsulate Character functions
 export class Character {
   static getActiveCampaign = function (command: Command, cb) {
-    (db.Campaign.Model.findOne as any)().byCommand(command).exec(function (err: object, campaign) {
+    db.Campaign.findOne().byCommand(command).exec(function (err: object, campaign) {
       if (err) {
         console.error(err)
         command.reply('Ran into an error in the getActiveCampaign function.')
@@ -41,7 +41,7 @@ export class Character {
   }
   static getChar = function (command: Command, cb) {
     Character.getActiveCampaign(command, function (activeCampaign) {
-      db.Character.Model.findOne({$where:{campaign : activeCampaign.id, user: command.auth.id}}).populate('user').exec(function (err, activeCharacter) {
+      db.Character.findOne({$where:{campaign : activeCampaign.id, user: command.auth.id}}).populate('user').exec(function (err, activeCharacter) {
         if (err) {
           console.error(err)
           command.reply('Ran into a problem in the getChar function.')
@@ -52,7 +52,7 @@ export class Character {
   getCharByAnyName = function (Command, cb) {
     Command.argument = common.caps(Command.argument.toLowerCase())
     Character.getActiveCampaign(Command, function (activeCampaign) {
-      db.Character.Model.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {
+      db.Character.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {
         if (err) {
           console.error(err)
           Command.channel.send('Ran into a problem in the getChar function.')
@@ -74,7 +74,7 @@ export class Character {
   }
   getSystem = function (command: Command, cb): void {
     Character.getActiveCampaign(command, function (activeCampaign) {
-      db.System.Model.findById(activeCampaign.system, function (err, system) {
+      db.System.findById(activeCampaign.system, function (err, system) {
         if (err) {
           console.error(err)
           command.reply('Ran into a problem in the getSystem function.')
