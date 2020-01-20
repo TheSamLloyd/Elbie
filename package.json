@@ -4,7 +4,7 @@
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "lib/elbie.js",
   "engines": {
-    "node": "^13.5.0",
+    "node": "<6.0.0",
     "yarn": "^1.21.1"
   },
   "dependencies": {
@@ -12,7 +12,6 @@
     "discord.js": "^11.5.0",
     "ejs": "^2.6.1",
     "erlpack": "discordapp/erlpack",
-    "ffmpeg-binaries": "^3.2.2",
     "fluent-ffmpeg": "^2.1.2",
     "libsodium-wrappers": "^0.7.3",
     "mongoose": "^5.7.5",
@@ -24,6 +23,7 @@
     "@babel/cli": "^7.7.7",
     "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
+    "@babel/preset-typescript": "^7.8.3",
     "@types/mongoose": "^5.5.41",
     "@types/node": "^13.1.6",
     "babel-eslint": "^10.0.3",
@@ -39,7 +39,7 @@
   "scripts": {
     "start": "node lib/elbie.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d lib"
+    "build": "babel src -d lib --extensions .ts"
   },
   "repository": {
     "type": "git",

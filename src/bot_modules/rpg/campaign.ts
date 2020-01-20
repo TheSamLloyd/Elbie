@@ -5,10 +5,6 @@ import { User, Channel, Guild as Server } from 'discord.js'
 import { db } from '../../models/schema'
 import { NativeError , Document} from 'mongoose'
 
-interface campaignCollection extends object{
-  [index:string]:Campaign
-}
-
 export class Campaign extends db.Campaign {
   id:string
   name:string
@@ -19,7 +15,7 @@ export class Campaign extends db.Campaign {
   allServer:boolean
   channel:Channel['id']|undefined
   server:Server['id']
-  static allCampaigns:campaignCollection
+  static allCampaigns:Campaign[]
   constructor(id:string|Document){
     super()
     if (typeof id==='string'){

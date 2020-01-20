@@ -1,7 +1,7 @@
 import { GameSystem } from "./game"
 import { ICharacter } from "../../../models/characterSchema"
 
-export class DungeonWorld extends GameSystem {
+class DungeonWorld extends GameSystem {
   constructor(){
     super()
   }
@@ -27,3 +27,5 @@ export class DungeonWorld extends GameSystem {
     return val
   }
 }
+
+export default new DungeonWorld

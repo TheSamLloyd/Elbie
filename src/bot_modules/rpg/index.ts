@@ -1,11 +1,10 @@
 // dependencies
-import { Common } from '../common'
-const common = Common.functions
+import common from '../common'
 import { RichEmbed } from 'discord.js'
 import { Command } from '../../objects/command'
 import { Module, ICallback } from '../module'
-import { Character as _Character, db as _db } from './character'
-const Character = _Character
+import { db as _db } from '../../models/schema'
+import { Character } from './character'
 const db = _db
 
 // module information
@@ -39,7 +38,7 @@ export const rpg: Module = {
     },
     getCampaign: (command: Command, cb: ICallback): void => {
       try {
-        db.Campaign.Object.findOne().bycommand(command).exec(function (err, campaign) {
+        db.Campaign.findOne().bycommand(command).exec(function (err, campaign) {
           console.log(campaign)
           if (err) return console.log(err)
           campaign.populate('system', (err, res) => {
@@ -62,7 +61,7 @@ export const rpg: Module = {
     'getCharByPlayer': (command: Command, cb: ICallback): void => {
       var query = command.argument !== '' ? { name: common.caps(command.argument) } : { id: command.auth.id }
       console.log(query)
-      db.User.Object.findOne(query, function (err, user) {
+      db.User.findOne(query, function (err, user) {
         if (err) console.error(err)
         if (!user) return cb(null)
         console.log(user)
@@ -74,7 +73,7 @@ export const rpg: Module = {
     },
     'getCharByName': (command: Command, cb: ICallback): void => {
       rpg['functions']['getCampaign'](command, campaign => {
-        db.Character.Object.findOne().byCampaignAndName(campaign.id, common.caps(command.argument))
+        db.Character.findOne().byCampaignAndName(campaign.id, common.caps(command.argument))
           .populate('user')
           .exec(function (err, char) {
             if (err) console.error(err)
@@ -87,9 +86,9 @@ export const rpg: Module = {
     'listChar:'(command: Command): void {
       console.log('Listing...')
       rpg['functions']['getCampaign'](command, campaign => {
-        db.Character.Object.find({ campaign: campaign.id }, function (err, characters) {
+        db.Character.find({ campaign: campaign.id }, function (err, characters) {
           if (err) console.error(err)
-          db.User.Object.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
+          db.User.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
             if (err) console.error(err)
             characters = characters.map((char) => ({ name: char.name, user: char.user.name }))
             var out = ''
@@ -222,7 +221,7 @@ commands : {
     'hp': { key:'cast', desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
     'mark': { key:'cast', desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
     'levelup': { function: Character.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
-    'theme': { function: Character.theme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
+    'theme': { function: Character.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
     'adv': { key:'advantage', desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
     'dadv': { key:'advantage', desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
     'disadv': { key:'advantage', desc: 'Alias of +dadv.' },

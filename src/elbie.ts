@@ -1,6 +1,5 @@
 // dependencies
-import { config } from 'dotenv'
-config()
+require('dotenv').config()
 import Discord from 'discord.js'
 import { Command } from './objects/command'
 const client = new Discord.Client()

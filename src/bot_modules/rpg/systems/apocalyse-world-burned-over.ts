@@ -14,4 +14,5 @@ class ApocalypseWorldBurnedOver extends GameSystem {
     return score
   }
 }
-module.exports = ApocalypseWorldBurnedOver
+
+export default new ApocalypseWorldBurnedOver 

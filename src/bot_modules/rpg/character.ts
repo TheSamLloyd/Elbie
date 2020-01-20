@@ -1,22 +1,12 @@
 // dependencies
-import { Common } from '../common'
-import { Masks } from './systems/masks'
-import { DungeonWorld } from './systems/dungeon-world'
-import { DnD35 } from './systems/dungeons-and-dragons-3-5e'
-const common = Common.functions
-const gameList = {
-  'Dungeon World': DungeonWorld,
-  'Masks': Masks,
-  'Dungeons and Dragons 3.5e': DnD35
-}
+import Common from '../common'
+import gameList from './systems/index'
 const audio = require('../audio') || false
 
 const DB_URI = process.env.MONGODB_URI
 import mongoose from 'mongoose'
 import { Command } from '../../objects/command'
 import { db } from '../../models/schema'
-import { ICharacter } from '../../models/characterSchema'
-import { ISystem } from '../../models/systemSchema'
 mongoose.set('useNewUrlParser', true)
 mongoose.set('useCreateIndex', true)
 mongoose.set('useUnifiedTopology', true)
@@ -29,7 +19,7 @@ mongoose.connect(DB_URI).then(
 )
 
 // Character object designed to encapsulate Character functions
-export class Character extends Document implements ICharacter {
+export class Character extends db.Character{
   static getActiveCampaign = function (command: Command, cb) {
     db.Campaign.findOne().where({$or:[{channel:command.channel}, {server:command.server, serverWide:true}]}).exec(function (err: object, campaign) {
       if (err) {
@@ -51,11 +41,8 @@ export class Character extends Document implements ICharacter {
       })
     })
   }
-  constructor(){
-    super()
-  }
   getCharByAnyName = function (Command, cb) {
-    Command.argument = common.caps(Command.argument.toLowerCase())
+    Command.argument = Common.caps(Command.argument.toLowerCase())
     Character.getActiveCampaign(Command, function (activeCampaign) {
       db.Character.find().where({campaign:activeCampaign}).populate('user').exec(function (err, characterArray) {
         if (err) {
@@ -101,7 +88,7 @@ export class Character extends Document implements ICharacter {
       var attr = Command.args[0]
       var value = Command.args[1]
       var current = char.get(attr)
-      char.set(attr, current + common.typed(value))
+      char.set(attr, current + Common.typed(value))
       if (attr === 'HP.current') {
         console.log('checking HP')
         char.set(attr, Math.min(char.HP.maxHP, Math.max(0, char.HP.current)))
@@ -123,7 +110,7 @@ export class Character extends Document implements ICharacter {
   }
   statRoll = function (Command, cb) {
     Character.getChar(Command, function (char) {
-      db.System.findById(char.populate('campaign')['campaign']['system']).exec((err, sys:ISystem)=>{
+      db.System.findById(char.populate('campaign')['campaign']['system']).exec((err, sys)=>{
         if (!(char && sys)) {
           console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
           Command.channel.send('Had trouble retrieving character or system.')
@@ -139,9 +126,9 @@ export class Character extends Document implements ICharacter {
               // if this is a skill roll
               stat = system.statAlias[system.skills[target]]
               mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
-            } else if (system.statAlias[target] || Object.values(system.statAlias).indexOf(common.caps(target)) !== -1) {
+            } else if (system.statAlias[target] || Object.values(system.statAlias).indexOf(Common.caps(target)) !== -1) {
               // if this is a stat roll
-              stat = system.statAlias[target] ? system.statAlias[target] : common.caps(target)
+              stat = system.statAlias[target] ? system.statAlias[target] : Common.caps(target)
               mod = system.mod(char.stats.get(stat))
             }
           } else {
