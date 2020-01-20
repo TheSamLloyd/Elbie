@@ -1,4 +1,5 @@
 import { GameSystem } from "./game";
+import { ICharacter } from "../../../models/characterSchema";
 
 export class Masks extends GameSystem {
   name = 'Masks'
@@ -10,5 +11,7 @@ export class Masks extends GameSystem {
     'sup': 'Superior',
     'mun': 'Mundane'
   }
-  levelup = (character): boolean => (character.exp >= 5)
+  levelup = (character:ICharacter): boolean => {
+    return (character.exp >= 5);
+  }
 }

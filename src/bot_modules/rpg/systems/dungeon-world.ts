@@ -1,4 +1,5 @@
 import { GameSystem } from "./game"
+import { ICharacter } from "../../../models/characterSchema"
 
 export class DungeonWorld extends GameSystem {
   constructor(){
@@ -13,7 +14,7 @@ export class DungeonWorld extends GameSystem {
     'wis': 'Wisdom',
     'cha': 'Charisma'
   }
-  levelup(character):boolean {return (character.exp >= character.level + 6)}
+  levelup(character:ICharacter):boolean {return (character.exp >= character.level + 6)}
   mod(score:number):number{
     let val = 0
     if (score >= 1 && score <= 3) val = -3

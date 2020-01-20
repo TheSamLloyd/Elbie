@@ -1,4 +1,5 @@
-import { GameSystem } from "../game"
+import { GameSystem } from "./game"
+import { ICharacter } from "../../../models/characterSchema"
 
 export class DnD35 extends GameSystem {
   constructor(){
@@ -60,7 +61,7 @@ export class DnD35 extends GameSystem {
     'use_magic_device': 'cha',
     'use_rope': 'dex'
   }
-  levelup = (character):boolean => false
+  levelup = (character:ICharacter):boolean => false
   mod = function (score) {
     var val = Math.floor(score / 2) - 5
     return val

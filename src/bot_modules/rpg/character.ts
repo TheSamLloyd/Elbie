@@ -6,7 +6,7 @@ import { DnD35 } from './systems/dungeons-and-dragons-3-5e'
 const common = Common.functions
 const gameList = {
   'Dungeon World': DungeonWorld,
-  'Masks':  Masks,
+  'Masks': Masks,
   'Dungeons and Dragons 3.5e': DnD35
 }
 const audio = require('../audio') || false
@@ -15,6 +15,8 @@ const DB_URI = process.env.MONGODB_URI
 import mongoose from 'mongoose'
 import { Command } from '../../objects/command'
 import { db } from '../../models/schema'
+import { ICharacter } from '../../models/characterSchema'
+import { ISystem } from '../../models/systemSchema'
 mongoose.set('useNewUrlParser', true)
 mongoose.set('useCreateIndex', true)
 mongoose.set('useUnifiedTopology', true)
@@ -27,9 +29,9 @@ mongoose.connect(DB_URI).then(
 )
 
 // Character object designed to encapsulate Character functions
-export class Character {
+export class Character extends Document implements ICharacter {
   static getActiveCampaign = function (command: Command, cb) {
-    db.Campaign.findOne().byCommand(command).exec(function (err: object, campaign) {
+    db.Campaign.findOne().where({$or:[{channel:command.channel}, {server:command.server, serverWide:true}]}).exec(function (err: object, campaign) {
       if (err) {
         console.error(err)
         command.reply('Ran into an error in the getActiveCampaign function.')
@@ -41,7 +43,7 @@ export class Character {
   }
   static getChar = function (command: Command, cb) {
     Character.getActiveCampaign(command, function (activeCampaign) {
-      db.Character.findOne({$where:{campaign : activeCampaign.id, user: command.auth.id}}).populate('user').exec(function (err, activeCharacter) {
+      db.Character.findOne({ $where: { campaign: activeCampaign.id, user: command.auth.id } }).populate('user').exec(function (err, activeCharacter) {
         if (err) {
           console.error(err)
           command.reply('Ran into a problem in the getChar function.')
@@ -49,10 +51,13 @@ export class Character {
       })
     })
   }
+  constructor(){
+    super()
+  }
   getCharByAnyName = function (Command, cb) {
     Command.argument = common.caps(Command.argument.toLowerCase())
     Character.getActiveCampaign(Command, function (activeCampaign) {
-      db.Character.find().byCampaign(activeCampaign).populate('user').exec(function (err, characterArray) {
+      db.Character.find().where({campaign:activeCampaign}).populate('user').exec(function (err, characterArray) {
         if (err) {
           console.error(err)
           Command.channel.send('Ran into a problem in the getChar function.')
@@ -84,15 +89,6 @@ export class Character {
       })
     })
   }
-  save = function (char, cb): void {
-    char.save(function (err, newChar) {
-      if (err) {
-        console.error(err)
-      } else {
-        cb(newChar)
-      }
-    })
-  }
   setAttr = function (command: Command, cb): void {
     Character.getChar(command, (char) => {
       var attr = command.args[0]
@@ -119,86 +115,86 @@ export class Character {
       })
     })
   }
-  getAttr = function (Command, cb) {
-  Character.getChar(Command, (char) => {
-    var attr = Command.args[0]
-    cb(char.get(attr))
-  })
-}
-statRoll = function (Command, cb) {
-  Character.getChar(Command, function (char) {
-    Character.getSystem(Command, function (sys) {
-      if (!(char && sys)) {
-        console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
-        Command.channel.send('Had trouble retrieving character or system.')
-      }
-      var target = Command.args[0] ? Command.args[0].toLowerCase() : ''
-      var system = gameList[sys.name]
-      var roll, mod, stat
-      var postfix = Command.args.slice(1)
-      var oper = ''
-      if (isNaN(parseInt(target)) && target !== '') {
-        if (system.skills && char['scores']['skills']) {
-          if (system.skills[target]) {
-            // if this is a skill roll
-            stat = system.statAlias[system.skills[target]]
-            mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
-          } else if (system.statAlias[target] || Object.values(system.statAlias).indexOf(common.caps(target)) !== -1) {
-            // if this is a stat roll
-            stat = system.statAlias[target] ? system.statAlias[target] : common.caps(target)
-            mod = system.mod(char.stats.get(stat))
-          }
-        } else {
-          Command.channel.send(`Ran into an error fetching stats...`)
-          mod = 0
-        }
-        if (postfix.join('+')) { oper = '+' }
-        console.log(stat, mod)
-        roll = `${system.defRoll}+${mod}${oper}${postfix}`
-        Command.argument = roll
-        cb(Command)
-      } else if (parseInt(target) || target === '') {
-        if (target === '') {
-          roll = `${system.defRoll}`
-        } else {
-          postfix = Command.args.slice(1)
-          oper = ''
-          if (postfix.join('+')) { oper = '+' }
-          roll = `${system.defRoll}+${target}${oper}${postfix}`
-        }
-        Command.argument = roll
-        cb(Command)
-      }
+  getAttr = function (cmd:Command, cb) {
+    Character.getChar(cmd, (char) => {
+      var attr = cmd.args[0]
+      cb(char.get(attr))
     })
-  })
-}
-// terminal
-levelup = function (Command):boolean {
-  Character.getChar(Command, function (char) {
-    Character.getSystem(Command, function (sys) {
-      var system = gameList[sys.name]
-      var canLevel = system.levelup(char)
-      if (canLevel) {
-        Command.args[0] = 'level'
-        Command.args[1] = 1
-        var success = Character.modifyAttr(Command)
-        if (success) Command.channel.send(`Leveled up to ${success}`)
-        else Command.channel.send(success)
-      } else Command.channel.send('Could not level up. Check EXP.')
-    })
-  })
-}
-theme = function (Command) {
-  if (audio) {
-    Character.getChar(Command, function (char) {
-      Command.argument = `https://www.youtube.com/watch?v=${char.get('theme')}`
-      console.log(char.get('theme'))
-      console.log(Command.argument)
-      audio.audio.play(Command)
-    })
-  } else {
-    Command.channel.send('audio module not installed or not working.')
   }
-}
+  statRoll = function (Command, cb) {
+    Character.getChar(Command, function (char) {
+      db.System.findById(char.populate('campaign')['campaign']['system']).exec((err, sys:ISystem)=>{
+        if (!(char && sys)) {
+          console.error(`Problem retrieving either character or system: ${char} / ${sys}`)
+          Command.channel.send('Had trouble retrieving character or system.')
+        }
+        var target = Command.args[0] ? Command.args[0].toLowerCase() : ''
+        var system = gameList[sys.name]
+        var roll, mod, stat
+        var postfix = Command.args.slice(1)
+        var oper = ''
+        if (isNaN(parseInt(target)) && target !== '') {
+          if (system.skills && char['scores']['skills']) {
+            if (system.skills[target]) {
+              // if this is a skill roll
+              stat = system.statAlias[system.skills[target]]
+              mod = `${system.mod(char.scores.stats.get(stat))}+${char['scores']['skills'].get(target)}`
+            } else if (system.statAlias[target] || Object.values(system.statAlias).indexOf(common.caps(target)) !== -1) {
+              // if this is a stat roll
+              stat = system.statAlias[target] ? system.statAlias[target] : common.caps(target)
+              mod = system.mod(char.stats.get(stat))
+            }
+          } else {
+            Command.channel.send(`Ran into an error fetching stats...`)
+            mod = 0
+          }
+          if (postfix.join('+')) { oper = '+' }
+          console.log(stat, mod)
+          roll = `${system.defRoll}+${mod}${oper}${postfix}`
+          Command.argument = roll
+          cb(Command)
+        } else if (parseInt(target) || target === '') {
+          if (target === '') {
+            roll = `${system.defRoll}`
+          } else {
+            postfix = Command.args.slice(1)
+            oper = ''
+            if (postfix.join('+')) { oper = '+' }
+            roll = `${system.defRoll}+${target}${oper}${postfix}`
+          }
+          Command.argument = roll
+          cb(Command)
+        }
+      })
+    })
+  }
+  // terminal
+  levelup = function (Command): void {
+    Character.getChar(Command, function (char) {
+      Character.getSystem(Command, function (sys) {
+        var system = gameList[sys.name]
+        var canLevel = system.levelup(char)
+        if (canLevel) {
+          Command.args[0] = 'level'
+          Command.args[1] = 1
+          var success = Character.modifyAttr(Command)
+          if (success) Command.channel.send(`Leveled up to ${success}`)
+          else Command.channel.send(success)
+        } else Command.channel.send('Could not level up. Check EXP.')
+      })
+    })
+  }
+  playTheme = function (Command) {
+    if (audio) {
+      Character.getChar(Command, function (char) {
+        Command.argument = `https://www.youtube.com/watch?v=${char.get('theme')}`
+        console.log(char.get('theme'))
+        console.log(Command.argument)
+        audio.audio.play(Command)
+      })
+    } else {
+      Command.channel.send('audio module not installed or not working.')
+    }
+  }
 }
 module.exports = { Character, gameList, db }

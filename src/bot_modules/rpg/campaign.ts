@@ -1,4 +1,4 @@
-import { GameSystem } from './game'
+import { GameSystem } from './systems/game'
 import { Character } from './character'
 import { Command } from '../../objects/command'
 import { User, Channel, Guild as Server } from 'discord.js'
@@ -9,7 +9,7 @@ interface campaignCollection extends object{
   [index:string]:Campaign
 }
 
-export class Campaign extends db.Campaign.Model {
+export class Campaign extends db.Campaign {
   id:string
   name:string
   shortName?:string
@@ -23,7 +23,7 @@ export class Campaign extends db.Campaign.Model {
   constructor(id:string|Document){
     super()
     if (typeof id==='string'){
-      db.Campaign.Model.findById(id).exec((err: NativeError, campaign) => {
+      db.Campaign.findById(id).exec((err: NativeError, campaign) => {
         if (err) {
           console.warn("Could not instantiate a campaign.")
           console.error(err)
@@ -50,7 +50,7 @@ export class Campaign extends db.Campaign.Model {
       }
     }
   static instatiateAllActiveCampaigns():void{
-    db.Campaign.Model.find().where({'active':true}).exec((err:NativeError,campaigns)=>{
+    db.Campaign.find().where({'active':true}).exec((err:NativeError,campaigns)=>{
       if (err){
         console.warn('Could not retrieve campaigns for instantiation.')
         console.error(err)

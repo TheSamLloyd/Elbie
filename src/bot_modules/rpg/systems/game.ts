@@ -1,7 +1,9 @@
 import { Command } from "../../../objects/command"
 import { Die } from "../dice"
+import { ICharacter } from "../../../models/characterSchema"
+import { db } from '../../../models/schema'
 
-export abstract class GameSystem {
+export abstract class GameSystem extends db.System {
     readonly name: string
     readonly defRoll: string
     roll(cmd: Command): object[] {
@@ -29,14 +31,14 @@ export abstract class GameSystem {
     rollFormat(command: Command): void {
         const output:object[] = this.roll(command)
         let text:string = ''
-        output.forEach((roll,i)=>{
-            text += output[i]['roll'] + ': ' + output[i]['dielist'] + '=**' + output[i]['total'] + '**\n'
+        output.forEach((roll)=>{
+            text += roll['roll'] + ': ' + roll['dielist'] + '=**' + roll['total'] + '**\n'
         })
         command.reply(text.trim())
     }
     mod(score: number): number {
         return score
     }
-    abstract levelup<T>(character:T): boolean
+    abstract levelup(character:ICharacter): boolean
 
 }
