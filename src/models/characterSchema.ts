@@ -91,17 +91,17 @@ CharacterSchema.query.byCampaignAndUserId = function (campaignID: string, userID
 CharacterSchema.query.byName = function (name: string): ICharacter[] {
   return this.where({ $or: [{ name: name }, { nickname: name }] })
 }
-CharacterSchema.query.byCampaignAndName = function (campaignID, name): ICharacter {
+CharacterSchema.query.byCampaignAndName = function (campaignID:string, name:string): ICharacter {
   return this.where({ campaign: campaignID, $or: [{ name: name }, { nickname: name }] })
 }
 
 CharacterSchema.pre('validate', function (next) {
-  if (this['HP']['current'] > this['HP']['maxHP']) {
-    this.invalidate('HP.current', 'HP must be less than or equal to max HP.', this['HP']['current'])
+  if (this.get('HP.current') > this.get('HP.maxHP')) {
+    this.invalidate('HP.current', 'HP must be less than or equal to max HP.', this.get('HP.current'))
   }
   next()
 })
-CharacterSchema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl, score) { this.scores.stats[skl] = score })
-CharacterSchema.virtual('skills').get(function () { return this.scores.skills }).set(function (skl, score) { this.scores.skills[skl] = score })
+CharacterSchema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl:string, score:number) { this.scores.stats[skl] = score })
+CharacterSchema.virtual('skills').get(function () { return this.scores.skills }).set(function (skl:string, score:number) { this.scores.skills[skl] = score })
 
 export default mongoose.model<ICharacter>('Character', CharacterSchema)

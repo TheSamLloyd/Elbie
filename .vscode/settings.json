@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\slloyd\\AppData\\Local\\Programs\\Python\\Python37\\python3.exe"
+    "python.pythonPath": "C:\\Users\\slloyd\\AppData\\Local\\Programs\\Python\\Python37\\python3.exe",
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

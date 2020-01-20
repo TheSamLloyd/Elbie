@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, DocumentQuery} from 'mongoose'
 import { ISystem } from './systemSchema'
-import { IUser } from './UserSchema'
+import { IUser } from './userSchema'
 import { Command } from '../objects/command'
 
 export interface ICampaign extends Document {

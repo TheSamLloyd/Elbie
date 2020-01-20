@@ -3,10 +3,10 @@ require('dotenv').config()
 import Discord from 'discord.js'
 import { Command } from './objects/command'
 const client = new Discord.Client()
-const token: string = process.env.DISCORD_TOKEN
+const token: string|undefined = process.env.DISCORD_TOKEN
 import { modules } from './bot_modules'
 const prefix: string = '+'
-const env: string = process.env.BUILD
+const env: string|undefined = process.env.BUILD
 const selfPackage = require('../package.json')
 
 // adding commands
@@ -18,7 +18,7 @@ modules.forEach(module => {
 })
 
 // helper functions
-function isCommand(message) {
+function isCommand(message:Discord.Message) {
   return (message.content[0] === prefix)
 }
 // login
@@ -48,14 +48,13 @@ client.on('ready', function () {
   }
   console.log(version)
   client.user.setPresence({
-    'status': 'online',
-    'afk': false,
-    'game': {
-      name: locale,
-      type: 'PLAYING'
+    status:'online',
+    game:{
+      name:locale,
+      url:'https://github.com/TheSamLloyd/Elbie'
     }
-  }).catch(err => {
-    console.log(err)
+  } as Discord.PresenceData).catch((err: Error) => {
+    console.error(err)
   })
   console.log('Ready!')
 })
@@ -67,20 +66,20 @@ client.on('disconnect', function () {
 })
 // error handling
 // for discord errors:
-client.on('error', function (err) {
-  console.log(err)
+client.on('error', function (err:Error) {
+  console.error(err)
   console.log('Got an error, trying to reconnect...')
   client.login(token)
 })
 //  for JS errors:
-function errorHandler(err) {
-  console.log(err)
+function errorHandler(err:Error) {
+  console.error(err)
   return `I ran into an error of type ${err.name}: check console for details.`
 }
 //  command handling
 function handler(cmd: Command) {
   if (cmd.command === '?') {
-    var output = []
+    var output:string[] = []
     Object.keys(commandList).forEach(command => {
       output.push(commandList[command].desc ? `${command} : ${commandList[command].desc}` : `${command}`)
     })

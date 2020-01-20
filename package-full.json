@@ -10,10 +10,16 @@
   "dependencies": {
     "bufferutil": "^4.0.1",
     "discord.js": "^11.5.0",
+    "ejs": "^2.6.1",
     "erlpack": "discordapp/erlpack",
-    "mongoose": "^5.7.5"
+    "mongoose": "^5.7.5",
+    "node-fetch": "^2.1.2",
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-typescript": "^7.8.3",
     "@types/mongoose": "^5.5.41",
     "@types/node": "^13.1.6",
     "babel-eslint": "^10.0.3",
@@ -24,8 +30,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.1.0",
-    "release": "^6.1.0",
-    "typescript": "^3.7.5"
+    "release": "^6.1.0"
   },
   "scripts": {
     "start": "node lib/elbie.js",
