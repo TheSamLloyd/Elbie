@@ -12,7 +12,7 @@ const SystemSchema = new Schema({
   }
 })
 
-SystemSchema.virtual('path').get(function () {
+SystemSchema.virtual('path').get(function (this:ISystem) {
   return `../bot_modules/rpg/${this.name.replace(/\W+/g, '-').toLowerCase()}.js`
 })
 

@@ -2,12 +2,20 @@ import mongoose, { Schema, Document } from 'mongoose'
 import { ICampaign } from './campaignSchema'
 import { IUser } from './userSchema'
 
+interface ISkills {
+  [skill: string]: any;
+}
+
+interface IStats {
+  [stat: string]: any;
+}
+
 export interface ICharacter extends Document {
   name: string
   nickname?: string
   user?: IUser['_id']
   campaign: ICampaign['_id']
-  scores: object
+  scores: { stats: IStats, skills: ISkills }
   attributes: object
   inventory: string[]
   HP: { current: number, maxHP: number }
@@ -82,16 +90,16 @@ const CharacterSchema: Schema = new Schema({
   }
 })
 
-CharacterSchema.query.byCampaign = function (campaignID: string): ICharacter[] {
+CharacterSchema.query.byCampaign = function (campaignID: ICampaign["_id"]): ICharacter[] {
   return this.where({ campaign: campaignID })
 }
-CharacterSchema.query.byCampaignAndUserId = function (campaignID: string, userID: string): ICharacter {
+CharacterSchema.query.byCampaignAndUserId = function (campaignID: ICampaign["_id"], userID: IUser["_id"]): ICharacter {
   return this.where({ campaign: campaignID, user: userID })
 }
 CharacterSchema.query.byName = function (name: string): ICharacter[] {
   return this.where({ $or: [{ name: name }, { nickname: name }] })
 }
-CharacterSchema.query.byCampaignAndName = function (campaignID:string, name:string): ICharacter {
+CharacterSchema.query.byCampaignAndName = function (campaignID: ICampaign["_id"], name: string): ICharacter {
   return this.where({ campaign: campaignID, $or: [{ name: name }, { nickname: name }] })
 }
 
@@ -101,7 +109,7 @@ CharacterSchema.pre('validate', function (next) {
   }
   next()
 })
-CharacterSchema.virtual('stats').get(function () { return this.scores.stats }).set(function (skl:string, score:number) { this.scores.stats[skl] = score })
-CharacterSchema.virtual('skills').get(function () { return this.scores.skills }).set(function (skl:string, score:number) { this.scores.skills[skl] = score })
+CharacterSchema.virtual('stats').get(function (this: ICharacter) { return this.scores.stats }).set(function (this: ICharacter, skl: string, score: number) { this.scores.stats[skl] = score })
+CharacterSchema.virtual('skills').get(function (this: ICharacter) { return this.scores.skills }).set(function (this: ICharacter, skl: string, score: number) { this.scores.skills[skl] = score })
 
 export default mongoose.model<ICharacter>('Character', CharacterSchema)
