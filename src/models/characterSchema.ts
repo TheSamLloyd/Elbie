@@ -10,13 +10,19 @@ interface IStats {
   [stat: string]: any;
 }
 
+interface IAttribute {
+  key:string
+  value:string
+  display:boolean
+}
+
 export interface ICharacter extends Document {
   name: string
   nickname?: string
-  user?: IUser['_id']
+  user: IUser['_id']
   campaign: ICampaign['_id']
   scores: { stats: IStats, skills: ISkills }
-  attributes: object
+  attributes: IAttribute[]
   inventory: string[]
   HP: { current: number, maxHP: number }
   level: number

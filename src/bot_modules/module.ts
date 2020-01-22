@@ -1,7 +1,6 @@
 import { Command } from "../objects/command"
 export interface ICallback{
-    <T>(err : Error, res : T ) : T | void
-    <T>(res: T): void | T
+    <T>(...args:any ) : T | void;
 }
 interface ICommands {
     [index : string] : {desc:string, key:string}

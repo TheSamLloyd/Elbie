@@ -17,20 +17,19 @@ export const rpg: Module = {
   functions: {
     // terminal 
     advantage: (command: Command): void => {
+      let text=''
       if (command.argument.indexOf(',') !== -1) {
         command.reply('You can only do one roll with advantage.')
         return
       } else {
-        let die1 = new Die(command.argument)
-        let die2 = new Die(command.argument)
-                GameSystem.roll(die1)
+          let rolls = GameSystem.roll(`${command.argument}, ${command.argument}`)
+          
         }
         command.reply(text)
-      }
     },
     getCampaign: (command: Command, cb: ICallback): void => {
       try {
-        db.Campaign.findOne().bycommand(command).exec(function (err, campaign) {
+        db.Campaign.findOne().bycommand(command).exec((err, campaign) => {
           console.log(campaign)
           if (err) return console.log(err)
           campaign.populate('system', (err, res) => {
@@ -63,7 +62,7 @@ export const rpg: Module = {
         })
       })
     },
-    getCharByName = (command: Command, cb: ICallback): void => {
+    getCharByName : (command: Command, cb: ICallback): void => {
       rpg['functions']['getCampaign'](command, campaign => {
         db.Character.findOne().byCampaignAndName(campaign.id, common.caps(command.argument))
           .populate('user')
@@ -77,12 +76,12 @@ export const rpg: Module = {
     // terminal
     'listChar:'(command: Command): void {
       console.log('Listing...')
-      rpg['functions']['getCampaign'](command, campaign => {
+      rpg.functions.getCampaign(command, (campaign:Campaign) => {
         db.Character.find({ campaign: campaign.id }, function (err, characters) {
           if (err) console.error(err)
-          db.User.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
+          db.Character.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
             if (err) console.error(err)
-            characters = characters.map((char) => ({ name: char.name, user: char.user.name }))
+            let listCharacters = characters.map((char) => ({ name: char.name, user: char.user.name }))
             var out = ''
             characters.forEach((char) => {
               out += `• ${char.name} (${char.user})\n`
@@ -103,16 +102,14 @@ export const rpg: Module = {
       }
       getter(command, (char:Character) => {
         if (char) {
+          const displayAttributes = char.attributes.filter(attribute=>attribute.display==true)
           var embed = new RichEmbed()
             .setColor('GREEN')
             .setAuthor(char.name + ' (' + char.user.name + ')')
-            .addField('Class:', common.caps(char.attributes.class || 'None'), true)
-            .addField('Race:', common.caps(char.attributes.race || 'None'), true)
-            .addField('Level:', char.level, true)
-            .addField('XP:', char.exp + '/' + (char.level + 6), true)
-            .addField('HP:', char.HP.current + '/' + char.HP.maxHP, true)
-            .addField('Alignment:', (char.attributes.alignment || 'None'), false)
-          for (var [key, value] of char.stats) {
+            displayAttributes.forEach(attribute => {
+              embed.addField(key + ':', value, true)
+            })
+          for (var [key, value] of char.scores.stats) {
             embed.addField(key + ':', value, true)
           }
           embed.addField('Description:', (char.desc || 'None'), false)

@@ -6,9 +6,6 @@ import { db } from '../../../models/schema'
 interface IGameSystem {
     readonly name: string
     readonly defRoll: string
-    roll: (str:string) => RollResults[]
-    rollFormat: (cmd:Command) => void
-    // rollFormat should eventually be moved to the rpg module -- a GameSystem shouldn't have to know about the structure of commands
     mod: (score: number) => number
     levelup: (chr: ICharacter) => boolean
 }
@@ -29,7 +26,7 @@ export abstract class GameSystem extends db.System implements IGameSystem {
     constructor() {
         super()
     }
-    roll(str:string): RollResults[] {
+    static roll(str:string): RollResults[] {
         let rolls: string[] = str.split(/\s*,\s*/)
         let results:RollResults[] = []
         rolls.forEach((iroll: string) => {
@@ -42,7 +39,7 @@ export abstract class GameSystem extends db.System implements IGameSystem {
                 }
                 catch (err) {
                     console.error(err)
-                    cmd.reply('Malformed roll.')
+                    console.error('Malformed roll.')
                 }
                 dielist = dielist.concat(k.roll())
             })
@@ -51,8 +48,8 @@ export abstract class GameSystem extends db.System implements IGameSystem {
         console.log(results)
         return results
     }
-    rollFormat(command: Command): void {
-        const output: RollResults[] = GameSystem.roll(command)
+    static rollFormat(command: Command): void {
+        const output: RollResults[] = GameSystem.roll(command.argument)
         let text: string = ''
         output.forEach((roll) => {
             text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
