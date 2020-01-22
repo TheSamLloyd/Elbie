@@ -1,8 +1,10 @@
 export class Die {
-  readonly sides: number
-  readonly _number: number
+  sides: number
+  _number: number
   type: string
   constructor(self: string) {
+    this.sides = 6;
+    this._number = 1;
     let temp = self.split(/[Dd]/)
     switch (temp.length) {
       case 2:
@@ -38,6 +40,7 @@ export class Die {
         break
 
       default:
+        this.sides=0;
         throw new Error("Could not parse input as either xDy or modifier format.")
     }
   }
@@ -50,11 +53,11 @@ export class Die {
     return output
   }
   roll = (): number[] => {
+    let output:number[] = []
     if (this.type == "modifier") {
       return [this._number]
     }
     else {
-      let output: number[]
       for (let i = 0; i < this._number; i++) {
         output.push(Die.randInt(1, this.sides))
       }

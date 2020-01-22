@@ -1,6 +1,5 @@
 // dependencies
-import { Common } from '../common'
-const common = Common.commands
+import common  from '../common'
 import { Module } from '../module'
 import { Command } from '../../objects/command'
 // basic bot commands

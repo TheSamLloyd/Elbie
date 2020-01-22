@@ -4,21 +4,21 @@ import Discord from 'discord.js'
 import { Command } from './objects/command'
 const client = new Discord.Client()
 const token: string | undefined = process.env.DISCORD_TOKEN
-import { modules } from './bot_modules'
+import Modules from './bot_modules'
 const prefix: string = '+'
 const env: string | undefined = process.env.BUILD
 const selfPackage = require('../package.json')
 
 // adding commands
 interface ICommandList {
-  [cmd: string]: (command: Command) => any
+  [cmd: string]: {function: (command:Command)=>any, desc:string|undefined}
 }
 
 const commandList: ICommandList = {}
-modules.forEach(module => {
-  Object.assign(commandList, module.commands)
-  console.log('Loaded commands for module ' + module['name'])
-  console.log('>' + module['desc'])
+Object.values(Modules).forEach(botmodule => {
+  Object.assign(commandList, botmodule.commands)
+  console.log('Loaded commands for module ' + botmodule['name'])
+  console.log('>' + botmodule['desc'])
 })
 
 // helper functions
@@ -84,13 +84,13 @@ function errorHandler(err: Error) {
 function handler(cmd: Command) {
   if (cmd.command === '?') {
     var output: string[] = []
-    Object.keys(commandList).forEach(command => {
-      output.push(commandList[command].desc ? `${command} : ${commandList[command].desc}` : `${command}`)
+    Object.keys(commandList).forEach(botcommand => {
+      output.push(commandList[botcommand].desc ? `${botcommand} : ${commandList[botcommand].desc}` : `${botcommand}`)
     })
     cmd.reply(output.join('\n'))
   } else {
     try {
-      commandList[cmd.command]['function'] ? commandList[cmd.command]['function'](Command) : commandList[cmd.command](Command)
+      commandList[cmd.command].function(cmd)
     } catch (err) {
       cmd.reply(errorHandler(err))
     }

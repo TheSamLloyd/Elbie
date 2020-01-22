@@ -5,6 +5,9 @@ import { Command } from '../../objects/command'
 import { Module, ICallback } from '../module'
 import { db as _db } from '../../models/schema'
 import { Character } from './character'
+import { Campaign } from './campaign'
+import { Die } from './dice'
+import { GameSystem } from './systems/game'
 const db = _db
 
 // module information
@@ -16,22 +19,11 @@ export const rpg: Module = {
     advantage: (command: Command): void => {
       if (command.argument.indexOf(',') !== -1) {
         command.reply('You can only do one roll with advantage.')
-        return null
+        return
       } else {
-        command.argument = command.argument + ',' + command.argument
-        var output = rpg['functions']['roll'](command)
-        var text = ''
-        if (output[0].valid) {
-          var bool = output[0].total > output[1].total ? 0 : 1
-          for (var i = 0; i <= 1; i++) {
-            text += output[i].roll + ': ' + output[i].dielist + '=**' + output[i].total + '**\n'
-          }
-          if (command.command === 'adv') {
-            text += 'Result: **' + output[bool].total + '**'
-          }
-          if (command.command === 'disadv' || command.command === 'dadv') {
-            text += 'Result: **' + output[1 - bool].total + '**'
-          }
+        let die1 = new Die(command.argument)
+        let die2 = new Die(command.argument)
+                GameSystem.roll(die1)
         }
         command.reply(text)
       }
@@ -58,7 +50,7 @@ export const rpg: Module = {
         cb(campaign.dm === command.auth.id)
       })
     },
-    'getCharByPlayer': (command: Command, cb: ICallback): void => {
+    getCharByPlayer: (command: Command, cb: ICallback): void => {
       var query = command.argument !== '' ? { name: common.caps(command.argument) } : { id: command.auth.id }
       console.log(query)
       db.User.findOne(query, function (err, user) {
@@ -71,7 +63,7 @@ export const rpg: Module = {
         })
       })
     },
-    'getCharByName': (command: Command, cb: ICallback): void => {
+    getCharByName = (command: Command, cb: ICallback): void => {
       rpg['functions']['getCampaign'](command, campaign => {
         db.Character.findOne().byCampaignAndName(campaign.id, common.caps(command.argument))
           .populate('user')
@@ -109,7 +101,7 @@ export const rpg: Module = {
       } else {
         getter = Character.getCharByAnyName
       }
-      getter(command, char => {
+      getter(command, (char:Character) => {
         if (char) {
           var embed = new RichEmbed()
             .setColor('GREEN')
@@ -145,19 +137,19 @@ export const rpg: Module = {
       }
       command.args = castlist[command.command]
       if (command.args[2]) {
-        Character.modifyAttr(command, function (attr) {
+        Character.modifyAttr(command, function (attr:string) {
           command.reply(`${command.args[0]}: ${attr}`)
         })
       } else {
-        Character.setAttr(command, function (attr) {
+        Character.setAttr(command, function (attr:string) {
           command.reply(`${command.args[0]}: ${attr}`)
         })
       }
     },
     bind: (command: Command): void => {
-      rpg['functions']['getCampaign'](command, function (campaign) {
+      rpg['functions']['getCampaign'](command, function (campaign:Campaign) {
         if (!campaign) {
-          const newCampaign = new db.CampaignObject({
+          const newCampaign = new db.Campaign({
             dm: command.auth.id,
             channel: command.channel.id,
             shtname: command.args[0],
@@ -178,10 +170,10 @@ export const rpg: Module = {
     statRoll: (command: Command) => {
       Character.statRoll(command, this.rollFormat)
     },
-    bladesRoll: (command: Command) => {
-      var n = parseInt(command.argument)
+    bladesRoll: (command: Command):void => {
+      let n:number = parseInt(command.argument)
       var out
-      var result
+      let result:number = 0
       var critical = 0
       var outcome
       if (n <= 0) {
@@ -205,11 +197,11 @@ export const rpg: Module = {
       else if (result >= 1) outcome = 'Bad outcome'
       else if (isNaN(n)) {
         command.reply('Malformed roll.')
-        return null
+        return
       }
       out = `${out} - ${outcome}`
       command.reply(out)
-      return null
+      return
     }
   },
 commands : {
@@ -220,8 +212,8 @@ commands : {
     'roll': { key:'rollFormat', desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
     'hp': { key:'cast', desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
     'mark': { key:'cast', desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
-    'levelup': { function: Character.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
-    'theme': { function: Character.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
+    'levelup': { function: Character.system.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
+    'theme': { function: Character.system.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
     'adv': { key:'advantage', desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
     'dadv': { key:'advantage', desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
     'disadv': { key:'advantage', desc: 'Alias of +dadv.' },

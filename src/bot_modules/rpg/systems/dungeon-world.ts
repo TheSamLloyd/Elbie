@@ -5,8 +5,8 @@ class DungeonWorld extends GameSystem {
   constructor(){
     super()
   }
-  defRoll: '2d6'
-  statAlias: {
+  defRoll = '2d6'
+  statAlias = {
     'str': 'Strength',
     'con': 'Constitution',
     'dex': 'Dexterity',

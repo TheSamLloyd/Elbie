@@ -5,8 +5,8 @@ class DnD35 extends GameSystem {
   constructor() {
     super()
   }
-  defRoll: '1d20'
-  statAlias: {
+  defRoll = '1d20'
+  statAlias = {
     'str': 'Strength',
     'con': 'Constitution',
     'dex': 'Dexterity',
@@ -14,7 +14,7 @@ class DnD35 extends GameSystem {
     'wis': 'Wisdom',
     'cha': 'Charisma'
   }
-  skills: {
+  skills = {
     'appraise': 'int',
     'balance': 'dex',
     'bluff': 'cha',
@@ -64,7 +64,7 @@ class DnD35 extends GameSystem {
   levelup = (character: ICharacter): boolean => {
     return false
   }
-  mod = function (score) {
+  mod = function (score:number) {
     var val = Math.floor(score / 2) - 5
     return val
   }
