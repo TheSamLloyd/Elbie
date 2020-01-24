@@ -1,13 +1,15 @@
 import { GameSystem } from './systems/game'
 import { Character } from './character'
-import { Command } from '../../objects/command'
 import { User, Channel, Guild as Server } from 'discord.js'
 import { db } from './models/schema'
 import { NativeError, Document } from 'mongoose'
 import { ICampaign } from './models/campaignSchema'
 
+interface ISubCampaignList {
+  [index:string]: Campaign
+}
 interface ICampaignList {
-  [id: string]: Campaign
+  [index: string]: ISubCampaignList
 }
 export class Campaign implements ICampaign {
   id: string = ""
@@ -27,10 +29,16 @@ export class Campaign implements ICampaign {
     this.serverWide = campaign.get('serverWide')
     this.id = campaign.id
     this.active = campaign.get('active')
-    Campaign.allCampaigns[this.id] = this
+    this.channel = campaign.get('channel')
+    if (this.serverWide || this.channel===undefined){
+      Campaign.allCampaigns[this.server]["all"] = this
+    }
+    else {
+      Campaign.allCampaigns[this.server][this.channel] = this
+    }
   }
-  static async get(id: ICampaign['id']): Promise<Campaign | undefined> {
-    let campaign = await db.Campaign.findById(id).exec((err: NativeError, campaign: Document) => {
+  static async retrieve(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign | undefined> {
+    let campaign = await db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec((err: NativeError, campaign: Document) => {
       return campaign
     })
     if (campaign === null) {
@@ -40,7 +48,7 @@ export class Campaign implements ICampaign {
     }
   }
   static instatiateAllActiveCampaigns(): void {
-    db.Campaign.find().where({ 'active': true }).exec((err:Error, campaigns:Document[]) => {
+    db.Campaign.find().where({ 'active': true }).exec((err: Error, campaigns: Document[]) => {
       if (err) {
         console.warn('Could not retrieve campaigns for instantiation.')
         console.error(err)
@@ -53,15 +61,22 @@ export class Campaign implements ICampaign {
       }
     })
   }
-  isDM(command: Command): boolean {
-    return (this.dm === command.auth.id)
+  isDM(id: User['id']): boolean {
+    return (this.dm === id)
   }
-  get(id?: string): Campaign {
-    if (id) {
-      return Campaign.allCampaigns[id]
+  get(serverId: Server['id'], channelId: Channel['id']): Campaign {
+    let possibleReturn = null
+    if (typeof Campaign.allCampaigns[serverId]["all"] == typeof Campaign){
+      possibleReturn = Campaign.allCampaigns[serverId]["all"]
     }
-    else {
-      return this
+    else if (typeof Campaign.allCampaigns[serverId][channelId] === typeof Campaign){
+      possibleReturn = Campaign.allCampaigns[serverId][channelId]
+    }
+    if (possibleReturn) {
+      return possibleReturn
+    } else {
+      Campaign.retrieve(serverId, channelId)
+      return this.get(serverId, channelId)
     }
   }
 }

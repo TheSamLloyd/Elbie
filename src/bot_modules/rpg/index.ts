@@ -23,31 +23,23 @@ export const rpg: Module = {
         return
       } else {
           let rolls = GameSystem.roll(`${command.argument}, ${command.argument}`)
-          
+          rolls.forEach(result=>{
+            text += `${result.dielist}=**${result.total}**\n`
+          })
+          text+=`Result: ${Math.max(...rolls.map(result=>result.total))}`
         }
         command.reply(text)
     },
     getCampaign: (command: Command, cb: ICallback): void => {
       try {
-        db.Campaign.findOne().bycommand(command).exec((err, campaign) => {
-          console.log(campaign)
-          if (err) return console.log(err)
-          campaign.populate('system', (err, res) => {
-            if (err) return console.log(err)
-            cb(res)
-          })
-        })
-      } catch (exception) {
-        console.log(exception)
-        console.log('No campaign could be retrieved')
-        cb(null)
+        cb(Campaign.retrieve(command.server.id, command.channel.id))
+      } catch (err) {
+        console.error(err)
+        command.reply("Could not retrieve campaign.")
       }
     },
     isDM: (command: Command, cb: ICallback): void => {
-      Character.getActiveCampaign(command, function (err, campaign) {
-        if (err) console.log(err)
-        cb(campaign.dm === command.auth.id)
-      })
+      cb(rpg.functions.getCampaign(command).isDM(command.auth.id))
     },
     getCharByPlayer: (command: Command, cb: ICallback): void => {
       var query = command.argument !== '' ? { name: common.caps(command.argument) } : { id: command.auth.id }

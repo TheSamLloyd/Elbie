@@ -1,6 +1,6 @@
 import { Command } from "../objects/command"
-export interface ICallback{
-    <T>(...args:any ) : T | void;
+export interface IFunction{
+    (cmd:Command, ...args:any[] ) : any | void;
 }
 interface ICommands {
     [index : string] : {desc:string, key:string}
@@ -8,10 +8,6 @@ interface ICommands {
 
 interface IFunctions {
     [index : string] : IFunction
-}
-
-export interface IFunction {
-    (cmd:Command, cb?:ICallback):ICallback|void
 }
 
 export interface Module {
