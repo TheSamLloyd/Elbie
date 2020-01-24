@@ -1,4 +1,5 @@
 // dependencies
+import fs from 'fs'
 require('dotenv').config()
 import Discord from 'discord.js'
 import { Command } from './objects/command'
@@ -7,7 +8,8 @@ const token: string | undefined = process.env.DISCORD_TOKEN
 import Modules from './bot_modules'
 const prefix: string = '+'
 const env: string | undefined = process.env.BUILD
-const selfPackage = require('../package.json')
+import * as selfPackage from '../package.json'
+
 
 // adding commands
 interface ICommandList {
