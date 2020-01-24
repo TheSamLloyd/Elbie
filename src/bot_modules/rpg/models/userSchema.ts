@@ -2,7 +2,8 @@ import mongoose, { Schema, Document } from 'mongoose'
 import { ICharacter } from './characterSchema'
 import { ICampaign } from './campaignSchema'
 
-export interface IUser extends Document {
+export interface IUser {
+  id: string
   name: string
   characters: ICharacter[]
   dm: ICampaign[]
@@ -26,4 +27,4 @@ const UserSchema = new Schema({
     ref: 'Campaign'
   }
 })
-export default mongoose.model<IUser>('User', UserSchema)
+export default mongoose.model('User', UserSchema)

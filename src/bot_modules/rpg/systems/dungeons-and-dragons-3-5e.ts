@@ -1,5 +1,5 @@
 import { GameSystem } from "./game"
-import { ICharacter } from "../../../models/characterSchema"
+import { ICharacter } from "../models/characterSchema"
 
 class DnD35 extends GameSystem {
   constructor() {

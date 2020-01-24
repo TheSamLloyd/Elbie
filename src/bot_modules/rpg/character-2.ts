@@ -7,10 +7,10 @@ const DB_URI = process.env.MONGODB_URI || ""
 import mongoose from 'mongoose'
 import { Command } from '../../objects/command'
 import { ICallback } from '../module'
-import { db } from '../../models/schema'
-import { ICampaign } from '../../models/campaignSchema'
-import { ICharacter } from '../../models/characterSchema'
-import { ISystem } from '../../models/systemSchema'
+import { db } from './models/schema'
+import { ICampaign } from './models/campaignSchema'
+import { ICharacter } from './models/characterSchema'
+import { ISystem } from './models/systemSchema'
 mongoose.set('useNewUrlParser', true)
 mongoose.set('useCreateIndex', true)
 mongoose.set('useUnifiedTopology', true)

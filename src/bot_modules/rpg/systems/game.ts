@@ -1,7 +1,7 @@
 import { Command } from "../../../objects/command"
 import { Die } from "../dice"
-import { ICharacter } from "../../../models/characterSchema"
-import { db } from '../../../models/schema'
+import { ICharacter } from "../models/characterSchema"
+import { db } from '../models/schema'
 
 interface IGameSystem {
     readonly name: string

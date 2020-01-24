@@ -1,25 +1,19 @@
 import mongoose, { Document, Schema, DocumentQuery} from 'mongoose'
 import { ISystem } from './systemSchema'
 import { IUser } from './userSchema'
-import { Command } from '../objects/command'
+import { Command } from '../../../objects/command'
 
-export interface ICampaign extends Document {
+export interface ICampaign {
+  id:string
   name: string
   shortname?: string
   channel?: string
   server: string
-  dm: IUser['_id']
+  dm: IUser['id']
   theme?: string
   active: boolean
-  system: ISystem['_id']
+  system: ISystem['id']
   serverWide: boolean
-  findOne: (...options:any)=>CampaignQuery
-  find: (...options:any)=>CampaignQuery
-  findById: (...options:any)=>CampaignQuery
-}
-interface CampaignQuery extends DocumentQuery<ICampaign, ICampaign, {}>{
-  byCommand: (cmd: Command) => ICampaign
-  allActive: () => ICampaign[]
 }
 
 const CampaignSchema: Schema = new Schema({
@@ -61,4 +55,4 @@ CampaignSchema.query.allActive = function (): ICampaign[] {
   return this.where({ active: true })
 }
 
-export default mongoose.model<ICampaign>('Campaign', CampaignSchema)
+export default mongoose.model('Campaign', CampaignSchema)
