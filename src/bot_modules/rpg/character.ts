@@ -1,24 +1,12 @@
 // dependencies
-const audio = require('../audio') || false
 
-const DB_URI = process.env.MONGODB_URI || ""
-import mongoose, { Document } from 'mongoose'
+import { Document } from 'mongoose'
 import { db } from './models/schema'
 import { ICampaign } from './models/campaignSchema'
 import { ICharacter } from './models/characterSchema'
 import { IUser } from './models/userSchema'
 import { IFunction } from '../module'
-import { User } from 'discord.js'
-mongoose.set('useNewUrlParser', true)
-mongoose.set('useCreateIndex', true)
-mongoose.set('useUnifiedTopology', true)
-
-mongoose.connect(DB_URI).then(
-  () => {
-    console.log('DB connection ready')
-  },
-  err => { console.log(`DB connection failed... \n${err}`) }
-)
+import { User } from './user'
 
 export class Character implements ICharacter {
   id:string
@@ -54,13 +42,8 @@ export class Character implements ICharacter {
     this.theme = character.get('theme')
     this.stats = this.scores.stats
     this.skills = this.scores.skills
-    db.User.findById(this.user).exec((err,user:Document)=>{
-      if (err) {
-        throw new Error('Issue retrieving user info.')
-      }
-      else {
-        this.user=new User(
-      }
+    User.get(this.user as string, (user:User)=>{
+      this.user = user
     })
   }
   static get(userId: IUser["id"], campaignId: ICampaign['id'], cb: IFunction): void {

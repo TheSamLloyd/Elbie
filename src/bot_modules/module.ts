@@ -3,16 +3,11 @@ export interface IFunction{
     (...args:any[] ) : any | void;
 }
 interface ICommands {
-    [index : string] : {desc:string, key:string}
-}
-
-interface IFunctions {
-    [index : string] : IFunction
+    [index : string] : {desc:string, key:IFunction}
 }
 
 export interface Module {
     name:string
     desc:string
-    functions:IFunctions
     commands:ICommands
 }

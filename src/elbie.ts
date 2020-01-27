@@ -3,7 +3,7 @@ import fs from 'fs'
 require('dotenv').config()
 import Discord from 'discord.js'
 import { Command } from './objects/command'
-const client = new Discord.Client()
+export const client = new Discord.Client()
 const token: string | undefined = process.env.DISCORD_TOKEN
 import Modules from './bot_modules'
 const prefix: string = '+'
