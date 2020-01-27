@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start": "node lib/elbie.js",
-    "test": "./node_modules/typescript/bin/tsc.exe -b --outDir ./lib",
+    "test": "./node_modules/typescript/bin/tsc",
     "build": "babel src -d lib --extensions .ts"
   },
   "repository": {

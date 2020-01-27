@@ -7,6 +7,8 @@ import { db } from './models/schema'
 import { ICampaign } from './models/campaignSchema'
 import { ICharacter } from './models/characterSchema'
 import { IUser } from './models/userSchema'
+import { IFunction } from '../module'
+import { User } from 'discord.js'
 mongoose.set('useNewUrlParser', true)
 mongoose.set('useCreateIndex', true)
 mongoose.set('useUnifiedTopology', true)
@@ -19,9 +21,10 @@ mongoose.connect(DB_URI).then(
 )
 
 export class Character implements ICharacter {
+  id:string
   name: string
   nickname: string | null
-  user: IUser['id']
+  user: IUser['id']|User
   campaign: ICampaign['id']
   scores: { stats: object, skills: object }
   attributes: any[]
@@ -35,6 +38,7 @@ export class Character implements ICharacter {
   stats: object
   skills: object
   constructor(character: Document) {
+    this.id=character.id
     this.user = character.get('user')
     this.name = character.get('name')
     this.nickname = character.get('nickname')
@@ -50,18 +54,31 @@ export class Character implements ICharacter {
     this.theme = character.get('theme')
     this.stats = this.scores.stats
     this.skills = this.scores.skills
-  }
-  static async get(userId: IUser["id"], campaignId: ICampaign['id']): Promise<Character|undefined> {
-    let pChar = await db.Character.findOne().where({ user: userId, campaign: campaignId }).exec((err, char) => {
-      return char
+    db.User.findById(this.user).exec((err,user:Document)=>{
+      if (err) {
+        throw new Error('Issue retrieving user info.')
+      }
+      else {
+        this.user=new User(
+      }
     })
-    if (pChar === null) {
-      throw new Error(`Could not retrieved with given IDs: chrID:${userId} // campaignID:${campaignId}`)
-    } else if (typeof pChar === typeof Document) {
-      return new Character(pChar)
-    }
   }
-  getSystem(this: Character) {
-
+  static get(userId: IUser["id"], campaignId: ICampaign['id'], cb: IFunction): void {
+    db.Character.findOne().where({ user: userId, campaign: campaignId }).exec((err, char) => {
+      if (char === null || err) {
+        throw err || new Error(`Could not retrieved with given IDs: chrID:${userId} // campaignID:${campaignId}`)
+      } else if (typeof char === typeof Document) {
+        cb(new Character(char))
+      }
+    })
+  }
+  static getById(id:ICharacter['id'], cb:IFunction):void{
+    db.Character.findById(id).exec((err,char:Document)=>{
+      if (char === null || err) {
+        throw err || new Error(`Could not retrieved with given IDs: chrID:${id}`)
+      } else if (typeof char === typeof Document) {
+        cb(new Character(char))
+      }
+    })
   }
 }

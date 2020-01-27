@@ -4,6 +4,7 @@ import { User, Channel, Guild as Server } from 'discord.js'
 import { db } from './models/schema'
 import { NativeError, Document } from 'mongoose'
 import { ICampaign } from './models/campaignSchema'
+import { IFunction } from '../module'
 
 interface ISubCampaignList {
   [index:string]: Campaign
@@ -21,6 +22,7 @@ export class Campaign implements ICampaign {
   channel: Channel['id'] | undefined
   server: Server['id'] = ""
   active: boolean
+  characters: Character[] = []
   static allCampaigns: ICampaignList
   constructor(campaign: Document) {
     this.name = campaign.get('name')
@@ -36,16 +38,17 @@ export class Campaign implements ICampaign {
     else {
       Campaign.allCampaigns[this.server][this.channel] = this
     }
+    this.instantiateCharacters()
   }
-  static async retrieve(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign | undefined> {
-    let campaign = await db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec((err: NativeError, campaign: Document) => {
-      return campaign
+  static retrieve(serverId: Server['id'], channelId: Channel['id'], cb:IFunction): void {
+    db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec((err: NativeError, campaign: Document) => {
+      if (err) {
+        console.error(err)
+      }
+      else{
+        cb(new Campaign(campaign))
+      }
     })
-    if (campaign === null) {
-      console.warn("Could not instantiate a campaign.")
-    } else {
-      return new Campaign(campaign)
-    }
   }
   static instatiateAllActiveCampaigns(): void {
     db.Campaign.find().where({ 'active': true }).exec((err: Error, campaigns: Document[]) => {
@@ -61,10 +64,17 @@ export class Campaign implements ICampaign {
       }
     })
   }
+  instantiateCharacters():void{
+    db.Character.find().where({campaign:this.id}).exec((err,chars)=>{
+      chars.forEach(char=>{
+        this.characters.push(new Character(char))
+      })
+    })
+  }
   isDM(id: User['id']): boolean {
     return (this.dm === id)
   }
-  get(serverId: Server['id'], channelId: Channel['id']): Campaign {
+  get(serverId: Server['id'], channelId: Channel['id'], cb:IFunction): void {
     let possibleReturn = null
     if (typeof Campaign.allCampaigns[serverId]["all"] == typeof Campaign){
       possibleReturn = Campaign.allCampaigns[serverId]["all"]
@@ -73,10 +83,9 @@ export class Campaign implements ICampaign {
       possibleReturn = Campaign.allCampaigns[serverId][channelId]
     }
     if (possibleReturn) {
-      return possibleReturn
+      cb(possibleReturn)
     } else {
-      Campaign.retrieve(serverId, channelId)
-      return this.get(serverId, channelId)
+      Campaign.retrieve(serverId, channelId, cb)
     }
   }
 }

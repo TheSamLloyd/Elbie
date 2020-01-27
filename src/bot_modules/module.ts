@@ -1,6 +1,6 @@
 import { Command } from "../objects/command"
 export interface IFunction{
-    (cmd:Command, ...args:any[] ) : any | void;
+    (...args:any[] ) : any | void;
 }
 interface ICommands {
     [index : string] : {desc:string, key:string}

@@ -2,7 +2,7 @@
 import common from '../common'
 import { RichEmbed } from 'discord.js'
 import { Command } from '../../objects/command'
-import { Module, ICallback } from '../module'
+import { Module, IFunction } from '../module'
 import { db as _db } from './models/schema'
 import { Character } from './character'
 import { Campaign } from './campaign'
@@ -17,90 +17,62 @@ export const rpg: Module = {
   functions: {
     // terminal 
     advantage: (command: Command): void => {
-      let text=''
+      let text = ''
       if (command.argument.indexOf(',') !== -1) {
         command.reply('You can only do one roll with advantage.')
         return
       } else {
-          let rolls = GameSystem.roll(`${command.argument}, ${command.argument}`)
-          rolls.forEach(result=>{
-            text += `${result.dielist}=**${result.total}**\n`
-          })
-          text+=`Result: ${Math.max(...rolls.map(result=>result.total))}`
-        }
-        command.reply(text)
-    },
-    getCampaign: (command: Command, cb: ICallback): void => {
-      try {
-        cb(Campaign.retrieve(command.server.id, command.channel.id))
-      } catch (err) {
-        console.error(err)
-        command.reply("Could not retrieve campaign.")
-      }
-    },
-    isDM: (command: Command, cb: ICallback): void => {
-      cb(rpg.functions.getCampaign(command).isDM(command.auth.id))
-    },
-    getCharByPlayer: (command: Command, cb: ICallback): void => {
-      var query = command.argument !== '' ? { name: common.caps(command.argument) } : { id: command.auth.id }
-      console.log(query)
-      db.User.findOne(query, function (err, user) {
-        if (err) console.error(err)
-        if (!user) return cb(null)
-        console.log(user)
-        Character.getChar(command).populate('user').exec(function (err, char) {
-          if (err) console.log(err)
-          cb(err, char)
+        let rolls = GameSystem.roll(`${command.argument}, ${command.argument}`)
+        rolls.forEach(result => {
+          text += `${result.dielist}=**${result.total}**\n`
         })
-      })
+        text += `Result: ${Math.max(...rolls.map(result => result.total))}`
+      }
+      command.reply(text)
     },
-    getCharByName : (command: Command, cb: ICallback): void => {
-      rpg['functions']['getCampaign'](command, campaign => {
-        db.Character.findOne().byCampaignAndName(campaign.id, common.caps(command.argument))
-          .populate('user')
-          .exec(function (err, char) {
-            if (err) console.error(err)
-            console.log(char)
-            cb(char)
-          })
-      })
+    getCampaign: (command: Command, cb: IFunction): void => {
+      Campaign.retrieve(command.server.id, command.channel.id, cb)
+    },
+    isDM: (command: Command): boolean => {
+      let campaign = rpg.functions.getCampaign(command)
+      if (typeof campaign == typeof Campaign) {
+        return campaign.isDM(command.auth.id)
+      }
+      else {
+        console.warn("Couldn't unwrap Campaign promise.")
+        return false
+      }
     },
     // terminal
     'listChar:'(command: Command): void {
       console.log('Listing...')
-      rpg.functions.getCampaign(command, (campaign:Campaign) => {
-        db.Character.find({ campaign: campaign.id }, function (err, characters) {
-          if (err) console.error(err)
-          db.Character.populate(characters, { path: 'user', model: 'User' }, function (err, characters) {
-            if (err) console.error(err)
-            let listCharacters = characters.map((char) => ({ name: char.name, user: char.user.name }))
-            var out = ''
-            characters.forEach((char) => {
-              out += `• ${char.name} (${char.user})\n`
-            })
-            console.log(out)
-            command.reply(out.trim())
-          })
+      rpg.functions.getCampaign(command, (campaign: Campaign) => {
+        let characters = campaign.characters.map((char: Character) => ({ name: char.name, user: char.user.name }))
+        var out = ''
+        characters.forEach((char) => {
+          out += `• ${char.name} (${char.user})\n`
         })
+        console.log(out)
+        command.reply(out.trim())
       })
     },
-    // terminal
-    who: (command: Command): void => {
+  // terminal
+  who: (command: Command): void => {
       if (command.argument === '') {
         var getter
         getter = Character.getChar
       } else {
         getter = Character.getCharByAnyName
       }
-      getter(command, (char:Character) => {
+      getter(command, (char: Character) => {
         if (char) {
-          const displayAttributes = char.attributes.filter(attribute=>attribute.display==true)
+          const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
           var embed = new RichEmbed()
             .setColor('GREEN')
             .setAuthor(char.name + ' (' + char.user.name + ')')
-            displayAttributes.forEach(attribute => {
-              embed.addField(key + ':', value, true)
-            })
+          displayAttributes.forEach(attribute => {
+            embed.addField(key + ':', value, true)
+          })
           for (var [key, value] of char.scores.stats) {
             embed.addField(key + ':', value, true)
           }
@@ -126,17 +98,17 @@ export const rpg: Module = {
       }
       command.args = castlist[command.command]
       if (command.args[2]) {
-        Character.modifyAttr(command, function (attr:string) {
+        Character.modifyAttr(command, function (attr: string) {
           command.reply(`${command.args[0]}: ${attr}`)
         })
       } else {
-        Character.setAttr(command, function (attr:string) {
+        Character.setAttr(command, function (attr: string) {
           command.reply(`${command.args[0]}: ${attr}`)
         })
       }
     },
     bind: (command: Command): void => {
-      rpg['functions']['getCampaign'](command, function (campaign:Campaign) {
+      rpg['functions']['getCampaign'](command, function (campaign: Campaign) {
         if (!campaign) {
           const newCampaign = new db.Campaign({
             dm: command.auth.id,
@@ -159,10 +131,10 @@ export const rpg: Module = {
     statRoll: (command: Command) => {
       Character.statRoll(command, this.rollFormat)
     },
-    bladesRoll: (command: Command):void => {
-      let n:number = parseInt(command.argument)
+    bladesRoll: (command: Command): void => {
+      let n: number = parseInt(command.argument)
       var out
-      let result:number = 0
+      let result: number = 0
       var critical = 0
       var outcome
       if (n <= 0) {
@@ -193,19 +165,19 @@ export const rpg: Module = {
       return
     }
   },
-commands : {
-    'r': { key:'statRoll', desc: 'Rolls the default roll for the system defined in the channel. Add a skill, stat, or number to automatically modify it.' },
-    'bind': { key:'bind', desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
-    'who': { key:'who', desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
-    'list': { key:'listChar', desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
-    'roll': { key:'rollFormat', desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
-    'hp': { key:'cast', desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
-    'mark': { key:'cast', desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
+  commands: {
+    'r': { key: 'statRoll', desc: 'Rolls the default roll for the system defined in the channel. Add a skill, stat, or number to automatically modify it.' },
+    'bind': { key: 'bind', desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
+    'who': { key: 'who', desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
+    'list': { key: 'listChar', desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
+    'roll': { key: 'rollFormat', desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
+    'hp': { key: 'cast', desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
+    'mark': { key: 'cast', desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
     'levelup': { function: Character.system.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
     'theme': { function: Character.system.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
-    'adv': { key:'advantage', desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
-    'dadv': { key:'advantage', desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
-    'disadv': { key:'advantage', desc: 'Alias of +dadv.' },
-    'b': { key:'bladesRoll', desc: 'Rolls a Blades in the Dark roll.' }
+    'adv': { key: 'advantage', desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
+    'dadv': { key: 'advantage', desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
+    'disadv': { key: 'advantage', desc: 'Alias of +dadv.' },
+    'b': { key: 'bladesRoll', desc: 'Rolls a Blades in the Dark roll.' }
   }
 }

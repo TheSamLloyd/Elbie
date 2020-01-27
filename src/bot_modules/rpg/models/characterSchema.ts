@@ -17,9 +17,10 @@ interface IAttribute {
 }
 
 export interface ICharacter {
+  id: string
   name: string
   nickname: string | null
-  user: IUser['id']
+  user: IUser['id']|IUser
   campaign: ICampaign['id']
   scores: { stats: IStats, skills: ISkills }
   attributes: IAttribute[]
@@ -32,6 +33,7 @@ export interface ICharacter {
   theme: string | null
   stats: object
   skills: any
+  aviURL?:string
 }
 
 const CharacterSchema: Schema = new Schema({
@@ -89,7 +91,12 @@ const CharacterSchema: Schema = new Schema({
   },
   theme: {
     type: String
-  }
+  },
+  aviURL:{
+    type: String,
+    required: false
+  },
+
 })
 
 CharacterSchema.query.byCampaign = function (campaignID: ICampaign["id"]): ICharacter[] {
