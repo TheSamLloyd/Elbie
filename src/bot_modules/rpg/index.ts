@@ -8,6 +8,7 @@ import { Character } from './character'
 import { Campaign } from './campaign'
 import { Die } from './dice'
 import { GameSystem } from './systems/game'
+import characterSchema from './models/characterSchema'
 
 // module information
 class rpg extends Module {
@@ -46,38 +47,33 @@ class rpg extends Module {
   }
   // terminal
   who = (command: Command): void => {
-    if (command.argument === '') {
-      var getter
-      getter = Character.get()
-    } else {
-      getter = Character.getCharByAnyName
-    }
-    getter(command, (char: Character) => {
-      if (char) {
-        const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
-        var embed = new RichEmbed()
-          .setColor('GREEN')
-          .setAuthor(char.name + ' (' + char.dbUser.name + ')')
-        displayAttributes.forEach(attribute => {
-          embed.addField(attribute.key + ':', attribute.value, true)
+    this.getCampaign(command, (campaign: Campaign) => {
+      if (command.argument === '') {
+        Character.get(command.auth.id, campaign.id, (char:Character)=>{
+          command.reply(this.generateEmbed(char))
         })
-        for (var [key, value] of char.stats) {
-          embed.addField(key + ':', value, true)
-        }
-        embed.addField('Description:', (char.desc || 'None'), false)
-          .setFooter('Elbeanor')
-        if (char.aviURL) {
-          embed.setImage(char.aviURL)
-        }
-        try {
-          command.reply(embed)
-        } catch (err) {
-          command.reply('Could not send rich embed -- may not have permission in this channel or server.')
-        }
       } else {
-        command.reply(`Couldn't find a character in the active campaign scope with name, nickname, or user's name "${command.argument}".`)
+        // get the character by username / name / nickname
       }
     })
+  }
+  generateEmbed = (char: Character): RichEmbed => {
+    const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
+    var embed = new RichEmbed()
+      .setColor('GREEN')
+      .setAuthor(char.name + ' (' + char.dbUser.name + ')')
+    displayAttributes.forEach(attribute => {
+      embed.addField(attribute.key + ':', attribute.value, true)
+    })
+    for (var [key, value] of char.stats) {
+      embed.addField(key + ':', value, true)
+    }
+    embed.addField('Description:', (char.desc || 'None'), false)
+      .setFooter('Elbeanor')
+    if (char.aviURL) {
+      embed.setImage(char.aviURL)
+    }
+    return embed
   }
   cast = (command: Command): void => {
     var castlist = {
@@ -95,33 +91,11 @@ class rpg extends Module {
       })
     }
   }
-  bind = (command: Command): void => {
-    this.getCampaign(command, function (campaign: Campaign) {
-      if (!campaign) {
-        const newCampaign = new db.Campaign({
-          dm: command.auth.id,
-          channel: command.channel.id,
-          shtname: command.args[0],
-          name: command.args.slice(1).join(' ')
-        })
-        newCampaign.save(function (err, campaign) {
-          if (err) console.error(err)
-          else {
-            command.reply(`Successfully created new campaign: ${campaign.name}
-          Please finish setup on the web interface [[link forthcoming]]`)
-          }
-        })
-      } else {
-        command.reply('Already defined a campaign for this channel.')
-      }
-    })
-  }
   statRoll = (command: Command) => {
     Character.statRoll(command, this.rollFormat)
   }
   commands: ICommands = {
     'r': { key: this.statRoll, desc: 'Rolls the default roll for the system defined in the channel. Add a skill, stat, or number to automatically modify it.' },
-    'bind': { key: this.bind, desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
     'list': { key: this.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
     'roll': { key: this.rollFormat, desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
