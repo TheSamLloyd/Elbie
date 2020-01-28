@@ -2,15 +2,15 @@ import mongoose, { Schema, Document } from 'mongoose'
 import { ICampaign } from './campaignSchema'
 import { IUser } from './userSchema'
 
-interface ISkills {
+export interface ISkills {
   [skill: string]: any;
 }
 
-interface IStats {
+export interface IStats {
   [stat: string]: any;
 }
 
-interface IAttribute {
+export interface IAttribute {
   key:string
   value:string
   display:boolean
@@ -31,8 +31,8 @@ export interface ICharacter {
   alive: boolean
   desc: string
   theme: string | null
-  stats: object
-  skills: any
+  stats: IStats
+  skills: ISkills
   aviURL?:string | null
 }
 

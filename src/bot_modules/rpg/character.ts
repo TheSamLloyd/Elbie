@@ -3,7 +3,7 @@
 import { Document } from 'mongoose'
 import { db } from './models/schema'
 import { ICampaign } from './models/campaignSchema'
-import { ICharacter } from './models/characterSchema'
+import { ICharacter, IStats, ISkills } from './models/characterSchema'
 import { IUser } from './models/userSchema'
 import { IFunction } from '../module'
 import { User } from './user'
@@ -15,7 +15,7 @@ export class Character implements ICharacter {
   user: IUser['id']
   dbUser: User | undefined
   campaign: ICampaign['id']
-  scores: { stats: object, skills: object }
+  scores: { stats: IStats, skills: ISkills }
   attributes: any[]
   inventory: string[]
   HP: { current: number, maxHP: number }
@@ -24,8 +24,8 @@ export class Character implements ICharacter {
   alive: boolean
   desc: string
   theme: string | null
-  stats: object
-  skills: object
+  stats: IStats
+  skills: ISkills
   aviURL: string | null
   constructor(character: Document) {
     this.id=character.id

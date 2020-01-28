@@ -61,11 +61,11 @@ class rpg extends Module {
     const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
     var embed = new RichEmbed()
       .setColor('GREEN')
-      .setAuthor(char.name + ' (' + char.dbUser.name + ')')
+      .setAuthor(char.name + ' (' + (char.dbUser ? char.dbUser.name : "") + ')')
     displayAttributes.forEach(attribute => {
       embed.addField(attribute.key + ':', attribute.value, true)
     })
-    for (var [key, value] of char.stats) {
+    for (char.stats) {
       embed.addField(key + ':', value, true)
     }
     embed.addField('Description:', (char.desc || 'None'), false)
@@ -91,18 +91,11 @@ class rpg extends Module {
       })
     }
   }
-  statRoll = (command: Command) => {
-    Character.statRoll(command, this.rollFormat)
-  }
   commands: ICommands = {
-    'r': { key: this.statRoll, desc: 'Rolls the default roll for the system defined in the channel. Add a skill, stat, or number to automatically modify it.' },
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
     'list': { key: this.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
-    'roll': { key: this.rollFormat, desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
     'hp': { key: this.cast, desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
     'mark': { key: this.cast, desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
-    'levelup': { key: Character.system.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
-    'theme': { key: Character.system.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
     'adv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
     'dadv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
     'disadv': { key: this.advantage, desc: 'Alias of +dadv.' }
