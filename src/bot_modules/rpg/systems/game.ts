@@ -59,6 +59,8 @@ export abstract class GameSystem extends db.System implements IGameSystem {
     mod(score: number): number {
         return score
     }
-    abstract levelup(character: ICharacter): boolean
+    levelup(character: ICharacter): boolean{
+        return false
+    }
 
 }

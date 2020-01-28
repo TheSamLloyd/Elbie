@@ -2,20 +2,19 @@
 import common from '../common'
 import { RichEmbed } from 'discord.js'
 import { Command } from '../../objects/command'
-import { Module, IFunction } from '../module'
-import { db as _db } from './models/schema'
+import { Module, IFunction, ICommands } from '../module'
+import { db } from './models/schema'
 import { Character } from './character'
 import { Campaign } from './campaign'
 import { Die } from './dice'
 import { GameSystem } from './systems/game'
-const db = _db
 
 // module information
-class rpg implements Module {
+class rpg extends Module {
   name: string = 'rpg'
   desc: string = 'functions to allow basic RPG commands'
   // terminal 
-  static advantage = (command: Command): void => {
+  advantage = (command: Command): void => {
     let text = ''
     if (command.argument.indexOf(',') !== -1) {
       command.reply('You can only do one roll with advantage.')
@@ -36,7 +35,7 @@ class rpg implements Module {
   listChar = (command: Command): void => {
     console.log('Listing...')
     this.getCampaign(command, (campaign: Campaign) => {
-      let characters = campaign.characters.map((char: Character) => ({ name: char.name, user: char.user.name }))
+      let characters = campaign.characters.map((char: Character) => ({ name: char.name, user: char.dbUser ? char.dbUser.name : "" }))
       var out = ''
       characters.forEach((char) => {
         out += `• ${char.name} (${char.user})\n`
@@ -49,7 +48,7 @@ class rpg implements Module {
   who = (command: Command): void => {
     if (command.argument === '') {
       var getter
-      getter = Character.getChar
+      getter = Character.get()
     } else {
       getter = Character.getCharByAnyName
     }
@@ -58,9 +57,9 @@ class rpg implements Module {
         const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
         var embed = new RichEmbed()
           .setColor('GREEN')
-          .setAuthor(char.name + ' (' + char.user.name + ')')
+          .setAuthor(char.name + ' (' + char.dbUser.name + ')')
         displayAttributes.forEach(attribute => {
-          embed.addField(key + ':', value, true)
+          embed.addField(attribute.key + ':', attribute.value, true)
         })
         for (var [key, value] of char.stats) {
           embed.addField(key + ':', value, true)
@@ -97,7 +96,7 @@ class rpg implements Module {
     }
   }
   bind = (command: Command): void => {
-    rpg.getCampaign(command, function (campaign: Campaign) {
+    this.getCampaign(command, function (campaign: Campaign) {
       if (!campaign) {
         const newCampaign = new db.Campaign({
           dm: command.auth.id,
@@ -120,53 +119,19 @@ class rpg implements Module {
   statRoll = (command: Command) => {
     Character.statRoll(command, this.rollFormat)
   }
-  bladesRoll = (command: Command): void => {
-    let n: number = parseInt(command.argument)
-    var out
-    let result: number = 0
-    var critical = 0
-    var outcome
-    if (n <= 0) {
-      var dice1 = common['randInt'](1, 6)
-      var dice2 = common['randInt'](1, 6)
-      result = Math.min(dice1, dice2)
-      out = `${n}d6: [${dice1}, ${dice2}]: ${result}`
-    } else if (n > 0) {
-      var dice = []
-      for (var i = 0; i < n; i++) {
-        dice.push(common['randInt'](1, 6))
-      }
-      result = Math.max(...dice)
-      critical = dice.filter(die => die === 6).length
-      out = `${n}d6: ${dice}: ${result}`
-    }
-    critical -= 1
-    if (critical) outcome = 'Critical success'
-    else if (result === 6) outcome = 'Full success'
-    else if (result >= 4) outcome = 'Partial success'
-    else if (result >= 1) outcome = 'Bad outcome'
-    else if (isNaN(n)) {
-      command.reply('Malformed roll.')
-      return
-    }
-    out = `${out} - ${outcome}`
-    command.reply(out)
-    return
-  }
-  commands: {
+  commands: ICommands = {
     'r': { key: this.statRoll, desc: 'Rolls the default roll for the system defined in the channel. Add a skill, stat, or number to automatically modify it.' },
-    'bind': { key: 'bind', desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
-    'who': { key: 'who', desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
-    'list': { key: 'listChar', desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
-    'roll': { key: 'rollFormat', desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
-    'hp': { key: 'cast', desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
-    'mark': { key: 'cast', desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
-    'levelup': { function: Character.system.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
-    'theme': { function: Character.system.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
-    'adv': { key: 'advantage', desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
-    'dadv': { key: 'advantage', desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
-    'disadv': { key: 'advantage', desc: 'Alias of +dadv.' },
-    'b': { key: 'bladesRoll', desc: 'Rolls a Blades in the Dark roll.' }
+    'bind': { key: this.bind, desc: 'Binds the channel to a new campaign. The DM should use this function. Syntax is +bind shortname Long Name of Campaign.' },
+    'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
+    'list': { key: this.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
+    'roll': { key: this.rollFormat, desc: 'Rolls a number of comma-separated rolls in xdy+k, xdy-3 format.' },
+    'hp': { key: this.cast, desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
+    'mark': { key: this.cast, desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
+    'levelup': { key: Character.system.levelup, desc: 'If possible, levels up your character and displays your new level. Makes no further stat changes.' },
+    'theme': { key: Character.system.playTheme, desc: 'If defined (and the audio module is loaded), plays your character\'s theme.' },
+    'adv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
+    'dadv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
+    'disadv': { key: this.advantage, desc: 'Alias of +dadv.' }
   }
 }
 

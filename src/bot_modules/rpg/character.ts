@@ -12,7 +12,8 @@ export class Character implements ICharacter {
   id:string
   name: string
   nickname: string | null
-  user: IUser['id']|User
+  user: IUser['id']
+  dbUser: User | undefined
   campaign: ICampaign['id']
   scores: { stats: object, skills: object }
   attributes: any[]
@@ -25,6 +26,7 @@ export class Character implements ICharacter {
   theme: string | null
   stats: object
   skills: object
+  aviURL: string | null
   constructor(character: Document) {
     this.id=character.id
     this.user = character.get('user')
@@ -42,8 +44,9 @@ export class Character implements ICharacter {
     this.theme = character.get('theme')
     this.stats = this.scores.stats
     this.skills = this.scores.skills
+    this.aviURL = character.get('aviURL')
     User.get(this.user as string, (user:User)=>{
-      this.user = user
+      this.dbUser = user
     })
   }
   static get(userId: IUser["id"], campaignId: ICampaign['id'], cb: IFunction): void {

@@ -33,7 +33,7 @@ export interface ICharacter {
   theme: string | null
   stats: object
   skills: any
-  aviURL?:string
+  aviURL?:string | null
 }
 
 const CharacterSchema: Schema = new Schema({
