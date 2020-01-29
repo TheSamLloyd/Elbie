@@ -3,7 +3,7 @@
 import { Document } from 'mongoose'
 import { db } from './models/schema'
 import { ICampaign } from './models/campaignSchema'
-import { ICharacter, IStats, ISkills } from './models/characterSchema'
+import { ICharacter, IStats, ISkills, IAttribute } from './models/characterSchema'
 import { IUser } from './models/userSchema'
 import { IFunction } from '../module'
 import { User } from './user'
@@ -16,7 +16,7 @@ export class Character implements ICharacter {
   dbUser: User | undefined
   campaign: ICampaign['id']
   scores: { stats: IStats, skills: ISkills }
-  attributes: any[]
+  attributes: IAttribute[]
   inventory: string[]
   HP: { current: number, maxHP: number }
   level: number

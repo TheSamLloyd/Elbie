@@ -49,7 +49,7 @@ class rpg extends Module {
   who = (command: Command): void => {
     this.getCampaign(command, (campaign: Campaign) => {
       if (command.argument === '') {
-        Character.get(command.auth.id, campaign.id, (char:Character)=>{
+        Character.get(command.auth.id, campaign.id, (char: Character) => {
           command.reply(this.generateEmbed(char))
         })
       } else {
@@ -63,11 +63,11 @@ class rpg extends Module {
       .setColor('GREEN')
       .setAuthor(char.name + ' (' + (char.dbUser ? char.dbUser.name : "") + ')')
     displayAttributes.forEach(attribute => {
-      embed.addField(attribute.key + ':', attribute.value, true)
+      embed.addField(`${attribute.key} : ${attribute.value}`, true)
     })
-    for (char.stats) {
-      embed.addField(key + ':', value, true)
-    }
+    Object.keys(char.stats).forEach(stat=> {
+      embed.addField(`${stat} : ${char.stats[stat]}`, true)
+    })
     embed.addField('Description:', (char.desc || 'None'), false)
       .setFooter('Elbeanor')
     if (char.aviURL) {
@@ -75,27 +75,9 @@ class rpg extends Module {
     }
     return embed
   }
-  cast = (command: Command): void => {
-    var castlist = {
-      mark: ['exp', common.orDef(command.args[0], 1), true],
-      hp: ['HP.current', common.orDef(command.args[0], 0), true]
-    }
-    command.args = castlist[command.command]
-    if (command.args[2]) {
-      Character.modifyAttr(command, function (attr: string) {
-        command.reply(`${command.args[0]}: ${attr}`)
-      })
-    } else {
-      Character.setAttr(command, function (attr: string) {
-        command.reply(`${command.args[0]}: ${attr}`)
-      })
-    }
-  }
   commands: ICommands = {
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
     'list': { key: this.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
-    'hp': { key: this.cast, desc: 'With no arguments, displays your current HP. With an integer argument, adjusts HP by that much, limited to the range between max HP and 0.' },
-    'mark': { key: this.cast, desc: 'With no arguments, increases your experience by 1 and displays the new value. With an integer argument, adjusts experience by that much.' },
     'adv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
     'dadv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
     'disadv': { key: this.advantage, desc: 'Alias of +dadv.' }

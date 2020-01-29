@@ -1,5 +1,4 @@
 // dependencies
-import fs from 'fs'
 require('dotenv').config()
 import Discord from 'discord.js'
 import { Command } from './objects/command'
