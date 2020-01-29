@@ -7,7 +7,7 @@ const token: string | undefined = process.env.DISCORD_TOKEN
 import Modules from './bot_modules'
 const prefix: string = '+'
 const env: string | undefined = process.env.BUILD
-import * as selfPackage from '../package.json'
+import * as selfPackage from './package.json'
 
 
 // adding commands
