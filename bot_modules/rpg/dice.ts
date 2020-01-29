@@ -1,30 +1,33 @@
 export class Die {
+  self:string
   sides: number
   _number: number
   type: string
   constructor(self: string) {
+    this.self=self
     this.sides = 6;
     this._number = 1;
-    let temp = self.split(/[Dd]/)
+    let temp:number[] = this.self.split(/[Dd]/,2).map((ind)=>parseInt(ind))
+    console.log(temp[0], temp[1])
     switch (temp.length) {
       case 2:
         this.type = "die"
-        if (temp[0] === "" || !(parseInt(temp[0]) >= 1)) {
+        if (temp[0]<1) {
           this._number = 1
-          if (!(parseInt(temp[0]) >= 1)) {
+          if (!(temp[0] >= 1)) {
             console.warn("Could not coerce LHS of die to number, assuming 1...")
           }
         }
         else {
-          this._number = parseInt(temp[0])
+          this._number = temp[0]
         }
-        if (parseInt(temp[1]) >= 1) {
-          this.sides = parseInt(temp[1])
+        if (temp[1] >= 1) {
+          this.sides = temp[1]
         } else {
-          if (isNaN(parseInt(temp[1]))) {
+          if (isNaN(temp[1])) {
             throw new TypeError("Could not parse RHS of die to number.")
           }
-          else if (parseInt(temp[1]) <= 0) {
+          else if (temp[1] <= 0) {
             throw new Error("Cannot have negative number of sides.")
           }
         }
@@ -32,8 +35,8 @@ export class Die {
       case 1:
         this.type = "modifier"
         this.sides = 1
-        if (!isNaN(parseInt(temp[0]))) {
-          this._number = parseInt(temp[0])
+        if (!isNaN(temp[0])) {
+          this._number = temp[0]
         } else {
           throw new TypeError("Could not parse modifier as integer.")
         }

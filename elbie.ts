@@ -12,7 +12,7 @@ import * as selfPackage from './package.json'
 
 // adding commands
 interface ICommandList {
-  [cmd: string]: {function: (command:Command)=>any, desc:string|undefined}
+  [cmd: string]: {key: (command:Command)=>any, desc:string|undefined}
 }
 
 const commandList: ICommandList = {}
@@ -20,6 +20,7 @@ Object.values(Modules).forEach(botmodule => {
   Object.assign(commandList, botmodule.commands)
   console.log('Loaded commands for module ' + botmodule['name'])
   console.log('>' + botmodule['desc'])
+  console.log(commandList)
 })
 
 // helper functions
@@ -91,7 +92,7 @@ function handler(cmd: Command) {
     cmd.reply(output.join('\n'))
   } else {
     try {
-      commandList[cmd.command].function(cmd)
+      commandList[cmd.command]['key'](cmd)
     } catch (err) {
       cmd.reply(errorHandler(err))
     }

@@ -20,12 +20,9 @@ class RollResults {
     }
 }
 
-export abstract class GameSystem extends db.System implements IGameSystem {
+export abstract class GameSystem implements IGameSystem {
     defRoll!: string
     name!: string
-    constructor() {
-        super()
-    }
     static roll(str:string): RollResults[] {
         let rolls: string[] = str.split(/\s*,\s*/)
         let results:RollResults[] = []
@@ -33,14 +30,7 @@ export abstract class GameSystem extends db.System implements IGameSystem {
             let dielist: number[] = []
             iroll = iroll.replace('-', '+-').replace('++', '+')
             iroll.split('+').forEach((die: string) => {
-                let k: Die = new Die("0d0")
-                try {
-                    k = new Die(die)
-                }
-                catch (err) {
-                    console.error(err)
-                    console.error('Malformed roll.')
-                }
+                const k = new Die(die)
                 dielist = dielist.concat(k.roll())
             })
             results.push(new RollResults({iroll, dielist}))
