@@ -5,9 +5,11 @@ import { db } from './models/schema'
 import { NativeError, Document } from 'mongoose'
 import { ICampaign } from './models/campaignSchema'
 import { IFunction } from '../module'
+import gameList from './systems/index'
+import nullGame from './systems/null-game'
 
 interface ISubCampaignList {
-  [index:string]: Campaign
+  [index: string]: Campaign
 }
 interface ICampaignList {
   [index: string]: ISubCampaignList
@@ -16,14 +18,15 @@ export class Campaign implements ICampaign {
   id: string = ""
   name: string = ""
   shortName?: string = ""
-  system: GameSystem | undefined
+  system: GameSystem | undefined = nullGame
   dm: User["id"] = ""
   serverWide: boolean = false
   channel: Channel['id'] | undefined
   server: Server['id'] = ""
   active: boolean
   characters: Character[] = []
-  static allCampaigns: ICampaignList
+  static allCampaigns: ICampaignList = {}
+  static instantiatedAll: boolean = false
   constructor(campaign: Document) {
     this.name = campaign.get('name')
     this.shortName = campaign.get('shortname')
@@ -32,7 +35,10 @@ export class Campaign implements ICampaign {
     this.id = campaign.id
     this.active = campaign.get('active')
     this.channel = campaign.get('channel')
-    if (this.serverWide || this.channel===undefined){
+    gameList.retrieve(campaign.get('system'), (sys: GameSystem) => {
+      if (sys) this.system = sys
+    })
+    if (this.serverWide || this.channel === undefined) {
       Campaign.allCampaigns[this.server]["all"] = this
     }
     else {
@@ -40,12 +46,15 @@ export class Campaign implements ICampaign {
     }
     this.instantiateCharacters()
   }
-  static retrieve(serverId: Server['id'], channelId: Channel['id'], cb:IFunction): void {
+  static retrieve(serverId: Server['id'], channelId: Channel['id'], cb: IFunction): void {
+    console.log('in the retrieve function...')
     db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec((err: NativeError, campaign: Document) => {
-      if (err) {
-        console.error(err)
+      console.log("inside the DB query..")
+      if (err || campaign == null) {
+        console.error(err || 'No campaign...?')
       }
-      else{
+      else {
+        console.log('Found a campaign!')
         cb(new Campaign(campaign))
       }
     })
@@ -60,13 +69,14 @@ export class Campaign implements ICampaign {
         campaigns.forEach(campaign => {
           new Campaign(campaign)
         })
+        this.instantiatedAll = true
         console.log('Campaigns instantiated with no errors.')
       }
     })
   }
-  instantiateCharacters():void{
-    db.Character.find().where({campaign:this.id}).exec((err,chars)=>{
-      chars.forEach(char=>{
+  instantiateCharacters(): void {
+    db.Character.find().where({ campaign: this.id }).exec((err, chars) => {
+      chars.forEach(char => {
         this.characters.push(new Character(char))
       })
     })
@@ -74,18 +84,9 @@ export class Campaign implements ICampaign {
   isDM(id: User['id']): boolean {
     return (this.dm === id)
   }
-  get(serverId: Server['id'], channelId: Channel['id'], cb:IFunction): void {
-    let possibleReturn = null
-    if (typeof Campaign.allCampaigns[serverId]["all"] == typeof Campaign){
-      possibleReturn = Campaign.allCampaigns[serverId]["all"]
-    }
-    else if (typeof Campaign.allCampaigns[serverId][channelId] === typeof Campaign){
-      possibleReturn = Campaign.allCampaigns[serverId][channelId]
-    }
-    if (possibleReturn) {
-      cb(possibleReturn)
-    } else {
-      Campaign.retrieve(serverId, channelId, cb)
-    }
+  static get(serverId: Server['id'], channelId: Channel['id'], cb: IFunction): void {
+    console.log(Campaign.allCampaigns)
+    console.log('Campaign not in AllCampaigns, trying retrieve from DB...')
+    Campaign.retrieve(serverId, channelId, cb)
   }
 }

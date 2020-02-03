@@ -1,4 +1,4 @@
-import { GameSystem } from "./game";
+import { GameSystem, RollResults } from "./game";
 import { Command } from "../../../objects/command";
 import common from '../../common'
 import { Character } from "../character";
@@ -13,46 +13,42 @@ class BladesInTheDark extends GameSystem {
     'sup': 'Superior',
     'mun': 'Mundane'
   }
-  constructor(){
+  constructor() {
     super()
   }
-  levelup = (character:Character):boolean => {
+  levelup = (character: Character): boolean => {
     return super.levelup(character)
   }
-  roll = (input:string): string => {
+  roll = (input: string): RollResults[] => {
     let n: number = parseInt(input)
-    var out
+    var out: string
     let result: number = 0
     var critical = 0
-    var outcome
+    var outcome: string
+    var dice: number[] = []
     if (n <= 0) {
-      var dice1 = common['randInt'](1, 6)
-      var dice2 = common['randInt'](1, 6)
-      result = Math.min(dice1, dice2)
-      out = `${n}d6: [${dice1}, ${dice2}]: ${result}`
+      dice = [common.randInt(1, 6), common.randInt(1, 6)]
+      result = Math.min(...dice)
+      out = `${n}d6: ${dice}]: ${result}`
     } else if (n > 0) {
-      var dice = []
       for (var i = 0; i < n; i++) {
         dice.push(common['randInt'](1, 6))
       }
-      result = Math.max(...dice)
-      critical = dice.filter(die => die === 6).length
-      out = `${n}d6: ${dice}: ${result}`
-      critical -= 1
-      if (critical) outcome = 'Critical success'
-      else if (result === 6) outcome = 'Full success'
-      else if (result >= 4) outcome = 'Partial success'
-      else if (result >= 1) outcome = 'Bad outcome'
-      else if (isNaN(n)) {
-        return 'Malformed roll.'
-      }
-      out = `${out} - ${outcome}`
-      return out
     }
-    return ""
-  }
-  rollFormat(cmd:Command){
-    cmd.reply(this.roll(cmd.argument))    
+    result = Math.max(...dice)
+    critical = dice.filter(die => die === 6).length
+    out = `${n}d6: ${dice}: ${result}`
+    critical -= 1
+    if (critical) outcome = 'Critical success'
+    else if (result === 6) outcome = 'Full success'
+    else if (result >= 4) outcome = 'Partial success'
+    else if (result >= 1) outcome = 'Bad outcome'
+    else {
+      outcome = "could not parse..."
+    }
+    out = `${out} - ${outcome}`
+    const output: RollResults = new RollResults({iroll:`${n}d6`, dielist:dice })
+    return [output]
   }
 }
 

@@ -16,4 +16,4 @@ class ApocalypseWorldBurnedOver extends GameSystem {
   }
 }
 
-export default new ApocalypseWorldBurnedOver 
+export default new ApocalypseWorldBurnedOver()

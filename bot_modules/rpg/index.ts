@@ -9,6 +9,8 @@ import { Campaign } from './campaign'
 import { Die } from './dice'
 import { GameSystem } from './systems/game'
 import characterSchema from './models/characterSchema'
+import { RollResults } from './systems/game'
+import nullGame from './systems/null-game'
 
 // module information
 class rpg extends Module {
@@ -21,7 +23,7 @@ class rpg extends Module {
       command.reply('You can only do one roll with advantage.')
       return
     } else {
-      let rolls = GameSystem.roll(`${command.argument}, ${command.argument}`)
+      let rolls = nullGame.roll(`${command.argument}, ${command.argument}`)
       rolls.forEach(result => {
         text += `${result.dielist}=**${result.total}**\n`
       })
@@ -30,7 +32,8 @@ class rpg extends Module {
     command.reply(text)
   }
   getCampaign = (command: Command, cb: IFunction): void => {
-    Campaign.retrieve(command.server.id, command.channel.id, cb)
+    if (!Campaign.instantiatedAll) Campaign.instatiateAllActiveCampaigns()
+    Campaign.get(command.server.id, command.channel.id, cb)
   }
   // terminal
   listChar = (command: Command): void => {
@@ -65,7 +68,7 @@ class rpg extends Module {
     displayAttributes.forEach(attribute => {
       embed.addField(`${attribute.key} : ${attribute.value}`, true)
     })
-    Object.keys(char.stats).forEach(stat=> {
+    Object.keys(char.stats).forEach(stat => {
       embed.addField(`${stat} : ${char.stats[stat]}`, true)
     })
     embed.addField('Description:', (char.desc || 'None'), false)
@@ -75,12 +78,28 @@ class rpg extends Module {
     }
     return embed
   }
+  rollFormat = (command: Command): void => {
+    this.getCampaign(command, (campaign: Campaign) => {
+      console.log(campaign)
+      console.log(campaign.system)
+      if (campaign && campaign.system) {
+        const output: RollResults[] = campaign.system.roll(command.argument)
+        let text: string = ''
+        output.forEach((roll) => {
+          text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
+        })
+        command.reply(text.trim())
+      }
+    })
+
+  }
   commands: ICommands = {
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
     'list': { key: this.listChar, desc: 'Lists every character and their associated user in the channel\'s associated campaign.' },
     'adv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
     'dadv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
-    'disadv': { key: this.advantage, desc: 'Alias of +dadv.' }
+    'disadv': { key: this.advantage, desc: 'Alias of +dadv.' },
+    'roll': { key: this.rollFormat, desc: 'Makes a roll in the defined system, or a standard xDy roll if not defined.' }
   }
 }
 
