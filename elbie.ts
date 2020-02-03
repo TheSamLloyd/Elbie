@@ -8,7 +8,17 @@ import Modules from './bot_modules'
 const prefix: string = '+'
 const env: string | undefined = process.env.BUILD
 import * as selfPackage from './package.json'
+import mongoose from 'mongoose'
+const dbToken = process.env.MONGODB_URI || ""
 
+export const database = mongoose.connect(dbToken, (err)=>{
+  if (err){
+    console.error("No connection to DB!")
+  console.error(err)}
+  else{
+    console.log('DB connection ready!')
+  }
+})
 
 // adding commands
 interface ICommandList {

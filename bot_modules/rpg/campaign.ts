@@ -39,9 +39,11 @@ export class Campaign implements ICampaign {
       if (sys) this.system = sys
     })
     if (this.serverWide || this.channel === undefined) {
+      Campaign.allCampaigns[this.server] = {}
       Campaign.allCampaigns[this.server]["all"] = this
     }
     else {
+      Campaign.allCampaigns[this.server] = {}
       Campaign.allCampaigns[this.server][this.channel] = this
     }
     this.instantiateCharacters()
@@ -66,10 +68,11 @@ export class Campaign implements ICampaign {
         console.error(err)
       }
       else {
+        console.log(campaigns)
         campaigns.forEach(campaign => {
           new Campaign(campaign)
         })
-        this.instantiatedAll = true
+        Campaign.instantiatedAll = true
         console.log('Campaigns instantiated with no errors.')
       }
     })
@@ -86,6 +89,14 @@ export class Campaign implements ICampaign {
   }
   static get(serverId: Server['id'], channelId: Channel['id'], cb: IFunction): void {
     console.log(Campaign.allCampaigns)
+    if (Campaign.allCampaigns[serverId]){
+      if (Campaign.allCampaigns[serverId]["all"]){
+        cb(Campaign.allCampaigns[serverId]["all"])
+      }
+      else if (Campaign.allCampaigns[serverId][channelId]){
+        cb(Campaign.allCampaigns[serverId][channelId])
+      }
+    }
     console.log('Campaign not in AllCampaigns, trying retrieve from DB...')
     Campaign.retrieve(serverId, channelId, cb)
   }
