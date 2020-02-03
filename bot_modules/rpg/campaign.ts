@@ -7,6 +7,7 @@ import { ICampaign } from './models/campaignSchema'
 import { IFunction } from '../module'
 import gameList from './systems/index'
 import nullGame from './systems/null-game'
+import { isFunction } from 'util'
 
 interface ISubCampaignList {
   [index: string]: Campaign
@@ -18,7 +19,7 @@ export class Campaign implements ICampaign {
   id: string = ""
   name: string = ""
   shortName?: string = ""
-  system: GameSystem | undefined = nullGame
+  system: (cb:IFunction)=> void
   dm: User["id"] = ""
   serverWide: boolean = false
   channel: Channel['id'] | undefined
@@ -35,15 +36,19 @@ export class Campaign implements ICampaign {
     this.id = campaign.id
     this.active = campaign.get('active')
     this.channel = campaign.get('channel')
-    gameList.retrieve(campaign.get('system'), (sys: GameSystem) => {
-      if (sys) this.system = sys
-    })
-    if (this.serverWide || this.channel === undefined) {
+    this.server = campaign.get('server')
+    this.system = (cb:IFunction)=>{
+      gameList.retrieve(campaign.get('system'), (sys:GameSystem) => {
+      if (sys!=null) cb(sys)
+      console.log(sys.name)
+    })}
+    if (!Campaign.allCampaigns[this.server]){
       Campaign.allCampaigns[this.server] = {}
+    }
+    if (this.serverWide || this.channel === undefined) {
       Campaign.allCampaigns[this.server]["all"] = this
     }
     else {
-      Campaign.allCampaigns[this.server] = {}
       Campaign.allCampaigns[this.server][this.channel] = this
     }
     this.instantiateCharacters()
@@ -74,12 +79,14 @@ export class Campaign implements ICampaign {
         })
         Campaign.instantiatedAll = true
         console.log('Campaigns instantiated with no errors.')
+        console.log(this.allCampaigns)
       }
     })
   }
   instantiateCharacters(): void {
-    db.Character.find().where({ campaign: this.id }).exec((err, chars) => {
+    db.Character.find().where({ campaign: this.id }).exec((err, chars: Document[]) => {
       chars.forEach(char => {
+        console.log(`Instantiating character: ${char.get('name')}`)
         this.characters.push(new Character(char))
       })
     })
@@ -88,16 +95,17 @@ export class Campaign implements ICampaign {
     return (this.dm === id)
   }
   static get(serverId: Server['id'], channelId: Channel['id'], cb: IFunction): void {
-    console.log(Campaign.allCampaigns)
-    if (Campaign.allCampaigns[serverId]){
-      if (Campaign.allCampaigns[serverId]["all"]){
+    if (Campaign.allCampaigns[serverId]) {
+      if (Campaign.allCampaigns[serverId]["all"]) {
         cb(Campaign.allCampaigns[serverId]["all"])
       }
-      else if (Campaign.allCampaigns[serverId][channelId]){
+      else if (Campaign.allCampaigns[serverId][channelId]) {
         cb(Campaign.allCampaigns[serverId][channelId])
       }
     }
-    console.log('Campaign not in AllCampaigns, trying retrieve from DB...')
-    Campaign.retrieve(serverId, channelId, cb)
+    else {
+      console.log('Campaign not in AllCampaigns, trying retrieve from DB...')
+      Campaign.retrieve(serverId, channelId, cb)
+    }
   }
 }

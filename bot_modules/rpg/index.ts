@@ -82,16 +82,30 @@ class rpg extends Module {
     this.getCampaign(command, (campaign: Campaign) => {
       console.log(campaign)
       console.log(campaign.system)
-      if (campaign && campaign.system) {
-        const output: RollResults[] = campaign.system.roll(command.argument)
-        let text: string = ''
-        output.forEach((roll) => {
-          text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
+      if (campaign) {
+        campaign.system((sys) => {
+          const output: RollResults[] = sys.roll(command.argument)
+          let text: string = ''
+          output.forEach((roll) => {
+            text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
+          })
+          command.reply(text.trim())
         })
-        command.reply(text.trim())
       }
     })
 
+  }
+  summary = (command: Command): void => {
+    let outtext: string = ""
+    this.getCampaign(command, (campaign: Campaign) => {
+      if (campaign) {
+        campaign.system((sys) => {
+          outtext += `${campaign.name} running in ${sys.name}\n`
+          outtext += `${campaign.characters.map((char) => char.name).join("\n")}`
+          command.reply(outtext)
+        })
+      }
+    })
   }
   commands: ICommands = {
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },
@@ -99,7 +113,8 @@ class rpg extends Module {
     'adv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the higher result.' },
     'dadv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
     'disadv': { key: this.advantage, desc: 'Alias of +dadv.' },
-    'roll': { key: this.rollFormat, desc: 'Makes a roll in the defined system, or a standard xDy roll if not defined.' }
+    'roll': { key: this.rollFormat, desc: 'Makes a roll in the defined system, or a standard xDy roll if not defined.' },
+    'summary': { key: this.summary, desc: 'Prints a summary of the campaign in the channel.' }
   }
 }
 

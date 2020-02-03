@@ -5,6 +5,7 @@ class DungeonWorld extends GameSystem {
   constructor(){
     super()
   }
+  name = 'Dungeon World'
   defRoll = '2d6'
   statAlias = {
     'str': 'Strength',

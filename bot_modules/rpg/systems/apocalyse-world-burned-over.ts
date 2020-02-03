@@ -2,6 +2,7 @@ import { GameSystem } from "./game";
 import { ICharacter } from "../models/characterSchema";
 
 class ApocalypseWorldBurnedOver extends GameSystem {
+  name = 'Apocalypse World: Burned Over'
   defRoll='2d6'
   statAlias={
     'aggro': 'Aggro',

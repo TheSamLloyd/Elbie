@@ -1,8 +1,13 @@
+export enum types {
+  "die",
+  "modifier"
+}
+
 export class Die {
   self:string
   sides: number
   _number: number
-  type: string
+  type: types
   constructor(self: string) {
     this.self=self
     this.sides = 6;
@@ -11,7 +16,7 @@ export class Die {
     console.log(temp[0], temp[1])
     switch (temp.length) {
       case 2:
-        this.type = "die"
+        this.type = types["die"]
         if (temp[0]<1) {
           this._number = 1
           if (!(temp[0] >= 1)) {
@@ -33,7 +38,7 @@ export class Die {
         }
         break;
       case 1:
-        this.type = "modifier"
+        this.type = types["modifier"]
         this.sides = 1
         if (!isNaN(temp[0])) {
           this._number = temp[0]
@@ -52,12 +57,12 @@ export class Die {
       upperBound = lowerBound
       lowerBound = 1
     }
-    let output: number = (Math.ceil(Math.random() * (upperBound - lowerBound + 1) + lowerBound))
+    let output: number = (Math.floor(Math.random() * (upperBound - lowerBound + 1) + lowerBound))
     return output
   }
   roll = (): number[] => {
     let output:number[] = []
-    if (this.type == "modifier") {
+    if (this.type == types["modifier"]) {
       return [this._number]
     }
     else {
