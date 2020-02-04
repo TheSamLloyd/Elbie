@@ -14,7 +14,7 @@ export class RollResults {
     constructor(res: { iroll: string, dielist: number[], total?:number|string }) {
         this.iroll = res.iroll
         this.dielist = res.dielist
-        this.total = res.total || Die.sum(res.dielist)
+        this.total = (res.total || 0) || Die.sum(res.dielist)
     }
 }
 export class skillSystem{
