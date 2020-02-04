@@ -1,9 +1,5 @@
 import { Die, types } from "../dice"
 import { Character } from "../character"
-import { db } from '../models/schema'
-import { ISystem } from "../models/systemSchema"
-import { Document } from 'mongoose'
-import { IFunction } from "../../module"
 
 interface IGameSystem {
     readonly name: string
