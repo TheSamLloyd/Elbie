@@ -1,5 +1,4 @@
 import { GameSystem, RollResults } from "./game";
-import { Command } from "../../../objects/command";
 import common from '../../common'
 import { Character } from "../character";
 

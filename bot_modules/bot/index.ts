@@ -1,7 +1,6 @@
 // dependencies
 import common  from '../common'
-import { Module } from '../module'
-import { Command } from '../../objects/command'
+import { Module, Command } from '../module'
 // basic bot commands
 class bot extends Module {
   name='bot'

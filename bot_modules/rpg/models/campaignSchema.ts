@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema, DocumentQuery} from 'mongoose'
 import { ISystem } from './systemSchema'
 import { IUser } from './userSchema'
-import { Command } from '../../../objects/command'
 
 export interface ICampaign {
   id:string
@@ -47,12 +46,5 @@ const CampaignSchema: Schema = new Schema({
     default: false
   }
 })
-
-CampaignSchema.query.byCommand = function (cmd: Command): ICampaign {
-  return this.where({ $or: [{ channel: cmd.channel.id }, { server: cmd.server.id, serverWide: true }] })
-}
-CampaignSchema.query.allActive = function (): ICampaign[] {
-  return this.where({ active: true })
-}
 
 export default mongoose.model('Campaign', CampaignSchema)

@@ -1,8 +1,7 @@
 // dependencies
 import common from '../common'
 import { RichEmbed } from 'discord.js'
-import { Command } from '../../objects/command'
-import { Module, IFunction, ICommands } from '../module'
+import { Module, IFunction, Command, ICommands } from '../module'
 import { db } from './models/schema'
 import { Character } from './character'
 import { Campaign } from './campaign'

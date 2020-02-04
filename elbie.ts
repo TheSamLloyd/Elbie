@@ -1,7 +1,7 @@
 // dependencies
 require('dotenv').config()
 import Discord from 'discord.js'
-import { Command } from './objects/command'
+import { Command } from './bot_modules/module'
 export const client = new Discord.Client()
 const token: string | undefined = process.env.DISCORD_TOKEN
 import Modules from './bot_modules'
