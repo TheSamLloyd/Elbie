@@ -10,11 +10,11 @@ interface IGameSystem {
 export class RollResults {
     readonly iroll: string
     readonly dielist: number[]
-    readonly total: number
-    constructor(res: { iroll: string, dielist: number[] }) {
+    readonly total: number|string|undefined
+    constructor(res: { iroll: string, dielist: number[], total?:number|string }) {
         this.iroll = res.iroll
         this.dielist = res.dielist
-        this.total = Die.sum(res.dielist)
+        this.total = res.total || Die.sum(res.dielist)
     }
 }
 export class skillSystem{

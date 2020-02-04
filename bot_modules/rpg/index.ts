@@ -6,8 +6,6 @@ import { db } from './models/schema'
 import { Character } from './character'
 import { Campaign } from './campaign'
 import { Die } from './dice'
-import { GameSystem } from './systems/game'
-import characterSchema from './models/characterSchema'
 import { RollResults } from './systems/game'
 import nullGame from './systems/null-game'
 
@@ -26,7 +24,7 @@ class rpg extends Module {
       rolls.forEach(result => {
         text += `${result.dielist}=**${result.total}**\n`
       })
-      text += `Result: ${Math.max(...rolls.map(result => result.total))}`
+      text += `Result: ${Math.max(...rolls.map(roll => roll.total as number))}`
     }
     command.reply(text)
   }
