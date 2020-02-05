@@ -21,13 +21,13 @@ class bot extends Module {
       heads = 'heads'
       tails = 'tails'
     }
-    var flip = common['randInt'](0, 1) ? heads : tails
+    var flip = common.randInt(0, 1) ? heads : tails
     command.reply(flip)
   }
   choose(command: Command): void {
     var n = command.args.length
     if (n >= 2) {
-      command.reply(command.args[common['randInt'](0, n - 1)])
+      command.reply(command.args[common.randInt(0, n - 1)])
     } else {
       command.reply('Please provide at least 2 options.')
     }

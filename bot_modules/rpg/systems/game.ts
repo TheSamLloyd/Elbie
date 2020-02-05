@@ -10,30 +10,30 @@ interface IGameSystem {
 export class RollResults {
     readonly iroll: string
     readonly dielist: number[]
-    readonly total: number|string|undefined
-    constructor(res: { iroll: string, dielist: number[], total?:number|string }) {
+    readonly total: number | string | undefined
+    constructor(res: { iroll: string, dielist: number[], total?: number | string }) {
         this.iroll = res.iroll
         this.dielist = res.dielist
         this.total = (res.total || 0) || Die.sum(res.dielist)
     }
 }
-export class skillSystem{
-    name:string
-    stat?:string
-    ranks?:number
-    constructor(name:string, ranks?:number, stat?:string){
-        this.name=name
-        this.ranks=ranks
-        this.stat=stat
+export class skillSystem {
+    name: string
+    stat?: string
+    ranks?: number
+    constructor(name: string, ranks?: number, stat?: string) {
+        this.name = name
+        this.ranks = ranks
+        this.stat = stat
     }
 }
 export interface SkillList {
-    [index:string]:skillSystem
+    [index: string]: skillSystem
 }
 export abstract class GameSystem implements IGameSystem {
     defRoll!: string
     name!: string
-    skills:SkillList = {}
+    skills: SkillList = {}
     roll(str: string): RollResults[] {
         if (str === "") str = this.defRoll
         let rolls: string[] = str.split(/\s*,\s*/)
@@ -47,7 +47,7 @@ export abstract class GameSystem implements IGameSystem {
                 const z = new Die(this.defRoll)
                 if (tempIroll.length == 1 && k.type == types['modifier']) {
                     dielist = dielist.concat(z.roll(), k.roll())
-                    iroll=this.defRoll+"+"+iroll
+                    iroll = this.defRoll + "+" + iroll
                 }
                 else { dielist = dielist.concat(k.roll()) }
             })
@@ -62,9 +62,9 @@ export abstract class GameSystem implements IGameSystem {
     levelup(character: Character): boolean {
         return false
     }
-    skillRoll = (char:Character, skill:string):RollResults[]=>{
-        if (this.skills[skill]){
-            return this.roll(this.defRoll+"+"+char.skills[skill] + "+" + this.skills[skill])
+    skillRoll = (char: Character, skill: string): RollResults[] => {
+        if (this.skills[skill]) {
+            return this.roll(this.defRoll + "+" + char.skills[skill] + "+" + this.skills[skill])
         }
         else {
             return this.roll("")
