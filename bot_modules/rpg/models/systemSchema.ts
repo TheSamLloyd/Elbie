@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 export interface ISystem extends Document {
-  name:string
-  path:string
+  name: string
+  path: string
 }
 
 const SystemSchema = new Schema({
@@ -12,7 +12,7 @@ const SystemSchema = new Schema({
   }
 })
 
-SystemSchema.virtual('path').get(function (this:ISystem) {
+SystemSchema.virtual('path').get(function (this: ISystem) {
   return `../bot_modules/rpg/${this.name.replace(/\W+/g, '-').toLowerCase()}.js`
 })
 

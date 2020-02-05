@@ -1,9 +1,9 @@
-import mongoose, { Document, Schema, DocumentQuery} from 'mongoose'
+import mongoose, { Document, Schema, DocumentQuery } from 'mongoose'
 import { ISystem } from './systemSchema'
 import { IUser } from './userSchema'
 
 export interface ICampaign {
-  id:string
+  id: string
   name: string
   shortname?: string
   channel?: string

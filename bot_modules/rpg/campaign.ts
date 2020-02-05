@@ -19,7 +19,7 @@ export class Campaign implements ICampaign {
   id: string = ""
   name: string = ""
   shortName?: string = ""
-  system: (cb:IFunction)=> void
+  system: (cb: IFunction) => void
   dm: User["id"] = ""
   serverWide: boolean = false
   channel: Channel['id'] | undefined
@@ -37,12 +37,13 @@ export class Campaign implements ICampaign {
     this.active = campaign.get('active')
     this.channel = campaign.get('channel')
     this.server = campaign.get('server')
-    this.system = (cb:IFunction)=>{
-      gameList.retrieve(campaign.get('system'), (sys:GameSystem) => {
-      if (sys!=null) cb(sys)
-      console.log(sys.name)
-    })}
-    if (!Campaign.allCampaigns[this.server]){
+    this.system = (cb: IFunction) => {
+      gameList.retrieve(campaign.get('system'), (sys: GameSystem) => {
+        if (sys != null) cb(sys)
+        console.log(sys.name)
+      })
+    }
+    if (!Campaign.allCampaigns[this.server]) {
       Campaign.allCampaigns[this.server] = {}
     }
     if (this.serverWide || this.channel === undefined) {

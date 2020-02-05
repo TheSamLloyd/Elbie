@@ -11,16 +11,16 @@ export interface IStats {
 }
 
 export interface IAttribute {
-  key:string
-  value:string
-  display:boolean
+  key: string
+  value: string
+  display: boolean
 }
 
 export interface ICharacter {
   id: string
   name: string
   nickname: string | null
-  user: IUser['id']|IUser
+  user: IUser['id'] | IUser
   campaign: ICampaign['id']
   scores: { stats: IStats, skills: ISkills }
   attributes: IAttribute[]
@@ -33,7 +33,7 @@ export interface ICharacter {
   theme: string | null
   stats: IStats
   skills: ISkills
-  aviURL?:string | null
+  aviURL?: string | null
 }
 
 const CharacterSchema: Schema = new Schema({
@@ -92,7 +92,7 @@ const CharacterSchema: Schema = new Schema({
   theme: {
     type: String
   },
-  aviURL:{
+  aviURL: {
     type: String,
     required: false
   },

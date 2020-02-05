@@ -4,20 +4,20 @@ export enum types {
 }
 
 export class Die {
-  self:string
+  self: string
   sides: number
   _number: number
   type: types
   constructor(self: string) {
-    this.self=self
+    this.self = self
     this.sides = 6;
     this._number = 1;
-    let temp:number[] = this.self.split(/[Dd]/,2).map((ind)=>parseInt(ind))
+    let temp: number[] = this.self.split(/[Dd]/, 2).map((ind) => parseInt(ind))
     console.log(temp[0], temp[1])
     switch (temp.length) {
       case 2:
         this.type = types["die"]
-        if (temp[0]<1) {
+        if (temp[0] < 1) {
           this._number = 1
           if (!(temp[0] >= 1)) {
             console.warn("Could not coerce LHS of die to number, assuming 1...")
@@ -48,7 +48,7 @@ export class Die {
         break
 
       default:
-        this.sides=0;
+        this.sides = 0;
         throw new Error("Could not parse input as either xDy or modifier format.")
     }
   }
@@ -61,7 +61,7 @@ export class Die {
     return output
   }
   roll = (): number[] => {
-    let output:number[] = []
+    let output: number[] = []
     if (this.type == types["modifier"]) {
       return [this._number]
     }
@@ -72,7 +72,7 @@ export class Die {
       return output
     }
   }
-  static sum(arr:number[]):number{
-    return arr.reduce((total,val)=>total+=val)
+  static sum(arr: number[]): number {
+    return arr.reduce((total, val) => total += val)
   }
 }

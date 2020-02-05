@@ -11,18 +11,18 @@ import * as selfPackage from './package.json'
 import mongoose from 'mongoose'
 const dbToken = process.env.MONGODB_URI || ""
 
-export const database = mongoose.connect(dbToken, (err)=>{
-  if (err){
-    console.error("No connection to DB!")
-  console.error(err)}
-  else{
+export const database = mongoose.connect(dbToken, (err) => {
+  if (err) {
+    console.error(`No connection to DB!\n${err}`)
+  }
+  else {
     console.log('DB connection ready!')
   }
 })
 
 // adding commands
 interface ICommandList {
-  [cmd: string]: {key: (command:Command)=>any, desc:string|undefined}
+  [cmd: string]: { key: (command: Command) => any, desc: string | undefined }
 }
 
 const commandList: ICommandList = {}
