@@ -73,7 +73,10 @@ export abstract class GameSystem implements IGameSystem {
     }
     skillRoll = (char: Character, skill: string): RollResults[] => {
         if (this.skills[skill]) {
-            return this.roll(this.defRoll + "+" + char.skills[skill] + "+" + this.skills[skill])
+            return this.roll(this.defRoll + "+" + char.skills[skill].ranks + "+" + this.mod(char.stats[skill]))
+        }
+        else if (this.stats[skill]){
+            return this.roll(this.defRoll + "+" + this.mod(char.stats[skill]))
         }
         else {
             return this.roll("")
