@@ -15,7 +15,7 @@ class Common {
     return array.filter(val => (val === 0 || val))
   }
   findMatch({ match, subst = true, strings }: { match: string; subst?: boolean; strings: string[] }): string[] {
-    return strings.filter((str: string) => str.includes(match))
+    return strings.filter((str: string) => str.toLowerCase().replace(/\W/,"").includes(match.toLowerCase().replace(/\W/,"")))
   }
 }
 
