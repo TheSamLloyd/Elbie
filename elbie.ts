@@ -2,13 +2,13 @@
 require('dotenv').config()
 import Discord from 'discord.js'
 import { Command } from './bot_modules/module'
-export const client = new Discord.Client()
-const token: string | undefined = process.env.DISCORD_TOKEN
 import Modules from './bot_modules'
-const prefix: string = '+'
-const env: string | undefined = process.env.BUILD
 import * as selfPackage from './package.json'
 import mongoose from 'mongoose'
+export const client = new Discord.Client()
+const token: string | undefined = process.env.DISCORD_TOKEN
+const prefix: string = '+'
+const env: string | undefined = process.env.BUILD
 const dbToken = process.env.MONGODB_URI || ""
 
 export const database = mongoose.connect(dbToken, (err) => {
@@ -30,7 +30,6 @@ Object.values(Modules).forEach(botmodule => {
   Object.assign(commandList, botmodule.commands)
   console.log('Loaded commands for module ' + botmodule['name'])
   console.log('>' + botmodule['desc'])
-  console.log(commandList)
 })
 
 // helper functions
@@ -61,6 +60,8 @@ client.on('ready', function () {
     case 'canary':
       locale = `CANARY`
       break
+    default:
+      locale = `(no locale)`
   }
   console.log(version)
   client.user.setPresence({

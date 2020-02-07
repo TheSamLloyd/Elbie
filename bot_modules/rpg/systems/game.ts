@@ -41,8 +41,8 @@ export class statSystem{
 export abstract class GameSystem implements IGameSystem {
     defRoll!: string
     name!: string
-    skills: ScoreList = {}
-    stats: ScoreList = {}
+    abstract skills: ScoreList = {}
+    abstract stats: ScoreList = {}
     roll(str: string): RollResults[] {
         if (str === "") str = this.defRoll
         let rolls: string[] = str.split(/\s*,\s*/)
