@@ -87,9 +87,12 @@ export class Campaign implements ICampaign {
   instantiateCharacters(): void {
     db.Character.find().where({ campaign: this.id }).exec((err, chars: Document[]) => {
       chars.forEach(char => {
-        console.log(`Instantiating character: ${char.get('name')}`)
+        console.log(`Instantiating character: ${char.get('name')}...\r`)
         this.characters.push(new Character(char))
       })
+      if (!err) {
+        console.log(`All characters for campaign ${this.name} instantiated!`)
+      }
     })
   }
   isDM(id: User['id']): boolean {

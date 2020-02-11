@@ -48,6 +48,7 @@ export class Character implements ICharacter {
     User.get(this.user as string, (user:User)=>{
       this.dbUser = user
     })
+    console.log(`${this.name} instantiated successfully!`)
   }
   static get(userId: IUser["id"], campaignId: ICampaign['id'], cb: IFunction): void {
     db.Character.findOne().where({ user: userId, campaign: campaignId }).exec((err, char) => {

@@ -1,4 +1,4 @@
-import { GameSystem, skillSystem } from "./game"
+import { GameSystem, skillSystem, statSystem } from "./game"
 import { Character } from "../character"
 
 class DnD35 extends GameSystem {
@@ -7,13 +7,13 @@ class DnD35 extends GameSystem {
   }
   name = 'Dungeons and Dragons 3.5e'
   defRoll = '1d20'
-  statAlias = {
-    'str': 'Strength',
-    'con': 'Constitution',
-    'dex': 'Dexterity',
-    'int': 'Intelligence',
-    'wis': 'Wisdom',
-    'cha': 'Charisma'
+  stats = {
+    "Strength": new statSystem('Strength', 'str'),
+    "Constitution": new statSystem('Constitution', 'con'),
+    "Dexterity": new statSystem('Dexterity', 'dex'),
+    "Intelligence": new statSystem('Intelligence', 'int'),
+    "Wisdom": new statSystem('Wisdom', 'wis'),
+    "Charisma": new statSystem('Charisma', 'cha')
   }
   skills = {
     'appraise': new skillSystem('Appraise', undefined, 'int'),

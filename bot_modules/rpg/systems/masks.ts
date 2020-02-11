@@ -1,16 +1,17 @@
-import { GameSystem } from "./game";
+import { GameSystem, statSystem } from "./game";
 import { ICharacter } from "../models/characterSchema";
 
 class Masks extends GameSystem {
   name = 'Masks'
   defRoll = '2d6'
-  statAlias = {
-    'dng': 'Danger',
-    'frk': 'Freak',
-    'sav': 'Savior',
-    'sup': 'Superior',
-    'mun': 'Mundane'
+  stats = {
+    'Danger': new statSystem('Danger','dng'),
+    'Freak': new statSystem('Freak','frk'),
+    'Savior': new statSystem('Savior','sav'),
+    'Superior': new statSystem('Superior','sup'),
+    'Mundane': new statSystem('Mundane','mun')
   }
+  skills={}
   levelup = (character:ICharacter): boolean => {
     return (character.exp >= 5);
   }

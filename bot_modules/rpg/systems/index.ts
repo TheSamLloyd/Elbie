@@ -19,7 +19,7 @@ class gameList {
             this.listObject[game.name] = game
         })
         console.log('gameList constructed')
-        console.log(this.listObject)
+        console.log(Object.keys(this.listObject))
     }
     get = (name: string): GameSystem => {
         return this.listObject[name]
@@ -31,7 +31,6 @@ class gameList {
             }
             else {
                 console.log(`system found -- name ${system.get('name')}`)
-                console.log(`${this.get(system.get('name'))}`)
                 cb(this.get(system.get('name')))
             }
         })

@@ -13,6 +13,10 @@ import nullGame from './systems/null-game'
 class rpg extends Module {
   name: string = 'rpg'
   desc: string = 'functions to allow basic RPG commands'
+  constructor(){
+    super()
+    if (!Campaign.instantiatedAll) Campaign.instatiateAllActiveCampaigns()
+  }
   // terminal 
   advantage = (command: Command): void => {
     let text = ''
