@@ -27,9 +27,6 @@ export class skillSystem {
         this.stat = stat
     }
 }
-export interface ScoreList {
-    [index: string]: skillSystem|statSystem
-}
 export class statSystem{
     name:string
     shortName?:string
@@ -38,11 +35,16 @@ export class statSystem{
         this.shortName=shortname
     }
 }
+
+export interface ScoreList{
+    [skillName:string]:skillSystem|statSystem
+}
+
 export abstract class GameSystem implements IGameSystem {
     defRoll!: string
     name!: string
-    abstract skills: ScoreList = {}
-    abstract stats: ScoreList = {}
+    abstract skills: ScoreList
+    abstract stats: ScoreList
     roll(str: string): RollResults[] {
         if (str === "") str = this.defRoll
         let rolls: string[] = str.split(/\s*,\s*/)

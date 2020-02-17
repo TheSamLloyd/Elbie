@@ -7,13 +7,13 @@ class DungeonWorld extends GameSystem {
   }
   name = 'Dungeon World'
   defRoll = '2d6'
-  stats:ScoreList = {
-    'strength': new statSystem('Strength','str'),
-    'dexterity': new statSystem('Dexterity','dex'),
-    'constitution': new statSystem('Constitution','con'),
-    'intelligence': new statSystem('Intelligence','int'),
-    'wisdom': new statSystem('Wisdom','wis'),
-    'charisma': new statSystem('Charisma','cha'),
+  stats:ScoreList={
+    'strength':new statSystem('Strength','str'),
+    'dexterity':new statSystem('Dexterity','dex'),
+    'constitution':new statSystem('Constitution','con'),
+    'intelligence':new statSystem('Intelligence','int'),
+    'wisdom':new statSystem('Wisdom','wis'),
+    'charisma':new statSystem('Charisma','cha'),
   }
   skills:ScoreList={}
   levelup(character:ICharacter):boolean {return (character.exp >= character.level + 6)}

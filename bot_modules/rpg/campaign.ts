@@ -40,7 +40,7 @@ export class Campaign implements ICampaign {
     this.system = (cb: IFunction) => {
       gameList.retrieve(campaign.get('system'), (sys: GameSystem) => {
         if (sys != null) cb(sys)
-        console.log(sys.name)
+        console.log(`->${sys.name}`)
       })
     }
     if (!Campaign.allCampaigns[this.server]) {
@@ -74,13 +74,12 @@ export class Campaign implements ICampaign {
         console.error(err)
       }
       else {
-        console.log(campaigns)
         campaigns.forEach(campaign => {
+          console.log(campaign.get("name"))
           new Campaign(campaign)
         })
         Campaign.instantiatedAll = true
         console.log('Campaigns instantiated with no errors.')
-        console.log(this.allCampaigns)
       }
     })
   }
