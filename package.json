@@ -11,12 +11,12 @@
     "bufferutil": "^4.0.1",
     "discord.js": "^11.5.0",
     "erlpack": "discordapp/erlpack",
+    "dotenv": "^8.2.0",
     "mongoose": "^5.7.5"
   },
   "devDependencies": {
     "@types/mongoose": "^5.5.41",
     "@types/node": "^13.1.6",
-    "dotenv": "^8.2.0",
     "eslint": "^6.7.2",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.11.0",
