@@ -28,8 +28,7 @@
   },
   "scripts": {
     "start": "node lib/elbie.js",
-    "test": "./node_modules/typescript/bin/tsc",
-    "build": "babel src -d lib --extensions .ts"
+    "build": "./node_modules/typescript/bin/tsc"
   },
   "repository": {
     "type": "git",
