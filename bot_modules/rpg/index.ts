@@ -24,7 +24,7 @@ class rpg extends Module {
       command.reply('You can only do one roll with advantage.')
       return
     } else {
-      let rolls = nullGame.roll(`${command.argument}, ${command.argument}`)
+      let rolls = nullGame.roll(null, `${command.argument}, ${command.argument}`)
       rolls.forEach(result => {
         text += `${result.dielist}=**${result.total}**\n`
       })
@@ -85,7 +85,9 @@ class rpg extends Module {
       console.log(campaign.system)
       if (campaign) {
         campaign.system((sys) => {
-          const output: RollResults[] = sys.roll(command.argument)
+          const char = campaign.characters.filter((char:Character)=>char.dbUser?.id==command.auth.id)[0]
+          console.log(`${char.name}`)
+          const output: RollResults[] = sys.roll(char, command.argument)
           let text: string = ''
           output.forEach((roll) => {
             text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
@@ -115,6 +117,7 @@ class rpg extends Module {
     'dadv': { key: this.advantage, desc: 'Rolls the given roll twice, reports both and selects the lower result.' },
     'disadv': { key: this.advantage, desc: 'Alias of +dadv.' },
     'roll': { key: this.rollFormat, desc: 'Makes a roll in the defined system, or a standard xDy roll if not defined.' },
+    'r': { key: this.rollFormat, desc: 'Alias of +roll' },
     'summary': { key: this.summary, desc: 'Prints a summary of the campaign in the channel.' }
   }
 }

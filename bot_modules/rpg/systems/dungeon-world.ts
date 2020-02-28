@@ -1,4 +1,4 @@
-import { GameSystem, Skill, Stat, ScoreList } from "./game"
+import { GameSystem, Score, ScoreList } from "./game"
 import { ICharacter } from "../models/characterSchema"
 
 class DungeonWorld extends GameSystem {
@@ -7,12 +7,12 @@ class DungeonWorld extends GameSystem {
   }
   name = 'Dungeon World'
   defRoll = '2d6'
-  stats = new ScoreList([new Stat('Strength', 'str'),
-  new Stat('Dexterity', 'dex'),
-  new Stat('Constitution', 'con'),
-  new Stat('Intelligence', 'int'),
-  new Stat('Wisdom', 'wis'),
-  new Stat('Charisma', 'cha')])
+  stats = new ScoreList([new Score({ name: 'Strength', shortName: 'str' }),
+  new Score({ name: 'Dexterity', shortName: 'dex' }),
+  new Score({ name: 'Constitution', shortName: 'con' }),
+  new Score({ name: 'Intelligence', shortName: 'int' }),
+  new Score({ name: 'Wisdom', shortName: 'wis' }),
+  new Score({ name: 'Charisma', shortName: 'cha' })])
 
   skills = new ScoreList([])
   levelup(character: ICharacter): boolean { return (character.exp >= character.level + 6) }

@@ -1,18 +1,19 @@
-import { GameSystem } from './game'
+import { GameSystem, ScoreList} from './game'
 import { ICharacter } from '../models/characterSchema'
+import { Character } from '../character'
 import {RollResults} from './game'
 
 class nullGame extends GameSystem {
     constructor() {
         super()
     }
-    skills={}
-    stats={}
+    skills= new ScoreList([])
+    stats= new ScoreList([])
     name = 'nullGame'
     defRoll = '2d6'
     levelup(character: ICharacter): boolean { return (character.exp >= character.level + 6) }
-    roll(str:string):RollResults[]{
-        return super.roll(str)
+    roll(char:Character|null, str:string):RollResults[]{
+        return super.roll(char,str)
     }
 }
 

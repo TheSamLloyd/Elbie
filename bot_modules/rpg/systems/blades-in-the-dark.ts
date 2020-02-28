@@ -1,4 +1,4 @@
-import { GameSystem, RollResults } from "./game";
+import { GameSystem, RollResults, ScoreList } from "./game";
 import { Character } from "../character";
 import { Die } from '../dice'
 
@@ -8,12 +8,12 @@ class BladesInTheDark extends GameSystem {
   constructor() {
     super()
   }
-  stats={}
-  skills={}
+  stats=new ScoreList([])
+  skills=new ScoreList([])
   levelup = (character: Character): boolean => {
     return super.levelup(character)
   }
-  roll = (input: string): RollResults[] => {
+  roll = (char:Character, input: string): RollResults[] => {
     let n: number = parseInt(input)
     let result: number = 0
     var critical = 0

@@ -17,27 +17,16 @@ export class RollResults {
         this.total = (res.total || 0) || Die.sum(res.dielist)
     }
 }
-class Score {
+export class Score {
     name: string
     shortName?: string
-    constructor(name: string, shortName?: string) {
+    ranks?: number
+    stat?: Score
+    constructor({ name, shortName, ranks, stat }: { name: string; shortName?: string; ranks?: number; stat?: Score }) {
         this.name = name
         this.shortName = shortName
-    }
-}
-export class Skill extends Score {
-    stat?: string
-    ranks?: number
-    constructor(name: string, ranks?: number, stat?: string) {
-        super(name)
         this.ranks = ranks
         this.stat = stat
-    }
-}
-export class Stat extends Score {
-    shortName?: string
-    constructor(name: string, shortName?: string) {
-        super(name, shortName)
     }
 }
 
@@ -45,13 +34,14 @@ interface IScoreList {
     [skillName: string]: Score
 }
 export class ScoreList implements IScoreList {
-    [k: string]: Score
+    [scoreName: string]: Score
     constructor(scores: Score[]) {
         scores.forEach((s: Score) => {
             this[s.name] = s
         })
+        console.log(this)
     }
-    getByName = (name: string): Score | undefined => {
+    getByName = (name: string): Score => {
         if (this[name]) return this[name]
         else {
             let k: object
@@ -62,6 +52,12 @@ export class ScoreList implements IScoreList {
             })
 
         }
+        throw new ReferenceError("No skill by that name")
+    }
+    getAllNames = (): string[] => {
+        let arr1: string[] = Object.keys(this).map((sc: string) => this[sc].name)
+        let arr2: string[] = Object.keys(this).filter((sc: string) => this[sc].shortName).map((sc: string) => this[sc].shortName || "")
+        return arr1.concat(arr2).filter((st: string) => st)
     }
 }
 export abstract class GameSystem implements IGameSystem {
@@ -69,7 +65,7 @@ export abstract class GameSystem implements IGameSystem {
     name!: string
     abstract skills: ScoreList
     abstract stats: ScoreList
-    roll(str: string): RollResults[] {
+    roll(char: Character | null, str: string): RollResults[] {
         if (str === "") str = this.defRoll
         let rolls: string[] = str.split(/\s*,\s*/)
         let results: RollResults[] = []
@@ -78,14 +74,16 @@ export abstract class GameSystem implements IGameSystem {
             iroll = iroll.replace('-', '+-').replace('++', '+')
             let tempIroll = iroll.split("+")
             tempIroll.forEach((die: string) => {
-                const k = new Die(die)
+                const k = this.skillRoll(char, die)
                 const z = new Die(this.defRoll)
                 if (tempIroll.length == 1 && k.type == types['modifier']) {
                     dielist = dielist.concat(z.roll(), k.roll())
                     iroll = this.defRoll + "+" + iroll
                 }
                 else { dielist = dielist.concat(k.roll()) }
-            })
+
+            }
+            )
             results.push(new RollResults({ iroll, dielist }))
         })
         console.log(results)
@@ -97,24 +95,18 @@ export abstract class GameSystem implements IGameSystem {
     levelup(character: Character): boolean {
         return false
     }
-    skillRoll = (char: Character, skill: string): RollResults[] => {
-        let sc:Score = this.skills.getByName(skill) || this.stats.getByName(skill) || new Score("")
-        if (typeof sc == typeof Skill){
-            let cSkill =  char.scores.skills[sc.name]
-            let ranks = cSkill.ranks
-            let mod = this.mod(char.scores.stats[cSkill.stat])
-            let rolls = `${this.defRoll}+${ranks}+${mod}`
-            return this.roll(rolls)
+    skillRoll = (char: Character | null, skill: string): Die => {
+        console.log(this.skills.getAllNames())
+        console.log(this.stats.getAllNames())
+        if (!char || !(skill in this.skills.getAllNames() || skill in this.stats.getAllNames())) {
+            return new Die(skill)
         }
-        else if (typeof sc == typeof Stat){
-            let cStat =  char.scores.stats[sc.name]
-            let mod = this.mod(char.scores.stats[cStat])
-            let rolls = `${this.defRoll}+${mod}`
-            return this.roll(rolls)
-        }
-        else {
-            return this.roll(this.defRoll)
-        }
+        let sc: Score = char.skills.getByName(skill) || char.stats.getByName(skill)
+        console.log(sc)
+        let cSkill = char.skills.getByName(sc.name) || char.stats.getByName(sc.name)
+        let ranks: number = cSkill?.ranks || 0
+        let mod = this.mod(cSkill?.stat?.ranks || 0) || 0
+        return new Die((ranks + mod).toString())
     }
 }
 

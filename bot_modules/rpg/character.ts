@@ -3,10 +3,11 @@
 import { Document } from 'mongoose'
 import { db } from './models/schema'
 import { ICampaign } from './models/campaignSchema'
-import { ICharacter, IStats, ISkills, IAttribute } from './models/characterSchema'
+import { ICharacter, IAttribute } from './models/characterSchema'
 import { IUser } from './models/userSchema'
 import { IFunction } from '../module'
 import { User } from './user'
+import { ScoreList, Score } from './systems/game'
 
 export class Character implements ICharacter {
   id:string
@@ -15,7 +16,7 @@ export class Character implements ICharacter {
   user: IUser['id']
   dbUser: User | undefined
   campaign: ICampaign['id']
-  scores: { stats: IStats, skills: ISkills }
+  scores: { stats: ScoreList, skills: ScoreList }
   attributes: IAttribute[]
   inventory: string[]
   HP: { current: number, maxHP: number }
@@ -24,8 +25,8 @@ export class Character implements ICharacter {
   alive: boolean
   desc: string
   theme: string | null
-  stats: IStats
-  skills: ISkills
+  stats: ScoreList
+  skills: ScoreList
   aviURL: string | null
   constructor(character: Document) {
     this.id=character.id
@@ -42,7 +43,9 @@ export class Character implements ICharacter {
     this.alive = character.get('alive')
     this.desc = character.get('desc')
     this.theme = character.get('theme')
-    this.stats = this.scores.stats
+    this.stats = new ScoreList(Object.keys(this.scores.stats).map((stat:string)=>{
+      return new Score({name: stat, ranks:character.get('scores').stats[stat]})
+    }))
     this.skills = this.scores.skills
     this.aviURL = character.get('aviURL')
     User.get(this.user as string, (user:User)=>{
