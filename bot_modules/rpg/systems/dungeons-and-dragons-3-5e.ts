@@ -1,4 +1,4 @@
-import { GameSystem, skillSystem, statSystem } from "./game"
+import { GameSystem, Skill, Stat, ScoreList } from "./game"
 import { Character } from "../character"
 
 class DnD35 extends GameSystem {
@@ -7,61 +7,62 @@ class DnD35 extends GameSystem {
   }
   name = 'Dungeons and Dragons 3.5e'
   defRoll = '1d20'
-  stats = {
-    "Strength": new statSystem('Strength', 'str'),
-    "Constitution": new statSystem('Constitution', 'con'),
-    "Dexterity": new statSystem('Dexterity', 'dex'),
-    "Intelligence": new statSystem('Intelligence', 'int'),
-    "Wisdom": new statSystem('Wisdom', 'wis'),
-    "Charisma": new statSystem('Charisma', 'cha')
-  }
-  skills = {
-    'appraise': new skillSystem('Appraise', undefined, 'int'),
-    'balance': new skillSystem('Balance', undefined, 'dex'),
-    'bluff': new skillSystem('Bluff', undefined, 'cha'),
-    'climb': new skillSystem('Climb', undefined, 'str'),
-    'concentration': new skillSystem('Concentration', undefined, 'con'),
-    'craft': new skillSystem('Craft', undefined, 'int'),
-    'decipher_script': new skillSystem('Decipher Script', undefined, 'int'),
-    'diplomacy': new skillSystem('Diplomacy', undefined, 'cha'),
-    'disable_device': new skillSystem('Disable Device', undefined, 'int'),
-    'disguise': new skillSystem('Disguise', undefined, 'cha'),
-    'escape_artist': new skillSystem('Escape Artist', undefined, 'dex'),
-    'forgery': new skillSystem('Forgery', undefined, 'int'),
-    'gather_information': new skillSystem('Gather Information', undefined, 'cha'),
-    'handle_animal': new skillSystem('Handle Animal', undefined, 'cha'),
-    'heal': new skillSystem('Heal', undefined, 'wis'),
-    'hide': new skillSystem('Hide', undefined, 'dex'),
-    'intimidate': new skillSystem('Intimidate', undefined, 'cha'),
-    'jump': new skillSystem('Jump', undefined, 'str'),
-    'knowledge_arcana': new skillSystem('Knowledge Arcana', undefined, 'int'),
-    'knowledge_architecture_and_engineering': new skillSystem('Knowledge (Architecture and Engineering)', undefined, 'int'),
-    'knowledge_dungeoneering': new skillSystem('Knowledge (Dungeoneering)', undefined, 'int'),
-    'knowledge_geography': new skillSystem('Knowledge (Geography)', undefined, 'dex'),
-    'knowledge_history': new skillSystem('Knowledge (History)', undefined, 'int'),
-    'knowledge_local': new skillSystem('Knowledge (Local)', undefined, 'int'),
-    'knowledge_nature': new skillSystem('Knowledge (Nature)', undefined, 'int'),
-    'knowledge_nobility_and_royalty': new skillSystem('Knowledge (Nobility and Royalty)', undefined, 'int'),
-    'knowledge_religion': new skillSystem('Knowledge (Religion)', undefined, 'int'),
-    'knowledge_planes': new skillSystem('Knowledge (Planes)', undefined, 'int'),
-    'listen': new skillSystem('Listen', undefined, 'wis'),
-    'move_silently': new skillSystem('Move Silently', undefined, 'dex'),
-    'open_lock': new skillSystem('Open Lock', undefined, 'dex'),
-    'perform': new skillSystem('Perform', undefined, 'cha'),
-    'profession': new skillSystem('Profession', undefined, 'wis'),
-    'ride': new skillSystem('Ride', undefined, 'dex'),
-    'search': new skillSystem('Search', undefined, 'int'),
-    'sense_motive': new skillSystem('Sense Motive', undefined, 'wis'),
-    'sleight of hand': new skillSystem('Sleight of Hand', undefined, 'dex'),
-    'speak_language': new skillSystem('Speak Language'),
-    'spellcraft': new skillSystem('Spellcraft', undefined, 'int'),
-    'spot': new skillSystem('Spot', undefined, 'wis'),
-    'survival': new skillSystem('Survival', undefined, 'wis'),
-    'swim': new skillSystem('Swim', undefined, 'str'),
-    'tumble': new skillSystem('Tumble', undefined, 'dex'),
-    'use_magic_device': new skillSystem('Use Magic Device', undefined, 'cha'),
-    'use_rope': new skillSystem('Use Rope', undefined, 'dex')
-  }
+  stats = new ScoreList(
+    [new Stat('Strength', 'str'),
+    new Stat('Constitution', 'con'),
+    new Stat('Dexterity', 'dex'),
+    new Stat('Intelligence', 'int'),
+    new Stat('Wisdom', 'wis'),
+    new Stat('Charisma', 'cha')])
+
+  skills = new ScoreList([
+    new Skill('Appraise', undefined, 'int'),
+    new Skill('Balance', undefined, 'dex'),
+    new Skill('Bluff', undefined, 'cha'),
+    new Skill('Climb', undefined, 'str'),
+    new Skill('Concentration', undefined, 'con'),
+    new Skill('Craft', undefined, 'int'),
+    new Skill('Decipher Script', undefined, 'int'),
+    new Skill('Diplomacy', undefined, 'cha'),
+    new Skill('Disable Device', undefined, 'int'),
+    new Skill('Disguise', undefined, 'cha'),
+    new Skill('Escape Artist', undefined, 'dex'),
+    new Skill('Forgery', undefined, 'int'),
+    new Skill('Gather Information', undefined, 'cha'),
+    new Skill('Handle Animal', undefined, 'cha'),
+    new Skill('Heal', undefined, 'wis'),
+    new Skill('Hide', undefined, 'dex'),
+    new Skill('Intimidate', undefined, 'cha'),
+    new Skill('Jump', undefined, 'str'),
+    new Skill('Knowledge Arcana', undefined, 'int'),
+    new Skill('Knowledge (Architecture and Engineering)', undefined, 'int'),
+    new Skill('Knowledge (Dungeoneering)', undefined, 'int'),
+    new Skill('Knowledge (Geography)', undefined, 'dex'),
+    new Skill('Knowledge (History)', undefined, 'int'),
+    new Skill('Knowledge (Local)', undefined, 'int'),
+    new Skill('Knowledge (Nature)', undefined, 'int'),
+    new Skill('Knowledge (Nobility and Royalty)', undefined, 'int'),
+    new Skill('Knowledge (Religion)', undefined, 'int'),
+    new Skill('Knowledge (Planes)', undefined, 'int'),
+    new Skill('Listen', undefined, 'wis'),
+    new Skill('Move Silently', undefined, 'dex'),
+    new Skill('Open Lock', undefined, 'dex'),
+    new Skill('Perform', undefined, 'cha'),
+    new Skill('Profession', undefined, 'wis'),
+    new Skill('Ride', undefined, 'dex'),
+    new Skill('Search', undefined, 'int'),
+    new Skill('Sense Motive', undefined, 'wis'),
+    new Skill('Sleight of Hand', undefined, 'dex'),
+    new Skill('Speak Language'),
+    new Skill('Spellcraft', undefined, 'int'),
+    new Skill('Spot', undefined, 'wis'),
+    new Skill('Survival', undefined, 'wis'),
+    new Skill('Swim', undefined, 'str'),
+    new Skill('Tumble', undefined, 'dex'),
+    new Skill('Use Magic Device', undefined, 'cha'),
+    new Skill('Use Rope', undefined, 'dex')
+  ])
+
   levelup = (character: Character): boolean => {
     return false
   }

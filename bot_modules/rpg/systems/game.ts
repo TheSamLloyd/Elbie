@@ -17,29 +17,53 @@ export class RollResults {
         this.total = (res.total || 0) || Die.sum(res.dielist)
     }
 }
-export class skillSystem {
+class Score {
     name: string
+    shortName?: string
+    constructor(name: string, shortName?: string) {
+        this.name = name
+        this.shortName = shortName
+    }
+}
+export class Skill extends Score {
     stat?: string
     ranks?: number
     constructor(name: string, ranks?: number, stat?: string) {
-        this.name = name
+        super(name)
         this.ranks = ranks
         this.stat = stat
     }
 }
-export class statSystem{
-    name:string
-    shortName?:string
-    constructor(name:string, shortname?:string){
-        this.name=name
-        this.shortName=shortname
+export class Stat extends Score {
+    shortName?: string
+    constructor(name: string, shortName?: string) {
+        super(name, shortName)
     }
 }
 
-export interface ScoreList{
-    [skillName:string]:skillSystem|statSystem
+interface IScoreList {
+    [skillName: string]: Score
 }
+export class ScoreList implements IScoreList {
+    [k: string]: Score
+    constructor(scores: Score[]) {
+        scores.forEach((s: Score) => {
+            this[s.name] = s
+        })
+    }
+    getByName = (name: string): Score | undefined => {
+        if (this[name]) return this[name]
+        else {
+            let k:object
+            Object.keys(this).map((s: string) => this[s]).filter((score: Score) => {
+                score.shortName
+            }).forEach((sn:Score)=>{
+                if (sn.shortName==name) return sn
+            })
 
+        }
+    }
+}
 export abstract class GameSystem implements IGameSystem {
     defRoll!: string
     name!: string
@@ -77,7 +101,7 @@ export abstract class GameSystem implements IGameSystem {
         if (this.skills[skill]) {
             return this.roll(this.defRoll + "+" + char.skills[skill].ranks + "+" + this.mod(char.stats[skill]))
         }
-        else if (this.stats[skill]){
+        else if (this.stats[skill]) {
             return this.roll(this.defRoll + "+" + this.mod(char.stats[skill]))
         }
         else {
