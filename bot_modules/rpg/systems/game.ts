@@ -54,11 +54,11 @@ export class ScoreList implements IScoreList {
     getByName = (name: string): Score | undefined => {
         if (this[name]) return this[name]
         else {
-            let k:object
+            let k: object
             Object.keys(this).map((s: string) => this[s]).filter((score: Score) => {
                 score.shortName
-            }).forEach((sn:Score)=>{
-                if (sn.shortName==name) return sn
+            }).forEach((sn: Score) => {
+                if (sn.shortName == name) return sn
             })
 
         }
@@ -98,14 +98,22 @@ export abstract class GameSystem implements IGameSystem {
         return false
     }
     skillRoll = (char: Character, skill: string): RollResults[] => {
-        if (this.skills[skill]) {
-            return this.roll(this.defRoll + "+" + char.skills[skill].ranks + "+" + this.mod(char.stats[skill]))
+        let sc:Score = this.skills.getByName(skill) || this.stats.getByName(skill) || new Score("")
+        if (typeof sc == typeof Skill){
+            let cSkill =  char.scores.skills[sc.name]
+            let ranks = cSkill.ranks
+            let mod = this.mod(char.scores.stats[cSkill.stat])
+            let rolls = `${this.defRoll}+${ranks}+${mod}`
+            return this.roll(rolls)
         }
-        else if (this.stats[skill]) {
-            return this.roll(this.defRoll + "+" + this.mod(char.stats[skill]))
+        else if (typeof sc == typeof Stat){
+            let cStat =  char.scores.stats[sc.name]
+            let mod = this.mod(char.scores.stats[cStat])
+            let rolls = `${this.defRoll}+${mod}`
+            return this.roll(rolls)
         }
         else {
-            return this.roll("")
+            return this.roll(this.defRoll)
         }
     }
 }
