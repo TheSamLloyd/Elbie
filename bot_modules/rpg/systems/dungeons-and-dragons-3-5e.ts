@@ -8,14 +8,14 @@ class DnD35 extends GameSystem {
   name = 'Dungeons and Dragons 3.5e'
   defRoll = '1d20'
   stats = new ScoreList(
-    [new Score({name: 'Strength', shortName: 'str'}),
+    new Score({name: 'Strength', shortName: 'str'}),
     new Score({name: 'Constitution', shortName: 'con'}),
     new Score({name: 'Dexterity', shortName:'dex'}),
     new Score({name: 'Intelligence', shortName: 'int'}),
     new Score({name: 'Wisdom', shortName:'wis'}),
-    new Score({name:'Charisma', shortName:'cha'})])
+    new Score({name:'Charisma', shortName:'cha'}))
 
-  skills = new ScoreList([
+  skills = new ScoreList(
     new Score({name:'Appraise', stat: this.stats['Intelligence']}),
     new Score({name:'Balance', stat: this.stats['Dexterity']}),
     new Score({name:'Bluff', stat: this.stats['Charisma']}),
@@ -61,7 +61,7 @@ class DnD35 extends GameSystem {
     new Score({name:'Tumble', stat: this.stats['Dexterity']}),
     new Score({name:'Use Magic Device', stat: this.stats['Charisma']}),
     new Score({name:'Use Rope', stat: this.stats['Dexterity']}),
-  ])
+  )
 
   levelup = (character: Character): boolean => {
     return false

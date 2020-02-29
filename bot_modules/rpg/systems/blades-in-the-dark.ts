@@ -8,8 +8,8 @@ class BladesInTheDark extends GameSystem {
   constructor() {
     super()
   }
-  stats=new ScoreList([])
-  skills=new ScoreList([])
+  stats=new ScoreList()
+  skills=new ScoreList()
   levelup = (character: Character): boolean => {
     return super.levelup(character)
   }

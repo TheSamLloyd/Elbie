@@ -40,7 +40,6 @@ export class Campaign implements ICampaign {
     this.system = (cb: IFunction) => {
       gameList.retrieve(campaign.get('system'), (sys: GameSystem) => {
         if (sys != null) cb(sys)
-        console.log(`->${sys.name}`)
       })
     }
     if (!Campaign.allCampaigns[this.server]) {

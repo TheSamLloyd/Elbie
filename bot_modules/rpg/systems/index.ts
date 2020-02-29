@@ -18,8 +18,7 @@ class gameList {
         gameArray.forEach(game => {
             this.listObject[game.name] = game
         })
-        console.log('gameList constructed')
-        console.log(Object.keys(this.listObject))
+        console.log(`gameList constructed with ${this.listObject.length} systems.`)
     }
     get = (name: string): GameSystem => {
         return this.listObject[name]
@@ -30,7 +29,7 @@ class gameList {
                 console.error(err || `No system found with id ${id}`)
             }
             else {
-                console.log(`system found -- name ${system.get('name')}`)
+                console.log(`system found -- name "${system.get('name')}"`)
                 cb(this.get(system.get('name')))
             }
         })

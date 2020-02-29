@@ -2,10 +2,8 @@
 import common from '../common'
 import { RichEmbed } from 'discord.js'
 import { Module, IFunction, Command, ICommands } from '../module'
-import { db } from './models/schema'
 import { Character } from './character'
 import { Campaign } from './campaign'
-import { Die } from './dice'
 import { RollResults } from './systems/game'
 import nullGame from './systems/null-game'
 

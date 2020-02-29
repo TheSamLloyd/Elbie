@@ -7,14 +7,14 @@ class DungeonWorld extends GameSystem {
   }
   name = 'Dungeon World'
   defRoll = '2d6'
-  stats = new ScoreList([new Score({ name: 'Strength', shortName: 'str' }),
+  stats = new ScoreList(new Score({ name: 'Strength', shortName: 'str' }),
   new Score({ name: 'Dexterity', shortName: 'dex' }),
   new Score({ name: 'Constitution', shortName: 'con' }),
   new Score({ name: 'Intelligence', shortName: 'int' }),
   new Score({ name: 'Wisdom', shortName: 'wis' }),
-  new Score({ name: 'Charisma', shortName: 'cha' })])
+  new Score({ name: 'Charisma', shortName: 'cha' }))
 
-  skills = new ScoreList([])
+  skills = new ScoreList()
   levelup(character: ICharacter): boolean { return (character.exp >= character.level + 6) }
   mod(score: number): number {
     let val = 0

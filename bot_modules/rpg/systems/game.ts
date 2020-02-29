@@ -19,12 +19,12 @@ export class RollResults {
 }
 export class Score {
     name: string
-    shortName?: string
+    shortName: string
     ranks?: number
     stat?: Score
     constructor({ name, shortName, ranks, stat }: { name: string; shortName?: string; ranks?: number; stat?: Score }) {
         this.name = name
-        this.shortName = shortName
+        this.shortName = shortName || this.name.replace(/\W/, '').toLowerCase()
         this.ranks = ranks
         this.stat = stat
     }
@@ -35,29 +35,11 @@ interface IScoreList {
 }
 export class ScoreList implements IScoreList {
     [scoreName: string]: Score
-    constructor(scores: Score[]) {
+    constructor(...scores: Score[]) {
         scores.forEach((s: Score) => {
             this[s.name] = s
+            this[s.shortName] = s
         })
-        console.log(this)
-    }
-    getByName = (name: string): Score => {
-        if (this[name]) return this[name]
-        else {
-            let k: object
-            Object.keys(this).map((s: string) => this[s]).filter((score: Score) => {
-                score.shortName
-            }).forEach((sn: Score) => {
-                if (sn.shortName == name) return sn
-            })
-
-        }
-        throw new ReferenceError("No skill by that name")
-    }
-    getAllNames = (): string[] => {
-        let arr1: string[] = Object.keys(this).map((sc: string) => this[sc].name)
-        let arr2: string[] = Object.keys(this).filter((sc: string) => this[sc].shortName).map((sc: string) => this[sc].shortName || "")
-        return arr1.concat(arr2).filter((st: string) => st)
     }
 }
 export abstract class GameSystem implements IGameSystem {
@@ -70,23 +52,27 @@ export abstract class GameSystem implements IGameSystem {
         let rolls: string[] = str.split(/\s*,\s*/)
         let results: RollResults[] = []
         rolls.forEach((iroll: string) => {
-            let dielist: number[] = []
-            iroll = iroll.replace('-', '+-').replace('++', '+')
-            let tempIroll = iroll.split("+")
-            tempIroll.forEach((die: string) => {
-                const k = this.skillRoll(char, die)
-                const z = new Die(this.defRoll)
-                if (tempIroll.length == 1 && k.type == types['modifier']) {
-                    dielist = dielist.concat(z.roll(), k.roll())
-                    iroll = this.defRoll + "+" + iroll
-                }
-                else { dielist = dielist.concat(k.roll()) }
+            try {
+                let dielist: number[] = []
+                iroll = iroll.replace('-', '+-').replace('++', '+')
+                let tempIroll = iroll.split("+")
+                tempIroll.forEach((die: string) => {
+                    const k = this.skillRoll(char, die)
+                    const z = new Die(this.defRoll)
+                    if (tempIroll.length == 1 && k.type == types['modifier']) {
+                        dielist = dielist.concat(z.roll(), k.roll())
+                        iroll = this.defRoll + "+" + iroll
+                    }
+                    else { dielist = dielist.concat(k.roll()) }
 
+                }
+                )
+                results.push(new RollResults({ iroll, dielist }))
             }
-            )
-            results.push(new RollResults({ iroll, dielist }))
+            catch {
+                results.push(new RollResults({ iroll: "Malformed roll.", dielist: [0],total:""}))
+            }
         })
-        console.log(results)
         return results
     }
     mod(score: number): number {
@@ -96,17 +82,24 @@ export abstract class GameSystem implements IGameSystem {
         return false
     }
     skillRoll = (char: Character | null, skill: string): Die => {
-        console.log(this.skills.getAllNames())
-        console.log(this.stats.getAllNames())
-        if (!char || !(skill in this.skills.getAllNames() || skill in this.stats.getAllNames())) {
+        if (!char) {
             return new Die(skill)
         }
-        let sc: Score = char.skills.getByName(skill) || char.stats.getByName(skill)
-        console.log(sc)
-        let cSkill = char.skills.getByName(sc.name) || char.stats.getByName(sc.name)
-        let ranks: number = cSkill?.ranks || 0
-        let mod = this.mod(cSkill?.stat?.ranks || 0) || 0
-        return new Die((ranks + mod).toString())
+        if (skill in this.skills || skill in this.stats) {
+            let sc: Score = char.skills[skill] || char.stats[skill]
+            let cSkill = char.skills[sc.name] || char.stats[sc.name]
+            let ranks: number = cSkill?.ranks || 0
+            let mod = this.mod(cSkill?.stat?.ranks || 0) || 0
+            return new Die((ranks + mod).toString())
+        }
+        else {
+            try {
+                return new Die(skill)
+            }
+            catch{
+                throw new ReferenceError('No skill by that name.')
+            }
+        }
     }
 }
 

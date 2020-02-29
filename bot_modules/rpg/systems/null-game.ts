@@ -7,8 +7,8 @@ class nullGame extends GameSystem {
     constructor() {
         super()
     }
-    skills= new ScoreList([])
-    stats= new ScoreList([])
+    skills= new ScoreList()
+    stats= new ScoreList()
     name = 'nullGame'
     defRoll = '2d6'
     levelup(character: ICharacter): boolean { return (character.exp >= character.level + 6) }
