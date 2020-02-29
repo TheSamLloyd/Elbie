@@ -1,5 +1,7 @@
 # Elbie (Landon Bot)
 
+> **_NOTE_**: This guide is being rewritten as we move into 4.0, which I am really excited about. Please feel free to submit bugs and issues as they arise. We're now significantly more flexible in terms of adding systems, so if you need a new system implemented, please let me know and I will work on it! Elbie has been rewritten not quite from the ground up but more from the top down in Typescript, allowing us more predictable behaviors and better debugging, as well as way more flexibility.
+
 An extensible [Discord](https://discordapp.com/) bot designed to facilitate running rules-lite [TTRPG](https://en.wikipedia.org/wiki/Tabletop_role-playing_game) systems, including [Dungeon World](http://dungeon-world.com/), [Fiasco](http://bullypulpitgames.com/games/fiasco/), and others, with rudimentary support for Dungeons & Dragons 3.5e.
 What makes Elbie distinct from many of the conventionally available Discord bots is her tight RPG integrations, capable of handling skills, inventory, dice rolls, and creating character summaries on the fly. She also has rudimentary (and in-progress) audio capabiities, with built-in support for character theme songs.
 
@@ -27,18 +29,17 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
   * `+flip (String? heads) (String? tails)`: Returns either "heads" or "tails", or if provided, returns one of the pair of options given.
   * `+choose (String options)`: Returns one of the (space-delimited) choices at random, e.g. `+choose a b c d e f horse` will return either "a", "b", "c", "d", "e", "f" or "horse". At least 2 choices must be provided.
 * rpg
-  * `+r (Integer? modifier | String? skill | String? stat) (extra dice as '+roll')`: Makes a single default roll as defined by whatever TTRPG system the channel is currently bound to (2d6 for PBtA games, 1d20 for most D&D/Pathfinder games, etc.) If `modifier` is provided, it will be added as a modifier
+  * `+roll (Integer? modifier | String? skill | String? stat) (extra dice as '+roll')`: Makes a single default roll as defined by whatever TTRPG system the channel is currently bound to (2d6 for PBtA games, 1d20 for most D&D/Pathfinder games, etc.) If `modifier` is provided, it will be added as a modifier. Aliased as `+roll`.
   * `+bind (String shortname) (String name)`: (If you're interested in binding Elbie to a channel for a campaign, just email me and we can talk!)
   * `+who (String? name)`: Generates a character summary of either the current player if no name is provided, or if `name` is a player name (like "Sam"), a character name (like "Lurreka Al-Petarra"), or a nickname (like "Lurreka"), it will generate a summary of that character or the character assigned to that player. (For reference, if for some reason you have a player named "Sam" and a different player has a character named "Sam", `+who Sam` will refer to the player. If you are doing this, why?)
   * `+list`: Lists all the characters in the current campaign with their player's name (e.g. "Amateotl Maikali, played by Sam")
-  * `+roll`: Accepts a comma-separated list of rolls and modifiers to perform in `xdy+z` format, e.g. `+roll 1d20+2d4+1d6+3,2d6-2`.
   * `+hp (Integer? amount)`: Adjusts the current character's HP by the given `amount`. Restricts to values between 0 and the character's maximum health. Not providing `amount` returns the character's current HP.
   * `+mark (Integer? amount)`: Increases the current character's XP by `amount` if provided. Defaults to 1.
   * `+levelup`: Increases the character's level by 1, if the character has enough XP. If not, fails. (Implementation of this command successfully depends on the system.)
   * `+theme`: Immediately plays the current character's theme (assuming audio module is installed and working.)
   * `+adv`: Accepts one dice string (`xdy+z`) and rolls it twice, returning both results and taking the higher one.
   * `+disadv`: Accepts one dice string (`xdy+z`) and rolls it twice, returning both results and taking the lower one. Aliased with `+dadv`.
-* audio
+* audio (Not implemented in 4.0.0a)
   * This module is in active development and features are likely to change without significant warning at any time. If you are messing with audio and you crash Elbie, it is your fault. I will reboot her but I *strongly* encourage you not to hurt my daughter.
   * `+play (String URL)`: Plays the audio from the linked YouTube video. If you want, you may omit everything except the video ID. If you do include the full video URL, it will likely embed in the channel, depending on permissions. If a song is currently playing, asking Elbie to play a new song will have her stop the old one and begin playing the new one as soon as it is cached.
   * `+stop`: Elbie will stop playing any audio she is currently playing.
@@ -48,25 +49,27 @@ Elbie is broken up into **modules**, each of which encapsulates several related 
 
 ## Extending Elbie
 
-Elbie is written to be fully extensible. All you need to do to write your own module is create a folder inside of `bot_modules` titled for your new module, and inside that create `index.js`. You may want to import `common.js` from `bot_modules`, which provides several common functions required by modules. Then you'll need four components in `index.js`:
+Elbie is written to be fully extensible. All you need to do to write your own module is create a folder inside of `bot_modules` titled for your new module, and inside that create `index.ts`. You may want to import `common` from `../common`, which provides several common functions required by modules. Then you'll need to add a new class in `index.ts`:
 
-```javascript
-  const name = "your-module-name"
-  const desc = "My new module"
-  const functions = {
-    foo: (Command)=>{
-      Command.channel.send("Hello World")
-    }
+```typescript
+import {Module, Command} from '../module'
+class newModule extends Module{
+  name = 'NewModule'
+  desc = 'My cool new module.'
+  foo(command:Command):void{
+    //function body
   }
-  const commands = {
-    'hello': functions.foo
+  commands = {
+    alias: {key: this.foo, desc: 'Does nothing, but looks nice in my new module.'}
   }
-  module.exports = {name, desc, functions, commands}
+}
+
+export default new newModule()
   ```
 
-To break this pattern down, `name` and `desc` are self-explanatory. `functions` is where all of your functions live, and their names may not be correlated with their command. That's why `commands` takes in a string (i.e. the command Elbie received) and returns a function, which she then executes by passing it the Command object she received. You are free to "alias" functions by having several keys in `commands` with the same function value.
+To break this pattern down, `name` and `desc` are self-explanatory. In the `commands` object, `alias` is what you type to get Elbie to trigger the command ("+alias"), and she will execute `this.foo()` with the trigger command. All of your functions that take a command as an argument should ONLY take a command and have the return type `void` unless you have a really, really good reason to break from that pattern. Encapsulation means that modules only should know the minimum they need to function.
 
-Elbie automatically includes any modules in the bot_modules folder, so they should be available as soon as she starts.
+After you've made your module, add an entry in `bot_modules/index.ts` pointing to your new module.
 
 If you've done everything right, when you start up Elbie, she should log the modules she has installed in the console and you should see your module's name and description, as well as its commands, which you should be able to use.
 
