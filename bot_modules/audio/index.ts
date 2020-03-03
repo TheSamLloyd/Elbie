@@ -5,8 +5,12 @@ interface QueueObject {
     [index:string]:Queue
 }
 
-interface Queue extends Array<string>{
-    [index:number]:string
+interface Queue extends Array<Track>{
+    [index:number]:Track
+}
+
+class Track {
+    
 }
 
 class audio extends Module {
@@ -16,7 +20,7 @@ class audio extends Module {
     constructor(){
         super()
     }
-   _play(string):void {
+   private _play(str:string):void {
 
                
     }
@@ -32,7 +36,9 @@ class audio extends Module {
 
     }
     listQueue(command:Command):void{
+        if (this.queue[command.server.id]){
 
+        }
     }
     play(command:Command):void{
 
