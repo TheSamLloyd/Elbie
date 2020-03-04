@@ -26,7 +26,7 @@ export class User implements IUser {
         })
     }
     static getDiscordInfo(userID: IUser['id'], cb: IFunction): void {
-        client.fetchUser(userID).then((discordUser:DiscordUser) => {
+        client.users.fetch(userID).then((discordUser:DiscordUser) => {
             if (discordUser) {
                 cb(discordUser)
             }

@@ -1,4 +1,4 @@
-import { Channel, User, GuildMember, Guild as Server, Message, RichEmbed } from "discord.js"
+import { Channel, User, Guild as Server, Message, MessageEmbed, GuildMember } from "discord.js"
 
 interface DiscordObject {
     id: string
@@ -8,11 +8,11 @@ export class Command {
         let content = message.content.slice(1).split(' ').filter(element => (element || element === '0'))
         this.channel = Command.clean(message.channel)
         this.auth = Command.clean(message.author)
-        this.member = message.member
+        this.member = message.member || <GuildMember>{}
         this.command = (content[0]).toLowerCase()
         this.argument = content.slice(1).join(' ')
         this.args = content.slice(1)
-        this.server = message.guild
+        this.server = message.guild || <Server>{}
         this.message = message
     }
     public channel: Channel
@@ -27,7 +27,7 @@ export class Command {
         str.id = str.id.replace(/\W/g, '')
         return str
     }
-    reply = (content: string | RichEmbed): void => {
+    reply = (content: string | MessageEmbed): void => {
         this.message.channel.send(content)
     }
 }

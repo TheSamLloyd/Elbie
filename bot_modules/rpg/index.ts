@@ -1,6 +1,6 @@
 // dependencies
 import common from '../common'
-import { RichEmbed } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 import { Module, IFunction, Command, ICommands } from '../module'
 import { Character } from './character'
 import { Campaign } from './campaign'
@@ -59,9 +59,9 @@ class rpg extends Module {
       }
     })
   }
-  generateEmbed = (char: Character): RichEmbed => {
+  generateEmbed = (char: Character): MessageEmbed => {
     const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
-    var embed = new RichEmbed()
+    var embed = new MessageEmbed()
       .setColor('GREEN')
       .setAuthor(char.name + ' (' + (char.dbUser ? char.dbUser.name : "") + ')')
     displayAttributes.forEach(attribute => {

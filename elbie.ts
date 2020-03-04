@@ -64,15 +64,17 @@ client.on('ready', function () {
       locale = `(no locale)`
   }
   console.log(version)
-  client.user.setPresence({
-    status: 'online',
-    game: {
-      name: locale,
-      url: 'https://github.com/TheSamLloyd/Elbie'
-    }
-  } as Discord.PresenceData).catch((err: Error) => {
-    console.error(err)
-  })
+  if (client.user) {
+    client.user.setPresence({
+      status: 'online',
+      game: {
+        name: locale,
+        url: 'https://github.com/TheSamLloyd/Elbie'
+      }
+    } as Discord.PresenceData).catch((err: Error) => {
+      console.error(err)
+    })
+  }
   console.log('Ready!')
 })
 
@@ -111,7 +113,7 @@ function handler(cmd: Command) {
 }
 // command execution
 client.on('message', function (message) {
-  if (isCommand(message)) {
+  if (message instanceof Discord.Message && isCommand(message)) {
     let command = new Command(message)
     // commands
     if (command.command === '?' || Object.keys(commandList).includes(command.command)) {
