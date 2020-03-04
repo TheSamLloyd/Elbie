@@ -32,6 +32,11 @@ class Track {
         }
         this.rqdBy = rqdBy
         this.id = id
+        this.getInfo()
+    }
+    getInfo = async () => {
+        this.info = await ytdl.getBasicInfo(this.id)
+        console.log(await this.info)
     }
 }
 
@@ -46,9 +51,8 @@ class audio extends Module {
         this.queue = {}
     }
     private _play = async (connection: VoiceConnection, track: Track) => {
-        console.log(track)
+        console.log(track.info.title, track.info.author)
         connection.play(await ytdl(track.id), { type: 'opus' })
-        track.info = await ytdl.getBasicInfo(track.id)
 
     }
     addQueue = (command: Command): void => {
@@ -61,18 +65,25 @@ class audio extends Module {
         command.reply("Closing connection!")
     }
     listQueue = async (command: Command) => {
-        const f = async () => {
-            return this.queue[command.server.id].map(async (a:Track)=> {
-                return await ytdl.getBasicInfo(a.id)
-            })
-        }
-        command.reply((await f()).join("\n"))
+        this.queue[command.server.id].forEach(async (val: Track) => {
+            console.log(val.id)
+            if (await val.info) {
+                command.reply(await val.info.title)
+            }
+            else {
+                await val.getInfo()
+                const info = await val.info
+                command.reply(await info.title)
+            }
+        })
     }
 
     play = (command: Command): void => {
         this.addQueue(command)
         const next = this.queue[command.server.id].pop()
         if (next instanceof Track) this._play(this.queue[command.server.id].connection, next)
+        command.reply(`Now playing: ${next?.info.title}`)
+
     }
     join = async (command: Command) => {
         if (command.member.voice.channel) {
@@ -85,12 +96,26 @@ class audio extends Module {
                 if (next instanceof Track) this._play(connection, next)
             })
         }
+        else {
+            command.reply("Sorry -- you have to join a voice channel first.")
+        }
+    }
+    pause = (command: Command): void => {
+        let disp = this.queue[command.server.id].connection.dispatcher
+        if (disp.paused){
+            disp.resume()
+        }
+        else{
+            disp.pause(false)
+        }
     }
     commands = {
         join: { key: this.join, desc: "" },
         play: { key: this.play, desc: "" },
+        add: {key: this.addQueue, desc:""},
         stop: { key: this.stop, desc: "" },
-        queue: { key: this.listQueue, desc: "" }
+        queue: { key: this.listQueue, desc: "" },
+        pause: { key: this.pause, desc: "" }
     }
 }
 
