@@ -1,6 +1,6 @@
 {
   "name": "elbie",
-  "version": "4.0.0a",
+  "version": "4.0.0b",
   "description": "discord bot designed to handle dungeon world and a few other ttrpgs",
   "main": "lib/elbie.js",
   "engines": {
@@ -8,11 +8,14 @@
     "yarn": "^1.21.1"
   },
   "dependencies": {
+    "@discordjs/opus": "^0.1.0",
     "bufferutil": "^4.0.1",
     "discord.js": "^11.5.0",
     "dotenv": "^8.2.0",
     "erlpack": "discordapp/erlpack",
-    "mongoose": "^5.7.5"
+    "mongoose": "^5.7.5",
+    "utf-8-validate": "^5.0.2",
+    "zlib-sync": "^0.1.6"
   },
   "devDependencies": {
     "@types/mongoose": "^5.5.41",
