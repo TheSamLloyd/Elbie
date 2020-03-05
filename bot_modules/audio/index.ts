@@ -109,13 +109,19 @@ class audio extends Module {
             disp.pause(false)
         }
     }
+    skip = async (command: Command) => {
+        var currQ = this.queue[command.server.id]
+        command.reply("Skipping...")
+        currQ.connection.dispatcher.end()
+    }
     commands = {
         join: { key: this.join, desc: "" },
         play: { key: this.play, desc: "" },
         add: {key: this.addQueue, desc:""},
         stop: { key: this.stop, desc: "" },
         queue: { key: this.listQueue, desc: "" },
-        pause: { key: this.pause, desc: "" }
+        pause: { key: this.pause, desc: "" },
+        skip: {key:this.skip, desc:""}
     }
 }
 
