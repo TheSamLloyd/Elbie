@@ -193,25 +193,26 @@ const rpg = {
     }
   },
   bind (Command) {
-    rpg.getCampaign(Command, function (campaign) {
-      if (!campaign) {
-        const newCampaign = new db.CampaignObject({
-          dm: Command.auth.id,
-          channel: Command.channel.id,
-          shtname: Command.args[0],
-          name: Command.args.slice(1).join(' ')
-        })
-        newCampaign.save(function (err, campaign) {
-          if (err) console.error(err)
-          else {
-            Command.channel.send(`Successfully created new campaign: ${campaign.name}
-          Please finish setup on the web interface [[link forthcoming]]`)
-          }
-        })
-      } else {
-        Command.channel.send('Already defined a campaign for this channel.')
-      }
-    })
+    Command.channel.send("This command isn't set up for use yet -- please email me at samlloydj@gmail.com if you want to make Elbie work in your campaign.")
+    // rpg.getCampaign(Command, function (campaign) {
+    //   if (!campaign) {
+    //     const newCampaign = new db.CampaignObject({
+    //       dm: Command.auth.id,
+    //       channel: Command.channel.id,
+    //       shtname: Command.args[0],
+    //       name: Command.args.slice(1).join(' ')
+    //     })
+    //     newCampaign.save(function (err, campaign) {
+    //       if (err) console.error(err)
+    //       else {
+    //         Command.channel.send(`Successfully created new campaign: ${campaign.name}
+    //       Please finish setup on the web interface [[link forthcoming]]`)
+    //       }
+    //     })
+    //   } else {
+    //     Command.channel.send('Already defined a campaign for this channel.')
+    //   }
+    // })
   },
   statRoll (Command) {
     Character.statRoll(Command, rpg.rollFormat)
