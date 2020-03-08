@@ -23,7 +23,6 @@ class Queue extends Array<Track> implements IQueue {
 class Track {
     rqdBy?: User
     id: string
-    video?: any
     info?: any
     options: {} = {}
     constructor({ rqdBy, id, options }: { rqdBy: User; id: string, options?: {} }) {
@@ -32,7 +31,6 @@ class Track {
         }
         this.rqdBy = rqdBy
         this.id = id
-        this.getInfo()
     }
     getInfo = async () => {
         this.info = await ytdl.getBasicInfo(this.id)
