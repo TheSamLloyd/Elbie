@@ -306,7 +306,7 @@ class fiasco extends Module {
           change = true
         }
         if (change) {
-          let embed = new MessageEmbed().addField('Color Setting', `Set the scene's color to ${colors[gameState.sceneColor]}`).setColor(gameState.sceneColor == colors.black ? 0 : 0xFFFFFF)
+          let embed = new MessageEmbed().addField('Color Setting', `Set the scene's color to ${colors[gameState.sceneColor]}`).setColor(gameState.sceneColor == colors.black ? 0 : 0xFFFFFE)
           command.reply(embed)
         }
       }
@@ -318,28 +318,28 @@ class fiasco extends Module {
       let player = parseInt(command.args[0])
       //uncomment these blocks at the end of testing
       //if (player != gameState.activePlayer) {
-        command.reply(`Gave  ${gameState.players[player].displayName} a ${colors[gameState.sceneColor]} die.`)
-        if (gameState.sceneColor == colors['white']) {
-          gameState.players[player].pool.nW++
-          gameState.pool.nW--
-        }
-        if (gameState.sceneColor == colors['black']) {
-          gameState.players[player].pool.nB++
-          gameState.pool.nB--
-        }
-        if (gameState.pool.nW + gameState.pool.nB > 2 * gameState.nPlayers) {
-          this.showPool(command)
-          command.reply(this.advanceTurn(gameState))
-        }
-        else {
-          this.showPool(command)
-          command.reply(`Time for **The Tilt**.`)
-          gameState.pool.binEmbed = await command.reply(this.tilt(gameState))
-        }
+      command.reply(`Gave  ${gameState.players[player].displayName} a ${colors[gameState.sceneColor]} die.`)
+      if (gameState.sceneColor == colors['white']) {
+        gameState.players[player].pool.nW++
+        gameState.pool.nW--
       }
-      //else{
-        //command.reply("You can't give yourself a die in Act I.")
-      //}
+      if (gameState.sceneColor == colors['black']) {
+        gameState.players[player].pool.nB++
+        gameState.pool.nB--
+      }
+      if (gameState.pool.nW + gameState.pool.nB > 2 * gameState.nPlayers) {
+        this.showPool(command)
+        command.reply(this.advanceTurn(gameState))
+      }
+      else {
+        this.showPool(command)
+        command.reply(`Time for **The Tilt**.`)
+        gameState.pool.binEmbed = await command.reply(this.tilt(gameState))
+      }
+    }
+    //else{
+    //command.reply("You can't give yourself a die in Act I.")
+    //}
     //}
     if (gameState && gameState.phase == states['Act II']) {
       command.reply(`Took a ${colors[gameState.sceneColor]} die.`)
@@ -361,14 +361,52 @@ class fiasco extends Module {
       }
     }
   }
-  aftermath = () => {
+  aftermath = (game:gameObject) => {
+    game.phase=states['Aftermath']
 
   }
   release = (command: Command) => {
 
   }
   ending = (nW: number, nB: number): string => {
-    return ""
+    let totalW: number = new Die(`${nW}d6`).roll().reduce((total, val) => total + val)
+    let totalB: number = new Die(`${nB}d6`).roll().reduce((total, val) => total + val)
+    let total = totalW - totalB
+    let larger = totalW - totalB > 0 ? 'White' : 'Black'
+    let modifier: string
+    const bEnding: string[] = ['The worst thing in the universe', 'Horrible', 'Brutal', 'Harsh', 'Savage', 'Rough', 'Pathetic', 'Nothing to write home about', 'Pretty good', 'Awesome']
+    const wEnding: string[] = ['The worst thing in the universe', 'Dreadful', 'Merciless', 'Grim', 'Bitter', 'Miserable', 'Weak', 'Nothing to crow about', 'Not too shabby', 'Fan-fucking-tastic']
+    if (total <= -13) {
+      modifier = bEnding[-1]
+    }
+    else if (total <= -10) {
+      modifier = bEnding[-2]
+    }
+    else if (total <= -8) {
+      modifier = bEnding[-3]
+    }
+    else if (total <= -6) {
+      modifier = bEnding[-4]
+    }
+    else if (total >= -5 && total <= 0) {
+      modifier = bEnding[total]
+    }
+    else if (total > 0 && total <= 5) {
+      modifier = wEnding[total]
+    }
+    else if (total <= 7) {
+      modifier = wEnding[6]
+    }
+    else if (total <= 9) {
+      modifier = wEnding[7]
+    }
+    else if (total <= 12) {
+      modifier = wEnding[8]
+    }
+    else {
+      modifier = wEnding[9]
+    }
+    return `${larger} ${Math.abs(total)}: ${modifier}`
   }
   commands = {
     fiasco: { key: this.start, desc: 'Starts a new fiasco game with the given number of players.' },
