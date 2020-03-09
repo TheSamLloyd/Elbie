@@ -27,8 +27,8 @@ export class Command {
         str.id = str.id.replace(/\W/g, '')
         return str
     }
-    reply = (content: string | MessageEmbed): void => {
-        this.message.channel.send(content)
+    reply = async (content: string | MessageEmbed): Promise<Message> => {
+        return await this.message.channel.send(content)
     }
 }
 export interface IFunction {
