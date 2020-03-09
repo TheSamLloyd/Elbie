@@ -2,6 +2,7 @@
 import common from '../common'
 import { Module, Command } from '../module'
 import { Die } from '../rpg/dice'
+import { MessageEmbed } from 'discord.js'
 // basic bot commands
 
 enum colors {
@@ -33,6 +34,7 @@ interface gameObject {
   activeAction: actions
   sceneColor: colors
   pool: gamePool
+  tilters: string[]
   players: {
     [index: number]: playerObject
   }
@@ -72,7 +74,8 @@ class poolObject {
     console.log(bins)
     return bins
   }
-  displayBins = (bin: bins): string => {
+  displayBins = (bin: bins): MessageEmbed => {
+    let embed = new MessageEmbed().setTitle('Pool').setColor('#633738')
     var output = "\`\`\`🎲 | #\n"
     for (var i = 1; i <= 6; i++) {
       if (bin[i.toString()]) {
@@ -80,17 +83,22 @@ class poolObject {
       }
     }
     output += "\`\`\`"
-    return output
+    embed.addField('Pool', output)
+    return embed
   }
 }
 
 class gamePool extends poolObject {
   setupPool: bins
   setupN: number
+  tiltPool: bins
+  tiltN: number
   constructor(n: number) {
     super()
     this.setupPool = this.bin(new Die(`${4 * n}d6`).roll())
+    this.tiltPool = this.bin(new Die(`${2 * n}d6`).roll())
     this.setupN = 4 * n
+    this.tiltN = 2
     this.nW = 2 * n
     this.nB = 2 * n
   }
@@ -112,7 +120,8 @@ class fiasco extends Module {
         activePlayer: 1,
         activeAction: actions['None'],
         pool: new gamePool(n),
-        players: {}
+        players: {},
+        tilters: []
       }
       command.reply('**SETUP**: Use `+setme 1` to declare who player 1 will be, in any order.')
     }
@@ -161,37 +170,63 @@ class fiasco extends Module {
       command.reply("Looks like this game is full!")
     }
     if (gameState && gameState.whosIn == gameState.nPlayers) {
-      command.reply(`Everyone's in! Let's move on.\n${gameState.pool.displayBins(gameState.pool.setupPool)}\nIt's ${gameState.players[1].displayName}'s turn.`)
+      command.reply(`Everyone's in! Let's move on.\nIt's ${gameState.players[1].displayName}'s turn.`)
+      command.reply(gameState.pool.displayBins(gameState.pool.setupPool))
     }
   }
   takeFromPool = (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
-    if (gameState && this.turnQ(command.auth, gameState)) {
+    if (gameState && (this.turnQ(command.auth, gameState) || gameState.phase == states['Tilt'])) {
       let die = parseInt(command.args[0])
-      if (gameState && gameState.whosIn == gameState.nPlayers && die) {
-        if (gameState.pool.setupPool[die] > 0 && gameState.pool.setupN > 1) {
-          gameState.pool.setupPool[die]--
-          gameState.pool.setupN--
-          command.reply(`Successfully took a ${die.toString()} from the pool. New pool:\n${gameState.pool.displayBins(gameState.pool.setupPool)}\n${this.advanceTurn(gameState)}`)
+      if (gameState.phase == states.Tilt && die) {
+        if (gameState.tilters.includes(command.auth.id) && die && gameState.pool.tiltN >= 1) {
+          gameState.pool.tiltPool[die]--
+          gameState.pool.tiltN--
+          let idIndex = gameState.tilters.indexOf(command.auth.id)
+          gameState.tilters = gameState.tilters.filter((val, index) => index != idIndex)
+          command.reply(`Successfully took a ${die.toString()} from the pool.`)
+          command.reply(gameState.pool.displayBins(gameState.pool.tiltPool))
         }
-        else if (gameState.pool.setupN == 1) {
-          command.reply(`Successfully took a wild ${die.toString()} from the pool. The pool is empty!`)
-          this.startActI(gameState, command)
+        else if (die) {
+          command.reply(`You can't take from the pool right now.`)
         }
-        else {
-          command.reply("You can't take that number from the pool.")
+        if (gameState.pool.tiltN == 0) {
+          command.reply(`Time for **Act II**!`)
+          this.startActII(gameState, command)
         }
-      } else {
-        command.reply("Wait for everyone to get in the game.")
+      }
+      else {
+        if (gameState.phase == states.Setup && gameState.whosIn == gameState.nPlayers && die) {
+          if (gameState.pool.setupPool[die] > 0 && gameState.pool.setupN > 1) {
+            gameState.pool.setupPool[die]--
+            gameState.pool.setupN--
+            command.reply(`Successfully took a ${die.toString()} from the pool. New pool:\n${gameState.pool.displayBins(gameState.pool.setupPool)}\n${this.advanceTurn(gameState)}`)
+          }
+          else if (gameState.pool.setupN == 1) {
+            command.reply(`Successfully took a wild ${die.toString()} from the pool. The pool is empty!`)
+            this.startActI(gameState, command)
+          }
+          else {
+            command.reply("You can't take that number from the pool.")
+          }
+        } else {
+          command.reply("Wait for everyone to get in the game.")
+        }
+
       }
     } else {
-      if (gameState) command.reply(`Only ${gameState.players[gameState.activePlayer].displayName} can take right now.`)
+      if (gameState && gameState.phase != states.Tilt) command.reply(`Only ${gameState.players[gameState.activePlayer].displayName} can take right now.`)
     }
   }
   startActI = (game: gameObject, command: Command) => {
     this.advanceTurn(game)
     game.phase = states['Act I']
     command.reply("**ACT I**: Each turn, use `+scene e(stablish)` or `+scene r(esolve)`.")
+  }
+  startActII = (game: gameObject, command: Command) => {
+    this.advanceTurn(game)
+    game.phase = states['Act II']
+    command.reply("**ACT II**: Each turn, use `+scene e(stablish)` or `+scene r(esolve)`.")
   }
   sceneEstablishorResolve = (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
@@ -216,37 +251,42 @@ class fiasco extends Module {
   showPool = (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
     if (gameState) {
-      let output = `Pool: ${gameState.pool.nW}W / ${gameState.pool.nB}B`
+      let embed = new MessageEmbed().setTitle("Pool").setColor('#633738')
+      embed.addField(`Dice Pool`, `${gameState.pool.nW}W / ${gameState.pool.nB}B`)
       for (var i = 1; i <= gameState.nPlayers; i++) {
-        output += `\n${gameState.players[i].displayName}: ${gameState.players[i].pool.nW}W / ${gameState.players[i].pool.nB}B`
+        embed.addField(`${gameState.players[i].displayName}`, `${gameState.players[i].pool.nW}W / ${gameState.players[i].pool.nB}B`)
       }
-      command.reply(output)
+      command.reply(embed)
     }
   }
-  tilt = (game:gameObject) => {
-    let output=""
-    let highW={
-      player:0,
-      number:0,
+  tilt = (game: gameObject) => {
+    game.phase=states['Tilt']
+    game.pool.displayBins(game.pool.tiltPool)
+    let highW = {
+      player: 0,
+      number: 0,
     }
-    let highB={
-      player:0,
-      number:0,
+    let highB = {
+      player: 0,
+      number: 0,
     }
-    for (var i = 1; i<=game.nPlayers;i++){
+    //this Tilt logic can and should be adjusted. 
+    for (var i = 1; i <= game.nPlayers; i++) {
       let player = game.players[i]
-      let dW = new Die(`${player.pool.nW}d6`).roll().reduce((total,val)=>total+val)
-      let dB = new Die(`${player.pool.nB}d6`).roll().reduce((total,val)=>total+val)
-      if (dW>highW.number || (dW==highW.number && Math.random()>(1/game.nPlayers))){
-        highW.number=dW
-        highW.player=i
+      let dW = new Die(`${player.pool.nW}d6`).roll().reduce((total, val) => total + val)
+      let dB = new Die(`${player.pool.nB}d6`).roll().reduce((total, val) => total + val)
+      if (dW > highW.number || (dW == highW.number && Math.random() > (1 / game.nPlayers))) {
+        highW.number = dW
+        highW.player = i
       }
-      if (dB>highB.number || (dB==highB.number && Math.random()>(1/game.nPlayers))){
-        highB.number=dB
-        highB.player=i
+      if (dB > highB.number || (dB == highB.number && Math.random() > (1 / game.nPlayers))) {
+        highB.number = dB
+        highB.player = i
       }
     }
-    output=`High white roller is ${game.players[highW.player]}!\nHigh black roller is ${game.players[highB.player]}!\n`
+    let output = `High white roller is ${game.players[highW.player].displayName}!\nHigh black roller is ${game.players[highB.player].displayName}!\n`
+    game.tilters = [highW.player, highB.player].map((val) => game.players[val].id)
+    return output
   }
   setColor = (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
@@ -283,11 +323,11 @@ class fiasco extends Module {
       }
       if (gameState.pool.nW + gameState.pool.nB > 2 * gameState.nPlayers) {
         this.showPool(command)
-        this.advanceTurn(gameState)
+        command.reply(this.advanceTurn(gameState))
       }
       else {
         this.showPool(command)
-        command.reply('Time for **The Tilt**.')
+        command.reply(`Time for **The Tilt**.\n${this.tilt(gameState)}`)
       }
     }
     if (gameState && gameState.phase == states['Act II']) {
@@ -296,13 +336,13 @@ class fiasco extends Module {
         gameState.players[gameState.activePlayer].pool.nW++
         gameState.pool.nW--
       }
-      if (gameState.sceneColor == colors['black']){
+      if (gameState.sceneColor == colors['black']) {
         gameState.players[gameState.activePlayer].pool.nB++
         gameState.pool.nB--
       }
       if (gameState.pool.nW + gameState.pool.nB > 0) {
         this.showPool(command)
-        this.advanceTurn(gameState)
+        command.reply(this.advanceTurn(gameState))
       }
       else {
         this.showPool(command)
@@ -326,6 +366,7 @@ class fiasco extends Module {
     scene: { key: this.sceneEstablishorResolve, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
     color: { key: this.setColor, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
     endscene: { key: this.endScene, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
+    show: { key: this.showPool, desc: '' }
   }
 }
 
