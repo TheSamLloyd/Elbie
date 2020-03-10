@@ -144,9 +144,19 @@ class fiasco extends Module {
     return `It's ${game.players[game.activePlayer].displayName}'s turn.`
   }
   advanceTurn = (gameState: gameObject): string => {
-    gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
-    gameState.sceneColor = colors[""]
-    return this.whoseTurn(gameState)
+    if (gameState.phase != states['Aftermath']) {
+      gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
+      gameState.sceneColor = colors[""]
+      return this.whoseTurn(gameState)
+    }
+    else {
+      gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
+      while (gameState.players[gameState.activePlayer].pool.nW + gameState.players[gameState.activePlayer].pool.nB == 0) {
+        gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
+      }
+      gameState.sceneColor = colors[""]
+      return this.whoseTurn(gameState)
+    }
   }
   assignPlayer = async (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
@@ -251,7 +261,7 @@ class fiasco extends Module {
       this.showPool(command)
     }
   }
-  showPool = (command: Command) => {
+  showPool = async (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
     if (gameState) {
       let embed = new MessageEmbed().setTitle("Pool").setColor('#633738')
@@ -259,7 +269,7 @@ class fiasco extends Module {
       for (var i = 1; i <= gameState.nPlayers; i++) {
         embed.addField(`${gameState.players[i].displayName} -- Player ${i}`, `${gameState.players[i].pool.nW}W / ${gameState.players[i].pool.nB}B`)
       }
-      command.reply(embed)
+      return await command.reply(embed)
     }
   }
   tilt = (game: gameObject) => {
@@ -358,12 +368,14 @@ class fiasco extends Module {
       else {
         this.showPool(command)
         command.reply('Time for **the Aftermath**.')
+        this.aftermath(gameState, command)
       }
     }
   }
-  aftermath = (game:gameObject) => {
-    game.phase=states['Aftermath']
-
+  aftermath = async (game: gameObject, command: Command) => {
+    game.phase = states['Aftermath']
+    game.pool.binEmbed = await this.showPool(command)
+    command.reply('Use `+release (b/w)` to release a die of that color at the end.')
   }
   release = (command: Command) => {
 
@@ -408,13 +420,13 @@ class fiasco extends Module {
     }
     return `${larger} ${Math.abs(total)}: ${modifier}`
   }
-  commands = {
+  readonly commands = {
     fiasco: { key: this.start, desc: 'Starts a new fiasco game with the given number of players.' },
-    setme: { key: this.assignPlayer, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
-    take: { key: this.takeFromPool, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
-    scene: { key: this.sceneEstablishorResolve, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
-    color: { key: this.setColor, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
-    endscene: { key: this.endScene, desc: 'Echoes back whatever text is sent. Cannot be used to trigger her commands.' },
+    setme: { key: this.assignPlayer, desc: '' },
+    take: { key: this.takeFromPool, desc: '' },
+    scene: { key: this.sceneEstablishorResolve, desc: '' },
+    color: { key: this.setColor, desc: '' },
+    endscene: { key: this.endScene, desc: '' },
     show: { key: this.showPool, desc: '' }
   }
 }
