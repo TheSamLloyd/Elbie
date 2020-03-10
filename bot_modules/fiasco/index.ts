@@ -260,19 +260,23 @@ class fiasco extends Module {
         output += '\nAt the end of your scene, use `+endscene n` to give your die to player number *n*.'
       }
       command.reply(output)
-      this.showPool(command)
+      this.showPool(command, true)
     }
   }
-  showPool = async (command: Command) => {
+  showPool = async (command: Command, deletePrev?:boolean) => {
     let gameState: gameObject | false = this.setQ(command)
     if (gameState) {
+      if (deletePrev) gameState.pool.binEmbed?.delete()
       let embed = new MessageEmbed().setTitle("Pool").setColor('#633738')
       embed.addField(`Dice Pool`, `${gameState.pool.nW}W / ${gameState.pool.nB}B`)
       for (var i = 1; i <= gameState.nPlayers; i++) {
         embed.addField(`${gameState.players[i].displayName} -- Player ${i}`, `${gameState.players[i].pool.nW}W / ${gameState.players[i].pool.nB}B`)
       }
-      return await command.reply(embed)
+      gameState.pool.binEmbed = await command.reply(embed)
     }
+  }
+  show = async (command:Command)=>{
+    this.showPool(command, false)
   }
   tilt = (game: gameObject) => {
     game.phase = states['Tilt']
@@ -317,6 +321,9 @@ class fiasco extends Module {
           gameState.sceneColor = colors['black']
           change = true
         }
+        else{
+          command.reply(`No dice to set the scene to that color.`)
+        }
         if (change) {
           let embed = new MessageEmbed().addField('Color Setting', `Set the scene's color to ${colors[gameState.sceneColor]}`).setColor(gameState.sceneColor == colors.black ? 0 : 0xFFFFFE)
           command.reply(embed)
@@ -340,11 +347,11 @@ class fiasco extends Module {
         gameState.pool.nB--
       }
       if (gameState.pool.nW + gameState.pool.nB > 2 * gameState.nPlayers) {
-        this.showPool(command)
+        this.showPool(command,true)
         command.reply(this.advanceTurn(gameState))
       }
       else {
-        this.showPool(command)
+        this.showPool(command, true)
         command.reply(`Time for **The Tilt**.`)
         gameState.pool.binEmbed = await command.reply(this.tilt(gameState))
       }
@@ -376,7 +383,12 @@ class fiasco extends Module {
   }
   aftermath = async (game: gameObject, command: Command) => {
     game.phase = states['Aftermath']
-    game.pool.binEmbed = await this.showPool(command)
+    let embed:MessageEmbed = new MessageEmbed().setTitle('Endings')
+    for (var i = 1; i<=game.nPlayers;i++){
+      embed.addField(game.players[i].displayName, this.ending(game.players[i].pool.nW,game.players[i].pool.nB))
+    }
+    command.reply(embed)
+    this.showPool(command,true)
     command.reply('Use `+release (b/w)` to release a die of that color at the end.')
   }
   release = (command: Command) => {
@@ -452,7 +464,8 @@ class fiasco extends Module {
     scene: { key: this.sceneEstablishorResolve, desc: '' },
     color: { key: this.setColor, desc: '' },
     endscene: { key: this.endScene, desc: '' },
-    show: { key: this.showPool, desc: '' }
+    show: { key: this.show, desc: '' },
+    release: { key: this.release, desc: '' }
   }
 }
 
