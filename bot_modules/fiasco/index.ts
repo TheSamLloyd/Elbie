@@ -151,8 +151,10 @@ class fiasco extends Module {
     }
     else {
       gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
-      while (gameState.players[gameState.activePlayer].pool.nW + gameState.players[gameState.activePlayer].pool.nB == 0) {
+      let i=0
+      while (gameState.players[gameState.activePlayer].pool.nW + gameState.players[gameState.activePlayer].pool.nB == 0 && i<=gameState.nPlayers) {
         gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
+        i++
       }
       gameState.sceneColor = colors[""]
       return this.whoseTurn(gameState)
@@ -378,7 +380,30 @@ class fiasco extends Module {
     command.reply('Use `+release (b/w)` to release a die of that color at the end.')
   }
   release = (command: Command) => {
-
+    let gameState: gameObject | false = this.setQ(command)
+    if (gameState && gameState.phase==states['Aftermath'] && this.turnQ(command.auth,gameState)){
+      switch (command.args[0].toLowerCase()[0]){
+        case 'b':
+          if (gameState.players[gameState.activePlayer].pool.nB>=1){
+            gameState.players[gameState.activePlayer].pool.nB--
+            gameState.pool.binEmbed?.edit(this.showPool(command))
+          }
+          else {
+            command.reply('I couldn\'t release a die of that color.')
+          }
+          break
+        case 'w':
+          if (gameState.players[gameState.activePlayer].pool.nW>=1){
+            gameState.players[gameState.activePlayer].pool.nW--
+            gameState.pool.binEmbed?.edit(this.showPool(command))
+          }
+          else {
+            command.reply('I couldn\'t release a die of that color.')
+          }
+        default:
+          command.reply('I couldn\'t release a die of that color.')
+      }
+    }
   }
   ending = (nW: number, nB: number): string => {
     let totalW: number = new Die(`${nW}d6`).roll().reduce((total, val) => total + val)
