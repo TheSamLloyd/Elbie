@@ -112,7 +112,7 @@ client.on('message', function (message) {
     }
     // commands
     if (Command.command === '?' || Object.keys(commandList).includes(Command.command)) {
-      console.log(`Command: ${Command.auth.username}: ${Command.command} => ${Command.argument} `)
+      console.log(`Command: ${Command.auth.tag}: ${Command.command} => ${Command.argument} `)
       handler(Command)
     } else {
       Command.channel.send('I couldn\'t understand that command.')
