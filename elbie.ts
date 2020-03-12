@@ -11,7 +11,7 @@ const prefix: string = '+'
 const env: string | undefined = process.env.BUILD
 const dbToken = process.env.MONGODB_URI || ""
 
-export const database = mongoose.connect(dbToken, (err) => {
+mongoose.connect(dbToken, {useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex:true},  (err) => {
   if (err) {
     console.error(`No connection to DB!\n${err}`)
   }
@@ -28,8 +28,8 @@ interface ICommandList {
 const commandList: ICommandList = {}
 Object.values(Modules).forEach(botmodule => {
   Object.assign(commandList, botmodule.commands)
-  console.log('Loaded commands for module ' + botmodule['name'])
-  console.log('>' + botmodule['desc'])
+  console.log(`Loaded commands for module ${botmodule['name']}`)
+  console.log(`\t>${botmodule['desc']}`)
 })
 
 // helper functions
@@ -79,13 +79,13 @@ client.on('ready', function () {
 })
 
 // keep-alive connection
-client.on('disconnect', function () {
+client.on('disconnect', ()=>{
   console.log('Disconnected, attempting to reconnect...')
   client.login(token)
 })
 // error handling
 // for discord errors:
-client.on('error', function (err: Error) {
+client.on('error', (err: Error)=>{
   console.error(err)
   console.log('Got an error, trying to reconnect...')
   client.login(token)
@@ -96,31 +96,31 @@ function errorHandler(err: Error) {
   return `I ran into an error of type ${err.name}: check console for details.`
 }
 //  command handling
-function handler(cmd: Command) {
+async function handler(cmd: Command) {
   if (cmd.command === '?') {
     var output: string[] = []
     Object.keys(commandList).forEach(botcommand => {
       output.push(commandList[botcommand].desc ? `${botcommand} : ${commandList[botcommand].desc}` : `${botcommand}`)
     })
-    cmd.reply(output.join('\n'))
+    await cmd.reply(output.join('\n'))
   } else {
     try {
       commandList[cmd.command]['key'](cmd)
     } catch (err) {
-      cmd.reply(errorHandler(err))
+      await cmd.reply(errorHandler(err))
     }
   }
 }
 // command execution
-client.on('message', function (message) {
+client.on('message', async (message)=>{
   if (message instanceof Discord.Message && isCommand(message)) {
     let command = new Command(message)
     // commands
     if (command.command === '?' || Object.keys(commandList).includes(command.command)) {
       console.log(`Command: ${command.auth.tag}: ${command.command} => ${command.argument} `)
-      handler(command)
+      await handler(command)
     } else {
-      command.reply('I couldn\'t understand that command.')
+      await command.reply('I couldn\'t understand that command.')
     }
   }
 })
