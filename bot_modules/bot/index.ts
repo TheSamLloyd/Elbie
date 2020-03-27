@@ -5,13 +5,13 @@ import { Module, Command } from '../module'
 class bot extends Module {
   name = 'bot'
   desc = 'basic bot commands'
-  ping(command: Command): void {
-    command.reply('pong')
+  async ping(command: Command): Promise<void> {
+    await command.reply('pong')
   }
-  echo(command: Command): void {
-    command.reply(command.argument)
+  async echo(command: Command): Promise<void> {
+    await command.reply(command.argument)
   }
-  flip(command: Command): void {
+  async flip(command: Command): Promise<void> {
     var heads
     var tails
     if (command.args.length === 2) {
@@ -22,9 +22,9 @@ class bot extends Module {
       tails = 'tails'
     }
     var flip = common.randInt(0, 1) ? heads : tails
-    command.reply(flip)
+    await command.reply(flip)
   }
-  choose(command: Command): void {
+  async choose(command: Command): Promise<void> {
     var n = command.args.length
     if (n >= 2) {
       command.reply(command.args[common.randInt(0, n - 1)])

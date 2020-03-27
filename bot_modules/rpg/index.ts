@@ -16,10 +16,10 @@ class rpg extends Module {
     if (!Campaign.instantiatedAll) Campaign.instatiateAllActiveCampaigns()
   }
   // terminal 
-  advantage = (command: Command): void => {
+  advantage = async (command: Command): Promise<void> => {
     let text = ''
     if (command.argument.indexOf(',') !== -1) {
-      command.reply('You can only do one roll with advantage.')
+      await command.reply('You can only do one roll with advantage.')
       return
     } else {
       let rolls = nullGame.roll(null, `${command.argument}, ${command.argument}`)
@@ -28,38 +28,38 @@ class rpg extends Module {
       })
       text += `Result: ${Math.max(...rolls.map(roll => roll.total as number))}`
     }
-    command.reply(text)
+    await command.reply(text)
   }
-  getCampaign = (command: Command, cb: IFunction): void => {
+  getCampaign = async (command: Command, cb: IFunction): Promise<void> => {
     if (!Campaign.instantiatedAll) Campaign.instatiateAllActiveCampaigns()
     Campaign.get(command.server.id, command.channel.id, cb)
   }
   // terminal
-  listChar = (command: Command): void => {
+  listChar = async (command: Command): Promise<void> => {
     console.log('Listing...')
-    this.getCampaign(command, (campaign: Campaign) => {
+    this.getCampaign(command, async (campaign: Campaign) => {
       let characters = campaign.characters.map((char: Character) => ({ name: char.name, user: char.dbUser ? char.dbUser.name : "" }))
       var out = ''
       characters.forEach((char) => {
         out += `• ${char.name} (${char.user})\n`
       })
       console.log(out)
-      command.reply(out.trim())
+      await command.reply(out.trim())
     })
   }
   // terminal
-  who = (command: Command): void => {
-    this.getCampaign(command, (campaign: Campaign) => {
+  who = async (command: Command): Promise<void> => {
+    this.getCampaign(command, async (campaign: Campaign) => {
       if (command.argument === '') {
-        Character.get(command.auth.id, campaign.id, (char: Character) => {
-          command.reply(this.generateEmbed(char))
+        Character.get(command.auth.id, campaign.id, async (char: Character) => {
+          await command.reply(await this.generateEmbed(char))
         })
       } else {
         // get the character by username / name / nickname
       }
     })
   }
-  generateEmbed = (char: Character): MessageEmbed => {
+  generateEmbed = async (char: Character): Promise<MessageEmbed> => {
     const displayAttributes = char.attributes.filter(attribute => attribute.display == true)
     var embed = new MessageEmbed()
       .setColor('GREEN')
@@ -77,12 +77,12 @@ class rpg extends Module {
     }
     return embed
   }
-  rollFormat = (command: Command): void => {
-    this.getCampaign(command, (campaign: Campaign) => {
+  rollFormat = async (command: Command): Promise<void> => {
+    this.getCampaign(command, async (campaign: Campaign) => {
       console.log(campaign)
       console.log(campaign.system)
       if (campaign) {
-        campaign.system((sys) => {
+        campaign.system(async (sys) => {
           const char = campaign.characters.filter((char:Character)=>char.dbUser?.id==command.auth.id)[0]
           console.log(`${char.name}`)
           const output: RollResults[] = sys.roll(char, command.argument)
@@ -90,20 +90,20 @@ class rpg extends Module {
           output.forEach((roll) => {
             text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
           })
-          command.reply(text.trim())
+          await command.reply(text.trim())
         })
       }
     })
 
   }
-  summary = (command: Command): void => {
+  summary = async (command: Command): Promise<void> => {
     let outtext: string = ""
     this.getCampaign(command, (campaign: Campaign) => {
       if (campaign) {
-        campaign.system((sys) => {
+        campaign.system(async (sys) => {
           outtext += `${campaign.name} running in ${sys.name}\n`
           outtext += `${campaign.characters.map((char) => char.name).join("\n")}`
-          command.reply(outtext)
+          await command.reply(outtext)
         })
       }
     })

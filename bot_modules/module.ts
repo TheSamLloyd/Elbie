@@ -36,7 +36,7 @@ export interface IFunction {
 }
 
 export interface ModuleCommand {
-    (cmd: Command, cb?: IFunction): void
+    (cmd: Command, cb?: IFunction): Promise<void>|void
 }
 
 export interface ICommands {
