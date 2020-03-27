@@ -27,9 +27,9 @@ class bot extends Module {
   async choose(command: Command): Promise<void> {
     var n = command.args.length
     if (n >= 2) {
-      command.reply(command.args[common.randInt(0, n - 1)])
+      await command.reply(command.args[common.randInt(0, n - 1)])
     } else {
-      command.reply('Please provide at least 2 options.')
+      await command.reply('Please provide at least 2 options.')
     }
   }
   commands = {
