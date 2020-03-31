@@ -81,27 +81,26 @@ class rpg extends Module {
     console.log(campaign)
     console.log(campaign.system)
     if (campaign) {
-      campaign.system(async (sys) => {
-        const char = campaign.characters.filter((char: Character) => char.dbUser?.id == command.auth.id)[0]
-        console.log(`${char.name}`)
-        const output: RollResults[] = sys.roll(char, command.argument)
-        let text: string = ''
-        output.forEach((roll) => {
-          text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
-        })
-        await command.reply(text.trim())
+      let sys = await campaign.system()
+      const char = campaign.characters.filter((char: Character) => char.dbUser?.id == command.auth.id)[0]
+      console.log(`${char.name}`)
+      const output: RollResults[] = sys.roll(char, command.argument)
+      let text: string = ''
+      output.forEach((roll) => {
+        text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
       })
+      await command.reply(text.trim())
     }
-
   }
+
+
   summary = async (command: Command): Promise<void> => {
     let outtext: string = ""
     let campaign: Campaign = await this.getCampaign(command)
-    campaign.system(async (sys) => {
-      outtext += `${campaign.name} running in ${sys.name}\n`
-      outtext += `${campaign.characters.map((char) => char.name).join("\n")}`
-      await command.reply(outtext)
-    })
+    let sys = await campaign.system()
+    outtext += `${campaign.name} running in ${sys.name}\n`
+    outtext += `${campaign.characters.map((char) => char.name).join("\n")}`
+    await command.reply(outtext)
   }
   commands: ICommands = {
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },

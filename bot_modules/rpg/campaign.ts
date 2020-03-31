@@ -19,7 +19,7 @@ export class Campaign implements ICampaign {
   id: string = ""
   name: string = ""
   shortName?: string = ""
-  system: (cb: IFunction) => void
+  system: () => Promise<GameSystem>
   dm: User["id"] = ""
   serverWide: boolean = false
   channel: Channel['id'] | undefined
