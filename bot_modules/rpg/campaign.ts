@@ -37,10 +37,8 @@ export class Campaign implements ICampaign {
     this.active = campaign.get('active')
     this.channel = campaign.get('channel')
     this.server = campaign.get('server')
-    this.system = (cb: IFunction) => {
-      gameList.retrieve(campaign.get('system'), (sys: GameSystem) => {
-        if (sys != null) cb(sys)
-      })
+    this.system = async () => {
+      return await gameList.retrieve(campaign.get('system'))
     }
     if (!Campaign.allCampaigns[this.server]) {
       Campaign.allCampaigns[this.server] = {}
@@ -53,61 +51,60 @@ export class Campaign implements ICampaign {
     }
     this.instantiateCharacters()
   }
-  static retrieve(serverId: Server['id'], channelId: Channel['id'], cb: IFunction): void {
+  static async retrieve(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign> {
     console.log('in the retrieve function...')
-    db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec((err: NativeError, campaign: Document) => {
+    let campaign: Document | null = await db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec()
+    return new Promise((resolve, reject) => {
       console.log("inside the DB query..")
-      if (err || campaign == null) {
-        console.error(err || 'No campaign...?')
+      if (campaign == null) {
+        reject('No campaign...?')
       }
       else {
         console.log('Found a campaign!')
-        cb(new Campaign(campaign))
+        resolve(new Campaign(campaign))
       }
     })
   }
-  static instatiateAllActiveCampaigns(): void {
-    db.Campaign.find().where({ 'active': true }).exec((err: Error, campaigns: Document[]) => {
-      if (err) {
-        console.warn('Could not retrieve campaigns for instantiation.')
-        console.error(err)
-      }
-      else {
-        campaigns.forEach(campaign => {
-          console.log(campaign.get("name"))
-          new Campaign(campaign)
-        })
-        Campaign.instantiatedAll = true
-        console.log('Campaigns instantiated with no errors.')
-      }
+  static async instatiateAllActiveCampaigns(): Promise<void> {
+    let campaigns: Document[] = await db.Campaign.find().where({ 'active': true }).exec()
+    campaigns.forEach(campaign => {
+      console.log(campaign.get("name"))
+      new Campaign(campaign)
     })
+    Campaign.instantiatedAll = true
+    console.log('Campaigns instantiated with no errors.')
+
   }
-  instantiateCharacters(): void {
-    db.Character.find().where({ campaign: this.id }).exec((err, chars: Document[]) => {
+  async instantiateCharacters(): Promise<void> {
+    let chars: Document[] = await db.Character.find().where({ campaign: this.id })
+    try {
       chars.forEach(char => {
         console.log(`Instantiating character: ${char.get('name')}...\r`)
         this.characters.push(new Character(char))
       })
-      if (!err) {
-        console.log(`All characters for campaign ${this.name} instantiated!`)
-      }
-    })
+      console.log(`All characters for campaign ${this.name} instantiated!`)
+    }
+    catch (err){
+      console.error(err)      
+    }
   }
   isDM(id: User['id']): boolean {
     return (this.dm === id)
   }
-  static get(serverId: Server['id'], channelId: Channel['id'], cb: IFunction): void {
-    if (Campaign.allCampaigns[serverId]) {
-      if (Campaign.allCampaigns[serverId]["all"]) {
-        cb(Campaign.allCampaigns[serverId]["all"])
+  static async get(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign> {
+    return new Promise((resolve, reject) => {
+      if (Campaign.allCampaigns[serverId]) {
+        if (Campaign.allCampaigns[serverId]["all"]) {
+          resolve(Campaign.allCampaigns[serverId]["all"])
+        }
+        else if (Campaign.allCampaigns[serverId][channelId]) {
+          resolve(Campaign.allCampaigns[serverId][channelId])
+        }
       }
-      else if (Campaign.allCampaigns[serverId][channelId]) {
-        cb(Campaign.allCampaigns[serverId][channelId])
+      else {
+        console.log('Campaign not in AllCampaigns, trying retrieve from DB...')
+        resolve(Campaign.retrieve(serverId, channelId))
       }
-    }
-    else {
-      console.log('Campaign not in AllCampaigns, trying retrieve from DB...')
-      Campaign.retrieve(serverId, channelId, cb)
-    }
+    })
   }
 }
