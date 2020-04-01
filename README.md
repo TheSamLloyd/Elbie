@@ -1,5 +1,8 @@
 # Elbie (Landon Bot)
 
+## Note!
+> If you want to use Elbie for character tracking you MUST send me a message so I can set you up in my database! Otherwise she won't know who you are. We are nearing a 4.0 release which will make much of this way, way easier for me so I encourage you to watch this space for an updated readme. The #develop branch has more info.
+
 An extensible [Discord](https://discordapp.com/) bot designed to facilitate running rules-lite [TTRPG](https://en.wikipedia.org/wiki/Tabletop_role-playing_game) systems, including [Dungeon World](http://dungeon-world.com/), [Fiasco](http://bullypulpitgames.com/games/fiasco/), and others, with rudimentary support for Dungeons & Dragons 3.5e.
 What makes Elbie distinct from many of the conventionally available Discord bots is her tight RPG integrations, capable of handling skills, inventory, dice rolls, and creating character summaries on the fly. She also has rudimentary (and in-progress) audio capabiities, with built-in support for character theme songs.
 
