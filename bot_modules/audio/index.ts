@@ -36,6 +36,7 @@ class Track {
     }
     get = async () => {
         this.info = await ytdl.getBasicInfo(this.id)
+        this.stream = await ytdl(this.id, {filter:'audioonly', highWaterMark:1<<25})
     }
 }
 
@@ -51,19 +52,28 @@ class audio extends Module {
     }
     private _play = async (currQ: Queue) => {
         let track = currQ[0]
-        currQ.connection.play(await ytdl(track.id), { type: 'opus' })
-        // let dispatcher=currQ.connection.dispatcher
-        // dispatcher.on('finish', () => {
-        //     currQ.pop()
-        //     if (currQ.length >= 1) {
-        //         let t = currQ[0]
-        //         if (t) {
-        //             this._play(currQ)
-        //             console.log(`Trying to play ${t.info.title}`)
-        //         }
-        //     }
+        currQ.connection.play(track.stream, { type: 'opus' })
+        console.log(`Now playing *${track.info.title}*, requested by ${track.rqdBy?.username}`)
+        let dispatcher = currQ.connection.dispatcher
+        dispatcher.on('finish', () => {
+            dispatcher.destroy()
+            let t = currQ.shift()
+            if (currQ.length >= 1) {
+                if (t !== undefined) {
+                    this._play(currQ)
+                }
+            }
+        })
+        dispatcher.on('debug', (info)=>{
+            console.warn(info)
+        })
+        dispatcher.on('error', (info) => {
+            console.error(info)
+            dispatcher.emit('finish')
+        })
+        // currQ.connection.on('debug', (info)=>{
+        //     console.warn(info)
         // })
-
     }
     addQueue = async (command: Command): Promise<void> => {
         let currQ = this.queue[command.server.id]
@@ -82,7 +92,7 @@ class audio extends Module {
         await command.reply("Closing connection!")
     }
     listQueue = async (command: Command) => {
-        await command.reply(this.queue[command.server.id].map((t: Track) => `->${t.info.title} requested by ${t.rqdBy?.username}`).join("\n"))
+        await command.reply(this.queue[command.server.id].map((t: Track) => `•**${t.info.title}** requested by ${t.rqdBy?.username}`).join("\n"))
     }
     join = async (command: Command) => {
         if (command.member.voice.channel) {
