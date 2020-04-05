@@ -145,15 +145,15 @@ class fiasco extends Module {
   }
   advanceTurn = (gameState: gameObject): string => {
     if (gameState.phase != states['Aftermath']) {
-      gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
+      gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers)
       gameState.sceneColor = colors[""]
       return this.whoseTurn(gameState)
     }
     else {
-      gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
-      let i=0
-      while (gameState.players[gameState.activePlayer].pool.nW + gameState.players[gameState.activePlayer].pool.nB == 0 && i<=gameState.nPlayers) {
-        gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers) + 1
+      gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers)
+      let i = 0
+      while (gameState.players[gameState.activePlayer].pool.nW + gameState.players[gameState.activePlayer].pool.nB == 0 && i <= gameState.nPlayers) {
+        gameState.activePlayer = ((gameState.activePlayer + 1) % gameState.nPlayers)
         i++
       }
       gameState.sceneColor = colors[""]
@@ -166,7 +166,7 @@ class fiasco extends Module {
       if (parseInt(command.args[0])) {
         let pN: number = parseInt(command.args[0])
         console.log("Trying to assign player number " + pN.toString())
-        if (1 <= pN && pN <= gameState.nPlayers && !gameState.players[pN]) {
+        if (1 <= pN && pN <= gameState.nPlayers && !gameState.players[pN - 1]) {
           gameState.players[pN] = new playerObject(command.auth, pN, command.args.slice(1).join(" "))
           console.log('Assigned player number ' + pN.toString())
           gameState.whosIn++
@@ -184,7 +184,7 @@ class fiasco extends Module {
     }
     if (gameState && gameState.whosIn == gameState.nPlayers) {
       await command.reply(`Everyone's in! Let's move on.`)
-      gameState.pool.binEmbed = await command.reply(gameState.pool.displayBins(gameState.pool.setupPool).addField(`Turn`, `${gameState.players[1].displayName}'s turn.`))
+      gameState.pool.binEmbed = await command.reply(gameState.pool.displayBins(gameState.pool.setupPool).addField(`Turn`, `${gameState.players[0].displayName}'s turn.`))
     }
   }
   takeFromPool = async (command: Command) => {
@@ -263,7 +263,7 @@ class fiasco extends Module {
       this.showPool(command, true)
     }
   }
-  showPool = async (command: Command, deletePrev?:boolean) => {
+  showPool = async (command: Command, deletePrev?: boolean) => {
     let gameState: gameObject | false = this.setQ(command)
     if (gameState) {
       if (deletePrev) gameState.pool.binEmbed?.delete()
@@ -275,7 +275,7 @@ class fiasco extends Module {
       gameState.pool.binEmbed = await command.reply(embed)
     }
   }
-  show = async (command:Command)=>{
+  show = async (command: Command) => {
     this.showPool(command, false)
   }
   tilt = async (game: gameObject) => {
@@ -321,7 +321,7 @@ class fiasco extends Module {
           gameState.sceneColor = colors['black']
           change = true
         }
-        else{
+        else {
           await command.reply(`No dice to set the scene to that color.`)
         }
         if (change) {
@@ -336,29 +336,30 @@ class fiasco extends Module {
     if (gameState && gameState.phase == states['Act I'] && parseInt(command.args[0]) <= gameState.nPlayers) {
       let player = parseInt(command.args[0])
       //uncomment these blocks at the end of testing
-      await command.reply(`Gave  ${gameState.players[player].displayName} a ${colors[gameState.sceneColor]} die.`)
-      if (gameState.sceneColor == colors['white']) {
-        gameState.players[player].pool.nW++
-        gameState.pool.nW--
-      }
-      if (gameState.sceneColor == colors['black']) {
-        gameState.players[player].pool.nB++
-        gameState.pool.nB--
-      }
-      if (gameState.pool.nW + gameState.pool.nB > 2 * gameState.nPlayers) {
-        this.showPool(command,true)
-        await command.reply(this.advanceTurn(gameState))
+      if (player != gameState.activePlayer) {
+        await command.reply(`Gave  ${gameState.players[player].displayName} a ${colors[gameState.sceneColor]} die.`)
+        if (gameState.sceneColor == colors['white']) {
+          gameState.players[player].pool.nW++
+          gameState.pool.nW--
+        }
+        if (gameState.sceneColor == colors['black']) {
+          gameState.players[player].pool.nB++
+          gameState.pool.nB--
+        }
+        if (gameState.pool.nW + gameState.pool.nB > 2 * gameState.nPlayers) {
+          this.showPool(command, true)
+          await command.reply(this.advanceTurn(gameState))
+        }
+        else {
+          this.showPool(command, true)
+          await command.reply(`Time for **The Tilt**.`)
+          gameState.pool.binEmbed = await command.reply(await this.tilt(gameState))
+        }
       }
       else {
-        this.showPool(command, true)
-        await command.reply(`Time for **The Tilt**.`)
-        gameState.pool.binEmbed = await command.reply(await this.tilt(gameState))
+        command.reply("You can't give yourself a die in Act I.")
       }
     }
-    //else{
-    //command.reply("You can't give yourself a die in Act I.")
-    //}
-    //}
     if (gameState && gameState.phase == states['Act II']) {
       await command.reply(`Took a ${colors[gameState.sceneColor]} die.`)
       if (gameState.sceneColor == colors['white']) {
@@ -382,20 +383,20 @@ class fiasco extends Module {
   }
   aftermath = async (game: gameObject, command: Command) => {
     game.phase = states['Aftermath']
-    let embed:MessageEmbed = new MessageEmbed().setTitle('Endings')
-    for (var i = 1; i<=game.nPlayers;i++){
-      embed.addField(game.players[i].displayName, this.ending(game.players[i].pool.nW,game.players[i].pool.nB))
+    let embed: MessageEmbed = new MessageEmbed().setTitle('Endings')
+    for (var i = 1; i <= game.nPlayers; i++) {
+      embed.addField(game.players[i].displayName, this.ending(game.players[i].pool.nW, game.players[i].pool.nB))
     }
     await command.reply(embed)
-    this.showPool(command,true)
+    this.showPool(command, true)
     await command.reply('Use `+release (b/w)` to release a die of that color at the end.')
   }
   release = async (command: Command) => {
     let gameState: gameObject | false = this.setQ(command)
-    if (gameState && gameState.phase==states['Aftermath'] && this.turnQ(command.auth,gameState)){
-      switch (command.args[0].toLowerCase()[0]){
+    if (gameState && gameState.phase == states['Aftermath'] && this.turnQ(command.auth, gameState)) {
+      switch (command.args[0].toLowerCase()[0]) {
         case 'b':
-          if (gameState.players[gameState.activePlayer].pool.nB>=1){
+          if (gameState.players[gameState.activePlayer].pool.nB >= 1) {
             gameState.players[gameState.activePlayer].pool.nB--
             gameState.pool.binEmbed?.edit(this.showPool(command))
           }
@@ -404,7 +405,7 @@ class fiasco extends Module {
           }
           break
         case 'w':
-          if (gameState.players[gameState.activePlayer].pool.nW>=1){
+          if (gameState.players[gameState.activePlayer].pool.nW >= 1) {
             gameState.players[gameState.activePlayer].pool.nW--
             gameState.pool.binEmbed?.edit(this.showPool(command))
           }
