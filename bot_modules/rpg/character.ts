@@ -9,6 +9,10 @@ import { IFunction } from '../module'
 import { User } from './user'
 import { ScoreList, Score } from './systems/game'
 
+class Attribute implements IAttribute {
+  constructor()
+}
+
 export class Character implements ICharacter {
   id: string
   name: string
@@ -52,22 +56,27 @@ export class Character implements ICharacter {
       this.dbUser = user
     })
   }
-  static get(userId: IUser["id"], campaignId: ICampaign['id'], cb: IFunction): void {
-    db.Character.findOne().where({ user: userId, campaign: campaignId }).exec((err, char) => {
-      if (char === null || err) {
-        throw err || new Error(`Could not retrieved with given IDs: chrID:${userId} // campaignID:${campaignId}`)
-      } else if (typeof char === typeof Document) {
-        cb(new Character(char))
-      }
-    })
+  static async get(userId: IUser["id"], campaignId: ICampaign['id']): Promise<Character | null> {
+    let char = await db.Character.findOne().where({ user: userId, campaign: campaignId })
+    if (char === null) {
+      console.log(`Could not retrieved with given IDs: chrID:${userId} // campaignID:${campaignId}`)
+      return null
+    } else if (char instanceof Document) {
+      return new Character(char)
+    } else {
+      return null
+    }
   }
-  static getById(id: ICharacter['id'], cb: IFunction): void {
-    db.Character.findById(id).exec((err, char: Document) => {
-      if (char === null || err) {
-        throw err || new Error(`Could not retrieved with given IDs: chrID:${id}`)
-      } else if (typeof char === typeof Document) {
-        cb(new Character(char))
-      }
-    })
+  static async getById(id: ICharacter['id'], cb: IFunction): Promise<Character | null> {
+    let char = await db.Character.findById(id)
+    if (char === null) {
+      console.log(`Could not retrieved with given IDs: chrID:${id}`)
+      return null
+    } else if (typeof char === typeof Document) {
+      return new Character(char)
+    }
+    else {
+      return null
+    }
   }
 }

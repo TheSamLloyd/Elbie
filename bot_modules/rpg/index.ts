@@ -30,32 +30,45 @@ class rpg extends Module {
     }
     await command.reply(text)
   }
-  getCampaign = async (command: Command): Promise<Campaign> => {
+  getCampaign = async (command: Command): Promise<Campaign | null> => {
     if (!Campaign.instantiatedAll) Campaign.instatiateAllActiveCampaigns()
     return await Campaign.get(command.server.id, command.channel.id)
   }
   // terminal
   listChar = async (command: Command): Promise<void> => {
     console.log('Listing...')
-    let campaign: Campaign = await this.getCampaign(command)
-    let characters = campaign.characters.map((char: Character) => ({ name: char.name, user: char.dbUser ? char.dbUser.name : "" }))
-    var out = ''
-    characters.forEach((char) => {
-      out += `• ${char.name} (${char.user})\n`
-    })
-    console.log(out)
-    await command.reply(out.trim())
+    let campaign: Campaign | null = await this.getCampaign(command)
+    if (campaign) {
+      let characters = campaign.characters.map((char: Character) => ({ name: char.name, user: char.dbUser ? char.dbUser.name : "" }))
+      var out = ''
+      characters.forEach((char) => {
+        out += `• ${char.name} (${char.user})\n`
+      })
+      console.log(out)
+      await command.reply(out.trim())
+    }
+    else {
+      console.log('Nothing to list.')
+    }
 
   }
   // terminal
   who = async (command: Command): Promise<void> => {
     let campaign: Campaign | null = await this.getCampaign(command)
-    if (command.argument === '') {
-      Character.get(command.auth.id, campaign.id, async (char: Character) => {
-        await command.reply(await this.generateEmbed(char))
-      })
-    } else {
-      // get the character by username / name / nickname
+    if (campaign) {
+      if (command.argument === '') {
+        let char = await Character.get(command.auth.id, campaign.id)
+        console.log(char)
+        if (char !== null) {
+          let embed = await this.generateEmbed(char)
+          console.log(embed.toString())
+          await command.reply(embed)
+        }
+        // get the character by username / name / nickname
+      }
+    }
+    else {
+      await command.reply('No campaign found.')
     }
   }
   generateEmbed = async (char: Character): Promise<MessageEmbed> => {
@@ -66,7 +79,7 @@ class rpg extends Module {
     displayAttributes.forEach(attribute => {
       embed.addField(`${attribute.key} : ${attribute.value}`, true)
     })
-    Object.keys(char.stats).forEach(stat => {
+    char.stats.name(stat => {
       embed.addField(`${stat} : ${char.stats[stat]}`, true)
     })
     embed.addField('Description:', (char.desc || 'None'), false)
@@ -77,30 +90,42 @@ class rpg extends Module {
     return embed
   }
   rollFormat = async (command: Command): Promise<void> => {
-    let campaign: Campaign = await this.getCampaign(command)
+    let campaign: Campaign | null = await this.getCampaign(command)
     console.log(campaign)
-    console.log(campaign.system)
+    console.log(campaign?.system)
+    let char = null
+    let sys
     if (campaign) {
-      let sys = await campaign.system()
-      const char = campaign.characters.filter((char: Character) => char.dbUser?.id == command.auth.id)[0]
-      console.log(`${char.name}`)
-      const output: RollResults[] = sys.roll(char, command.argument)
-      let text: string = ''
-      output.forEach((roll) => {
-        text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
-      })
-      await command.reply(text.trim())
+      sys = await campaign.system()
+      char = campaign.characters.filter((char: Character) => char.dbUser?.id == command.auth.id)[0]
     }
+    else {
+      sys = nullGame
+    }
+    console.log(`${char?.name}`)
+    const output: RollResults[] = sys.roll(char, command.argument)
+    let text: string = ''
+    output.forEach((roll) => {
+      text += roll.iroll + ': ' + roll.dielist + '=**' + roll.total + '**\n'
+    })
+    await command.reply(text.trim())
+
   }
 
 
   summary = async (command: Command): Promise<void> => {
     let outtext: string = ""
-    let campaign: Campaign = await this.getCampaign(command)
-    let sys = await campaign.system()
-    outtext += `${campaign.name} running in ${sys.name}\n`
-    outtext += `${campaign.characters.map((char) => char.name).join("\n")}`
-    await command.reply(outtext)
+    let campaign: Campaign | null = await this.getCampaign(command)
+    if (campaign) {
+      let sys = await campaign.system()
+      outtext += `${campaign.name} running in ${sys.name}\n`
+      outtext += `${campaign.characters.map((char) => char.name).join("\n")}`
+      await command.reply(outtext)
+    }
+    else {
+      console.log('nothing to summarize!')
+    }
+
   }
   commands: ICommands = {
     'who': { key: this.who, desc: 'Displays information about the users\'s character, or if another user is specified by name or character name, that user\' character.' },

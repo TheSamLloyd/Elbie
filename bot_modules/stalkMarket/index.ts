@@ -3,14 +3,24 @@ import common from '../common'
 import { Module, Command } from '../module'
 import { IMarket } from './models/turnipSchema'
 import { User } from 'discord.js'
+import turnip from './models/turnipSchema'
 
+// class turnipFactory {
+//   // retrieve by ID 
+//   retrieve = async (id: User['id']): Promise<Market> => {
+//     let foundMarket = await turnip.findOne({ ownerID: id }).exec()
+//     return new Market({ user: (foundMarket.get('ownerID')), price: foundMarket.get('sellPrices').last() })
+
+
+//   }
+// }
 class Market implements IMarket {
   ownerID: User['id']
   lastBuyPrice?: number
   sellPrices: number[]
   lastUpdate: number
-  constructor(user: User, price?: number) {
-    this.ownerID = user.id
+  constructor({ user, price }: { user: User['id']; price?: number }) {
+    this.ownerID = user
     this.lastUpdate = (new Date()).getHours() % 12
     if (price && price > 0) {
       this.sellPrices = [price]
@@ -90,7 +100,7 @@ class stalkMarket extends Module {
     if (parseInt(command.argument)) {
       let value = parseInt(command.argument)
       //get Market from db
-      let market = new Market(command.auth)
+      let market = new Market({ user: command.auth.id })
       market.addBuyPrice(value)
       await command.reply(`The price of ${value.toString()} is ${market.score().toString()} sigma from your average price.`)
     }

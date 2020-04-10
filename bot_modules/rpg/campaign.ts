@@ -51,13 +51,13 @@ export class Campaign implements ICampaign {
     }
     this.instantiateCharacters()
   }
-  static async retrieve(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign> {
+  static async retrieve(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign|null> {
     console.log('in the retrieve function...')
     let campaign: Document | null = await db.Campaign.findOne().where({ $or: [{ channel: channelId }, { server: serverId, serverWide: true }] }).exec()
     return new Promise((resolve, reject) => {
       console.log("inside the DB query..")
       if (campaign == null) {
-        reject('No campaign...?')
+        resolve(null)
       }
       else {
         console.log('Found a campaign!')
@@ -91,7 +91,7 @@ export class Campaign implements ICampaign {
   isDM(id: User['id']): boolean {
     return (this.dm === id)
   }
-  static async get(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign> {
+  static async get(serverId: Server['id'], channelId: Channel['id']): Promise<Campaign|null> {
     return new Promise((resolve, reject) => {
       if (Campaign.allCampaigns[serverId]) {
         if (Campaign.allCampaigns[serverId]["all"]) {
