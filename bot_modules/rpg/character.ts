@@ -10,7 +10,14 @@ import { User } from './user'
 import { ScoreList, Score } from './systems/game'
 
 class Attribute implements IAttribute {
-  constructor()
+  key:string
+  value:string
+  display:boolean
+  constructor(obj:IAttribute){
+    this.key=obj.key
+    this.value=obj.value.toString()
+    this.display = obj?.display || true
+  }
 }
 
 export class Character implements ICharacter {
@@ -21,7 +28,7 @@ export class Character implements ICharacter {
   dbUser: User | undefined
   campaign: ICampaign['id']
   scores: { stats: ScoreList, skills: ScoreList }
-  attributes: IAttribute[]
+  attributes: Attribute[]
   inventory: string[]
   HP: { current: number, maxHP: number }
   level: number
@@ -40,7 +47,7 @@ export class Character implements ICharacter {
     this.campaign = character.get('campaign')
     let scores = character.get('scores')
     let stats: Map<string, any> = scores['stats']
-    this.attributes = character.get('attributes')
+    this.attributes = character.get('attributes').map((attribute:IAttribute)=>{return new Attribute(attribute)})
     this.inventory = character.get('inventory')
     this.HP = character.get('HP')
     this.level = character.get('level')

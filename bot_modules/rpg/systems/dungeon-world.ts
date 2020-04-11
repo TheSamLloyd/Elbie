@@ -29,4 +29,4 @@ class DungeonWorld extends GameSystem {
   }
 }
 
-export default new DungeonWorld
+export default new DungeonWorld()

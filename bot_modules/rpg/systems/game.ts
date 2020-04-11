@@ -33,13 +33,19 @@ export class Score {
 interface IScoreList {
     [skillName: string]: Score
 }
-export class ScoreList implements IScoreList {
-    [scoreName: string]: Score
+export class ScoreList extends Array<Score>{
     constructor(...scores: Score[]) {
-        scores.forEach((s: Score) => {
-            this[s.name] = s
-            this[s.shortName] = s
-        })
+        super(...scores)
+    }
+    get = (name: string): Score | null => {
+        name = name.toLowerCase()
+        let scores = this.filter((val: Score) => val.name.toLowerCase() === name || val?.shortName?.toLowerCase() === name)
+        if (scores.length == 0) {
+            return null
+        }
+        else {
+            return scores[0]
+        }
     }
 }
 export abstract class GameSystem implements IGameSystem {
@@ -70,7 +76,7 @@ export abstract class GameSystem implements IGameSystem {
                 results.push(new RollResults({ iroll, dielist }))
             }
             catch {
-                results.push(new RollResults({ iroll: "Malformed roll.", dielist: [0],total:""}))
+                results.push(new RollResults({ iroll: "Malformed roll.", dielist: [0], total: "" }))
             }
         })
         return results
@@ -82,14 +88,16 @@ export abstract class GameSystem implements IGameSystem {
         return false
     }
     skillRoll = (char: Character | null, skill: string): Die => {
+        console.log('in the skill roll function')
         if (!char) {
             return new Die(skill)
         }
-        if (skill in this.skills || skill in this.stats) {
-            let sc: Score = char.skills[skill] || char.stats[skill]
-            let cSkill = char.skills[sc.name] || char.stats[sc.name]
-            let ranks: number = cSkill?.ranks || 0
-            let mod = this.mod(cSkill?.stat?.ranks || 0) || 0
+        let sc: Score | null = char.skills.get(skill) || char.stats.get(skill)
+        console.log(`sc: ${sc?.name}`)
+        if (sc != null) {
+            let ranks: number = sc?.ranks || 0
+            let mod: number = this.mod(sc?.stat?.ranks || 0) || 0
+            console.log(ranks, mod, sc.name)
             return new Die((ranks + mod).toString())
         }
         else {

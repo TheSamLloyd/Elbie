@@ -77,10 +77,10 @@ class rpg extends Module {
       .setColor('GREEN')
       .setAuthor(char.name + ' (' + (char.dbUser ? char.dbUser.name : "") + ')')
     displayAttributes.forEach(attribute => {
-      embed.addField(`${attribute.key} : ${attribute.value}`, true)
+      embed.addField(`${attribute.key}`, `${attribute.value}`, true)
     })
-    char.stats.name(stat => {
-      embed.addField(`${stat} : ${char.stats[stat]}`, true)
+    char.stats.forEach(stat => {
+      embed.addField(`${stat.name}`,`${stat?.ranks || 0}`, true)
     })
     embed.addField('Description:', (char.desc || 'None'), false)
       .setFooter('Elbeanor')
@@ -91,8 +91,6 @@ class rpg extends Module {
   }
   rollFormat = async (command: Command): Promise<void> => {
     let campaign: Campaign | null = await this.getCampaign(command)
-    console.log(campaign)
-    console.log(campaign?.system)
     let char = null
     let sys
     if (campaign) {
