@@ -1,5 +1,8 @@
 # Elbie (Landon Bot)
 
+# 8 June 2020
+> I have been made aware that someone seems to have got ahold of her API key and has abused it to post pretty heinously racist and transphobic messages. While I have regenerated her keys and taken her offline while I ensure future security, I want to apologize for anyone who had to deal with that in their servers. I appreciate everyone who immediately let me know so I could take appropriate action.
+
 ## Note!
 > If you want to use Elbie for character tracking you MUST send me a message so I can set you up in my database! Otherwise she won't know who you are. We are nearing a 4.0 release which will make much of this way, way easier for me so I encourage you to watch this space for an updated readme. The #develop branch has more info.
 
