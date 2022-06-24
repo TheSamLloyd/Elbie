@@ -17,7 +17,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "libsodium-wrappers": "^0.7.3",
     "mongoose": "^5.7.5",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "node-opus": "^0.3.0",
     "ytdl-core": "^0.20.4"
   },
